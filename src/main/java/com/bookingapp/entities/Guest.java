@@ -1,6 +1,7 @@
 package com.bookingapp.entities;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
@@ -11,15 +12,19 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Owner extends UserAccount {
+public class Guest extends UserAccount {
+
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
-    private Set<Request> reservations;
+    private Set<Accommodation> favouriteAccommodations;
+
+    @Column(nullable = false)
+    private int numberOfCancellations;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
-    private Set<Accommodation> accommodations;
+    private Set<Accommodation> history;
 
-    public Owner() {
+    public Guest() {
 
     }
 }
