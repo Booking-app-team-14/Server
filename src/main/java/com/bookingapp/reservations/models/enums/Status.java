@@ -1,4 +1,4 @@
-package com.bookingapp.models.reservations.enums;
+package com.bookingapp.reservations.models.enums;
 
 public enum Status {
     SENT, ACCEPTED, DECLINED, CANCELLED

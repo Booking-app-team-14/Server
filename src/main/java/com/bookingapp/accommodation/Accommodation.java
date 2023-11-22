@@ -1,4 +1,4 @@
-package com.bookingapp.models.accommodation;
+package com.bookingapp.accommodation;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,6 +1,6 @@
-package com.bookingapp.models.users;
+package com.bookingapp.users.models;
 
-import com.bookingapp.models.users.enums.Role;
+import com.bookingapp.users.models.enums.Role;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Email;

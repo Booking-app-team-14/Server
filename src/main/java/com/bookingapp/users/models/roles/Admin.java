@@ -1,6 +1,6 @@
-package com.bookingapp.models.users.roles;
+package com.bookingapp.users.models.roles;
 
-import com.bookingapp.models.users.UserAccount;
+import com.bookingapp.users.models.UserAccount;
 import jakarta.persistence.Entity;
 
 import lombok.Getter;

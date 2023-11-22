@@ -1,7 +1,7 @@
-package com.bookingapp.models.reservations;
+package com.bookingapp.reservations.models;
 
-import com.bookingapp.models.reservations.enums.Status;
-import com.bookingapp.models.users.roles.Guest;
+import com.bookingapp.reservations.models.enums.Status;
+import com.bookingapp.users.models.roles.Guest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

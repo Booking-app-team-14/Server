@@ -1,6 +1,6 @@
-package com.bookingapp.models.notifications;
+package com.bookingapp.notifications.models;
 
-import com.bookingapp.models.users.UserAccount;
+import com.bookingapp.users.models.UserAccount;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

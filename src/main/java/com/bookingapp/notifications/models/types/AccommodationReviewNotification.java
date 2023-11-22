@@ -1,7 +1,7 @@
-package com.bookingapp.models.notifications.types;
+package com.bookingapp.notifications.models.types;
 
-import com.bookingapp.models.accommodation.Accommodation;
-import com.bookingapp.models.notifications.Notification;
+import com.bookingapp.accommodation.Accommodation;
+import com.bookingapp.notifications.models.Notification;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
