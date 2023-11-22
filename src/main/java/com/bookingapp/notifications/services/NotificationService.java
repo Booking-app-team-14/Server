@@ -1,6 +1,6 @@
 package com.bookingapp.notifications.services;
 import com.bookingapp.notifications.models.Notification;
-import com.bookingapp.notifications.repositories.NotificationRepository;
+import com.bookingapp.notifications.repositories.NotificationIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +9,10 @@ import java.util.Optional;
 @Service
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
+    private final NotificationIRepository notificationRepository;
 
     @Autowired
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationIRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
     }
 

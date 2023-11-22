@@ -17,14 +17,14 @@ public class RequestController {
         this.requestService = requestService;
     }
 
-    // Create a new reservation request
+
     @PostMapping("/create")
     public ResponseEntity<Request> createReservationRequest(@RequestBody Request request) {
         Request createdRequest = requestService.createRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
     }
 
-    // Get a reservation request by ID
+
     @GetMapping("/{requestId}")
     public ResponseEntity<Request> getReservationRequestById(@PathVariable Long requestId) {
         Request request = requestService.getRequestById(requestId);
@@ -35,7 +35,7 @@ public class RequestController {
         }
     }
 
-    // Update a reservation request
+
     @PutMapping("/{requestId}/update")
     public ResponseEntity<Request> updateReservationRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
         Request request = requestService.updateRequest(requestId, updatedRequest);
