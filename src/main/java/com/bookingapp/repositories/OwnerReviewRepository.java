@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface OwnerReviewRepository extends JpaRepository<OwnerReview, Long> {
 
-    @Query("SELECT r FROM OwnerReview r WHERE r.owner.id = ?1")
+    @Query("SELECT r FROM OwnerReview r WHERE r.owner.userId = ?1")
     List<OwnerReview> findAllByOwnerId(Long ownerId);
 
-    @Query("SELECT r FROM OwnerReview r WHERE r.owner.id = ?1 AND r.status = 0")
+    @Query("SELECT r FROM OwnerReview r WHERE r.owner.userId = ?1 AND r.status = 0")
     List<OwnerReview> findAllApprovedByOwnerId(Long ownerId);
 
     @Query("SELECT r FROM OwnerReview r WHERE r.status = 2")
