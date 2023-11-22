@@ -57,4 +57,8 @@ public class UserAccountService {
         }
         return null;
     }
+
+    public void save(UserAccount reportedUser) {
+
+    }
 }

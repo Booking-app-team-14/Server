@@ -21,7 +21,7 @@ public class UserAccount {
     @NotBlank
     @Email
     @Column(nullable = false, unique = true)
-    private String email;
+    private String username;
 
     @NotBlank
     @Size(min = 8)
@@ -51,4 +51,21 @@ public class UserAccount {
 
     @Column(nullable = false)
     private boolean isBlocked;
+
+    @Column(nullable = false)
+    private String imagePath;
+
+    @Column(nullable = false)
+    private int numberOfReports;
+    public UserAccount() {
+
+    }
+
+    public UserAccount(Long id, String username, String imagePath, Integer numberOfReports, Boolean blocked) {
+        this.userId = id;
+        this.username = username;
+        this.imagePath = imagePath;
+        this.numberOfReports = numberOfReports;
+        this.isBlocked = blocked;
+    }
 }
