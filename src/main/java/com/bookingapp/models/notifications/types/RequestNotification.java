@@ -10,9 +10,7 @@ import lombok.Setter;
 @Setter
 @Entity
 public class RequestNotification extends Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+
     @Column(nullable = false)
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH})
     private Request request;

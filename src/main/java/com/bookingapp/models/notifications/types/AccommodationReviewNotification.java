@@ -10,16 +10,14 @@ import lombok.Setter;
 @Setter
 @Entity
 public class AccommodationReviewNotification extends Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+
     @Column(nullable = false)
     private int rating;
-    @Column(nullable = false)
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH})
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Accommodation accommodation;
 
-    public AccommodationReviewNotification(){
+    public AccommodationReviewNotification() {
 
     }
 }

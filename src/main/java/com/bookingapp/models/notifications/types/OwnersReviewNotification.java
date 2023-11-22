@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @Entity
 public class OwnersReviewNotification extends Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+
     @Column(nullable = false)
     private int rating;
 
