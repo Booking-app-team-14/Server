@@ -47,21 +47,13 @@ public class RequestService {
         return false;
     }
 
-    public Request getGuestHistory(Long userId) {
-        Optional<Request> requestOptional = requestRepository.findById(userId);
-        if (requestOptional.isPresent()) {
-            Request existingRequest = requestOptional.get();
-            return  requestOptional.orElse(null);
-        }
-        return null;
-    }
     public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
 
         Set<Request> reservations = requestRepository.findAllByGuestId(guestId);
 
         Set<GuestReservationDTO> historyReservations = new HashSet<>();
         for (Request reservation : reservations) {
-            GuestReservationDTO dto = new GuestReservationDTO(reservation.getRequestId(), reservation.getRequestId(),
+            GuestReservationDTO dto = new GuestReservationDTO(reservation.getId(), reservation.getId(),
                     reservation.getUserId(), reservation.getStartDate(), reservation.getEndDate());
 
             historyReservations.add(dto);

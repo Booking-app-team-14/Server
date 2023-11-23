@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/requests")
+@RequestMapping("/api/requests")
 public class RequestController {
 
     private final RequestService requestService;
@@ -22,16 +22,16 @@ public class RequestController {
     }
 
 
-    @PostMapping("/create")
+    @PostMapping(value = "/{id}", consumes = "application/json", name = "guest makes a request")
     public ResponseEntity<Request> createReservationRequest(@RequestBody Request request) {
         Request createdRequest = requestService.createRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
     }
 
 
-    @GetMapping("/{requestId}")
-    public ResponseEntity<Request> getReservationRequestById(@PathVariable Long requestId) {
-        Request request = requestService.getRequestById(requestId);
+    @GetMapping("/{Id}")
+    public ResponseEntity<Request> getReservationRequestById(@PathVariable Long Id) {
+        Request request = requestService.getRequestById(Id);
         if (request != null) {
             return ResponseEntity.ok(request);
         } else {
@@ -40,7 +40,7 @@ public class RequestController {
     }
 
 
-    @PutMapping("/{requestId}/update")
+    @PutMapping("/{requestId}")
     public ResponseEntity<Request> updateReservationRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
         Request request = requestService.updateRequest(requestId, updatedRequest);
         if (request != null) {
@@ -50,18 +50,17 @@ public class RequestController {
         }
     }
 
-    @DeleteMapping("/{requestId}/delete")
-    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long requestId) {
-        boolean deleted = requestService.deleteRequest(requestId);
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long Id) {
+        boolean deleted = requestService.deleteRequest(Id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping(value = "/ussers/{usersId}/requests", name = "user gets reservation history")
-    public ResponseEntity<Set<GuestReservationDTO>> getOwnerReviews(@PathVariable Long userId) {
-        Set<GuestReservationDTO> guestHistory = requestService.getAllGuestHistoryReservations(userId);
-        return new ResponseEntity<>(guestHistory, HttpStatus.OK);
+    @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
+    public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
+        return requestService.getAllGuestHistoryReservations(guestId);
     }
 }

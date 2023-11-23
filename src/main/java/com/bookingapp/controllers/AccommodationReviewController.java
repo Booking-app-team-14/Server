@@ -84,7 +84,7 @@ public class AccommodationReviewController {
     public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
 
-        if (accommodation == null) {
+        if (accommodation.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

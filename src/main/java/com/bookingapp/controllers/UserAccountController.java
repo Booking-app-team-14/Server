@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserAccountController {
 
     private final UserAccountService userAccountService;
@@ -18,16 +18,16 @@ public class UserAccountController {
     }
 
 
-    @PostMapping("/create")
+    @PostMapping("/{Id}}")
     public ResponseEntity<UserAccount> createUserAccount(@RequestBody UserAccount userAccount) {
         UserAccount createdUser = userAccountService.createUser(userAccount);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserAccount> getUserAccountById(@PathVariable Long userId) {
-        UserAccount userAccount = userAccountService.getUserById(userId);
+    @GetMapping("/{Id}")
+    public ResponseEntity<UserAccount> getUserAccountById(@PathVariable Long Id) {
+        UserAccount userAccount = userAccountService.getUserById(Id);
         if (userAccount != null) {
             return ResponseEntity.ok(userAccount);
         } else {
@@ -36,9 +36,9 @@ public class UserAccountController {
     }
 
 
-    @PutMapping("/{userId}/update")
-    public ResponseEntity<UserAccount> updateUserAccount(@PathVariable Long userId, @RequestBody UserAccount updatedUser) {
-        UserAccount userAccount = userAccountService.updateUser(userId, updatedUser);
+    @PutMapping("/{Id}")
+    public ResponseEntity<UserAccount> updateUserAccount(@PathVariable Long Id, @RequestBody UserAccount updatedUser) {
+        UserAccount userAccount = userAccountService.updateUser(Id, updatedUser);
         if (userAccount != null) {
             return ResponseEntity.ok(userAccount);
         } else {
@@ -46,9 +46,9 @@ public class UserAccountController {
         }
     }
 
-    @DeleteMapping("/{userId}/delete")
-    public ResponseEntity<Void> deleteUserAccount(@PathVariable Long userId) {
-        boolean deleted = userAccountService.deleteUser(userId);
+    @DeleteMapping("/{Id}")
+    public ResponseEntity<Void> deleteUserAccount(@PathVariable Long Id) {
+        boolean deleted = userAccountService.deleteUser(Id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
@@ -57,9 +57,9 @@ public class UserAccountController {
     }
 
 
-    @GetMapping("/{userId}/role")
-    public ResponseEntity<String> getUserRole(@PathVariable Long userId) {
-        String role = userAccountService.getUserRole(userId);
+    @GetMapping(value="/{Id}",consumes = "application/json",name="user gets registered")
+    public ResponseEntity<String> getUserRole(@PathVariable Long Id) {
+        String role = userAccountService.getUserRole(Id);
         if (role != null) {
             return ResponseEntity.ok(role);
         } else {

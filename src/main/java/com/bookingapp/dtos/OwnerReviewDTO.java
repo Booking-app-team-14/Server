@@ -24,8 +24,8 @@ public class OwnerReviewDTO {
 
     public OwnerReviewDTO(OwnerReview ownerReview) {
         this.id = ownerReview.getId();
-        this.userId = ownerReview.getUser().getUserId();
-        this.ownerId = ownerReview.getOwner().getUserId();
+        this.userId = ownerReview.getUser().getId();
+        this.ownerId = ownerReview.getOwner().getId();
         this.rating = ownerReview.getRating();
         this.comment = ownerReview.getComment();
         this.sentAt = ownerReview.getSentAt();

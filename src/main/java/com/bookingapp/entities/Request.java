@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long requestId;
+    private Long Id;
 
 //    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
  //   private Guest from;

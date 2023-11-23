@@ -1,5 +1,6 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.services.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/accommodations")
@@ -58,6 +60,10 @@ public class AccommodationController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping("/{id}")
+    public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId){
+        return accommodationService.getAllOwnersAccommodation(ownerId);
     }
 }
 

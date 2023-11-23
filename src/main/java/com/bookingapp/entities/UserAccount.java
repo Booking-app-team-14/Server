@@ -16,7 +16,7 @@ import lombok.Setter;
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long Id;
 
     @NotBlank
     @Email
@@ -62,7 +62,7 @@ public class UserAccount {
     }
 
     public UserAccount(Long id, String username, String imagePath, Integer numberOfReports, Boolean blocked) {
-        this.userId = id;
+        this.Id = id;
         this.username = username;
         this.imagePath = imagePath;
         this.numberOfReports = numberOfReports;

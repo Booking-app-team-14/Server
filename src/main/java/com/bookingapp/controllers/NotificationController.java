@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/api/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -19,15 +19,15 @@ public class NotificationController {
     }
 
 
-    @PostMapping("/create")
+    @PostMapping(value="/{Id}", consumes = "application/json",name="guest makes a new request or review")
     public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
         Notification createdNotification = notificationService.createNotification(notification);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNotification);
     }
 
-    @GetMapping("/{notificationId}")
-    public ResponseEntity<Notification> getNotificationById(@PathVariable Long notificationId) {
-        Notification notification = notificationService.getNotificationById(notificationId);
+    @GetMapping("/{Id}")
+    public ResponseEntity<Notification> getNotificationById(@PathVariable Long Id) {
+        Notification notification = notificationService.getNotificationById(Id);
         if (notification != null) {
             return ResponseEntity.ok(notification);
         } else {
@@ -35,18 +35,18 @@ public class NotificationController {
         }
     }
 
-    @PutMapping("/{notificationId}/update")
-    public ResponseEntity<Notification> updateNotification(@PathVariable Long notificationId, @RequestBody Notification updatedNotification) {
-        Notification notification = notificationService.updateNotification(notificationId, updatedNotification);
+    @PutMapping("/{Id}")
+    public ResponseEntity<Notification> updateNotification(@PathVariable Long Id, @RequestBody Notification updatedNotification) {
+        Notification notification = notificationService.updateNotification(Id, updatedNotification);
         if (notification != null) {
             return ResponseEntity.ok(notification);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    @DeleteMapping("/{notificationId}/delete")
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long notificationId) {
-        boolean deleted = notificationService.deleteNotification(notificationId);
+    @DeleteMapping("/{Id}")
+    public ResponseEntity<Void> deleteNotification(@PathVariable Long Id) {
+        boolean deleted = notificationService.deleteNotification(Id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {

@@ -1,12 +1,15 @@
 package com.bookingapp.services;
 
+import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.repositories.AccommodationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccommodationService {
@@ -53,5 +56,20 @@ public class AccommodationService {
             return false;
         }
     }
+        public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
+
+            List<Accommodation> accommodations = getAllAccommodations();
+
+            Set<OwnersAccommodationDTO> ownersAccommmodation = new HashSet<>();
+            for (Accommodation accommodation1 : accommodations) {
+                OwnersAccommodationDTO dto = new OwnersAccommodationDTO(ownerId, accommodation1.getId(),
+                        accommodation1.getName(),accommodation1.getDescription());
+
+                ownersAccommmodation.add(dto);
+
+            }
+            return ownersAccommmodation;
+        }
+
 }
 
