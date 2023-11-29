@@ -39,7 +39,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Set<String> images;
 
-    @OneToMany (mappedBy="accommodation", cascade = CascadeType.ALL)
+    @OneToMany (cascade = CascadeType.ALL)
     private Set<Amenity> amenities;
 
     @Column(nullable=false)
@@ -51,7 +51,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer maxNumberOfGuests;
 
-    @OneToMany (mappedBy="accommodation", cascade = CascadeType.ALL)
+    @OneToMany (cascade = CascadeType.ALL)
     private Set<Availability> availability;
 
     @Column(nullable=false)

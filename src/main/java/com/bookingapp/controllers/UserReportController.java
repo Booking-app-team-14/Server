@@ -37,41 +37,50 @@ public class UserReportController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserReportDTO> getUserReport(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
 
-        if (userReport == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(new UserReportDTO(), HttpStatus.OK);
 
-        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.OK);
+//        UserReport userReport = userReportService.findOne(id);
+//
+//        if (userReport == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteUserReport(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
 
-        if (userReport != null) {
-            userReportService.remove(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(HttpStatus.OK);
+
+//        UserReport userReport = userReportService.findOne(id);
+//
+//        if (userReport != null) {
+//            userReportService.remove(id);
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
     }
 
     @PutMapping(value = "/{id}/reportedUser")
     public ResponseEntity<Void> updateReportedUser(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
 
-        if (userReport == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        UserAccount reportedUser = userReport.getReportedUser();
-        reportedUser.setBlocked(true);
-        userAccountService.save(reportedUser);
-
-        deleteUserReport(id);
         return new ResponseEntity<>(HttpStatus.OK);
+
+//        UserReport userReport = userReportService.findOne(id);
+//
+//        if (userReport == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        UserAccount reportedUser = userReport.getReportedUser();
+//        reportedUser.setBlocked(true);
+//        userAccountService.save(reportedUser);
+//
+//        deleteUserReport(id);
+//        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")

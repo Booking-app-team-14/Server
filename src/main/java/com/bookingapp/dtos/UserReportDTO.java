@@ -56,4 +56,7 @@ public class UserReportDTO {
         this.sentAt = sentAt;
     }
 
+    public UserReportDTO() {
+    }
+
 }
