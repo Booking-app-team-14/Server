@@ -9,7 +9,6 @@ import lombok.Setter;
 @Entity
 public class RequestNotification extends Notification {
 
-    @Column(nullable = false)
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH})
     private Request request;
 

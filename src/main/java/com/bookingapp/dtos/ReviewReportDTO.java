@@ -37,4 +37,8 @@ public class ReviewReportDTO {
         this.sentAt = sentAt;
     }
 
+    public ReviewReportDTO() {
+
+    }
+
 }

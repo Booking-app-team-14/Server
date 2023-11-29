@@ -57,16 +57,17 @@ public class RequestService {
     }
     public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
 
-        Set<Request> reservations = requestRepository.findAllByGuestId(guestId);
-
-        Set<GuestReservationDTO> historyReservations = new HashSet<>();
-        for (Request reservation : reservations) {
-            GuestReservationDTO dto = new GuestReservationDTO(reservation.getRequestId(), reservation.getRequestId(),
-                    reservation.getUserId(), reservation.getStartDate(), reservation.getEndDate());
-
-            historyReservations.add(dto);
-
-        }
-        return historyReservations;
+//        Set<Request> reservations = requestRepository.findAllByGuestId(guestId);
+//
+//        Set<GuestReservationDTO> historyReservations = new HashSet<>();
+//        for (Request reservation : reservations) {
+//            GuestReservationDTO dto = new GuestReservationDTO(reservation.getRequestId(), reservation.getRequestId(),
+//                    reservation.getUserId(), reservation.getStartDate(), reservation.getEndDate());
+//
+//            historyReservations.add(dto);
+//
+//        }
+//        return historyReservations;
+        return null;
     }
 }

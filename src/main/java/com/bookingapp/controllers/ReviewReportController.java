@@ -37,35 +37,41 @@ public class ReviewReportController {
 
     @PutMapping(value = "/{id}", consumes = "text/plain", name = "admin approves/rejects the review report")
     public ResponseEntity<ReviewReportDTO> approveReviewReport(Long id, String status) {
-        ReviewReport reviewReport = reviewReportService.findById(id);
 
-        if (reviewReport == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(new ReviewReportDTO(), HttpStatus.OK);
 
-        switch (status) {
-            case "ACCEPTED" -> reviewReport.setStatus(ReportStatus.ACCEPTED);
-            case "DECLINED" -> reviewReport.setStatus(ReportStatus.DECLINED);
-            default -> {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.OK);
+//        ReviewReport reviewReport = reviewReportService.findById(id);
+//
+//        if (reviewReport == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        switch (status) {
+//            case "ACCEPTED" -> reviewReport.setStatus(ReportStatus.ACCEPTED);
+//            case "DECLINED" -> reviewReport.setStatus(ReportStatus.DECLINED);
+//            default -> {
+//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//            }
+//        }
+//
+//        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.OK);
     }
 
     @PostMapping(value = "/{id}", consumes = "application/json", name = "owner reports a review")
     public ResponseEntity<ReviewReportDTO> createReviewReport(@PathVariable Long id, @RequestBody ReviewReportDTO reviewReportDTO) {
-        ReviewReport reviewReport = new ReviewReport();
-        reviewReport.setId(id);
-        reviewReport.setAccommodationReview(accommodationReviewService.findById(reviewReportDTO.getAccommodationReviewId()));
-        reviewReport.setReason(reviewReportDTO.getReason());
-        reviewReport.setStatus(ReportStatus.PENDING);
-        reviewReport.setSentAt(reviewReportDTO.getSentAt());
 
-        reviewReportService.save(reviewReport);
+        return new ResponseEntity<>(new ReviewReportDTO(), HttpStatus.CREATED);
 
-        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.CREATED);
+//        ReviewReport reviewReport = new ReviewReport();
+//        reviewReport.setId(id);
+//        reviewReport.setAccommodationReview(accommodationReviewService.findById(reviewReportDTO.getAccommodationReviewId()));
+//        reviewReport.setReason(reviewReportDTO.getReason());
+//        reviewReport.setStatus(ReportStatus.PENDING);
+//        reviewReport.setSentAt(reviewReportDTO.getSentAt());
+//
+//        reviewReportService.save(reviewReport);
+//
+//        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.CREATED);
     }
 
 }
