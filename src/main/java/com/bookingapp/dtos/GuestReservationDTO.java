@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public class GuestReservationDTO {
 
 
-    private Long id;
 
     private Long reservationId;
 
@@ -21,8 +20,7 @@ public class GuestReservationDTO {
 
     private LocalDate endDate;
 
-    public GuestReservationDTO(Long id, Long reservationId, Long accommodationId, LocalDate startDate, LocalDate endDate){
-        this.id = id;
+    public GuestReservationDTO(Long reservationId, Long accommodationId, LocalDate startDate, LocalDate endDate){
         this.reservationId = reservationId;
         this.accommodationId = accommodationId;
         this.startDate = startDate;

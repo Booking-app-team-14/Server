@@ -1,6 +1,6 @@
 package com.bookingapp.entities;
 
-import com.bookingapp.enums.Status;
+import com.bookingapp.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +32,7 @@ public class Request {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private RequestStatus requestStatus;
 
     public Request() {
 

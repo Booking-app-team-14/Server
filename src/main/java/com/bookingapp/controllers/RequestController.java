@@ -1,7 +1,7 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.GuestReservationDTO;
-import com.bookingapp.entities.Request;
+import com.bookingapp.dtos.RequestDTO;
 import com.bookingapp.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,15 +23,15 @@ public class RequestController {
 
 
     @PostMapping(value = "/{id}", consumes = "application/json", name = "guest makes a request")
-    public ResponseEntity<Request> createReservationRequest(@RequestBody Request request) {
-        Request createdRequest = requestService.createRequest(request);
+    public ResponseEntity<RequestDTO> createReservationRequest(@RequestBody RequestDTO request) {
+        RequestDTO createdRequest = requestService.createRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
     }
 
 
     @GetMapping("/{Id}")
-    public ResponseEntity<Request> getReservationRequestById(@PathVariable Long Id) {
-        Request request = requestService.getRequestById(Id);
+    public ResponseEntity<RequestDTO> getReservationRequestById(@PathVariable Long Id) {
+        RequestDTO request = requestService.getRequestById(Id);
         if (request != null) {
             return ResponseEntity.ok(request);
         } else {
@@ -41,8 +41,8 @@ public class RequestController {
 
 
     @PutMapping("/{requestId}")
-    public ResponseEntity<Request> updateReservationRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
-        Request request = requestService.updateRequest(requestId, updatedRequest);
+    public ResponseEntity<RequestDTO> updateReservationRequest(@PathVariable Long requestId, @RequestBody RequestDTO updatedRequest) {
+        RequestDTO request = requestService.updateRequest(requestId, updatedRequest);
         if (request != null) {
             return ResponseEntity.ok(request);
         } else {
@@ -51,8 +51,8 @@ public class RequestController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long Id) {
-        boolean deleted = requestService.deleteRequest(Id);
+    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long id) {
+        boolean deleted = requestService.deleteRequest(id);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
@@ -60,7 +60,7 @@ public class RequestController {
         }
     }
     @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
-    public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
-        return requestService.getAllGuestHistoryReservations(guestId);
+    public Set<GuestReservationDTO> getAllGuestHistoryReservations(@PathVariable Long Id) {
+        return requestService.getAllGuestHistoryReservations(Id);
     }
 }

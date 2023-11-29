@@ -1,5 +1,6 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.services.AccommodationService;
@@ -64,6 +65,10 @@ public class AccommodationController {
     @GetMapping("/{id}")
     public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId){
         return accommodationService.getAllOwnersAccommodation(ownerId);
+    }
+    @GetMapping
+    public Set<BestOffersDTO> getBestOffers(){
+        return accommodationService.getBestOffers();
     }
 }
 

@@ -21,7 +21,7 @@ public class UserAccountController {
     @PostMapping("/{Id}}")
     public ResponseEntity<UserAccount> createUserAccount(@RequestBody UserAccount userAccount) {
         UserAccount createdUser = userAccountService.createUser(userAccount);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return ResponseEntity.status(HttpStatus.OK).body(createdUser);
     }
 
 
@@ -57,7 +57,7 @@ public class UserAccountController {
     }
 
 
-    @GetMapping(value="/{Id}",consumes = "application/json",name="user gets registered")
+    @GetMapping(value="/{Id}",consumes = "application/json")
     public ResponseEntity<String> getUserRole(@PathVariable Long Id) {
         String role = userAccountService.getUserRole(Id);
         if (role != null) {

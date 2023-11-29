@@ -1,7 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.GuestReservationDTO;
-import com.bookingapp.entities.Request;
+import com.bookingapp.dtos.RequestDTO;
 import com.bookingapp.repositories.RequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +20,19 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public Request createRequest(Request request) {
+    public RequestDTO createRequest(RequestDTO request) {
         return requestRepository.save(request);
     }
 
-    public Request getRequestById(Long requestId) {
-        Optional<Request> requestOptional = requestRepository.findById(requestId);
+    public RequestDTO getRequestById(Long requestId) {
+        Optional<RequestDTO> requestOptional = requestRepository.findById(requestId);
         return requestOptional.orElse(null);
     }
 
-    public Request updateRequest(Long requestId, Request updatedRequest) {
-        Optional<Request> requestOptional = requestRepository.findById(requestId);
+    public RequestDTO updateRequest(Long requestId, RequestDTO updatedRequest) {
+        Optional<RequestDTO> requestOptional = requestRepository.findById(requestId);
         if (requestOptional.isPresent()) {
-            Request existingRequest = requestOptional.get();
+            RequestDTO existingRequest = requestOptional.get();
             return requestRepository.save(existingRequest);
         }
         return null;
@@ -49,11 +49,11 @@ public class RequestService {
 
     public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
 
-        Set<Request> reservations = requestRepository.findAllByGuestId(guestId);
+        Set<RequestDTO> reservations = requestRepository.findAllById(guestId);
 
         Set<GuestReservationDTO> historyReservations = new HashSet<>();
-        for (Request reservation : reservations) {
-            GuestReservationDTO dto = new GuestReservationDTO(reservation.getId(), reservation.getId(),
+        for (RequestDTO reservation : reservations) {
+            GuestReservationDTO dto = new GuestReservationDTO(reservation.getUserId(),
                     reservation.getUserId(), reservation.getStartDate(), reservation.getEndDate());
 
             historyReservations.add(dto);
