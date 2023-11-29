@@ -63,8 +63,8 @@ public class AccommodationController {
         }
     }
     @GetMapping("/{id}")
-    public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId){
-        return accommodationService.getAllOwnersAccommodation(ownerId);
+    public ResponseEntity<OwnersAccommodationDTO> getAllOwnersAccommodation(@PathVariable Long id){
+        return (ResponseEntity<OwnersAccommodationDTO>) accommodationService.getAllOwnersAccommodation(id);
     }
     @GetMapping
     public Set<BestOffersDTO> getBestOffers(){

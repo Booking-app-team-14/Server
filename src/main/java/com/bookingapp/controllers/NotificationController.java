@@ -1,6 +1,6 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.entities.Notification;
+import com.bookingapp.dtos.NotificationDTO;
 import com.bookingapp.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,14 @@ public class NotificationController {
 
 
     @PostMapping(value="/{Id}", consumes = "application/json",name="guest makes a new request or review")
-    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
-        Notification createdNotification = notificationService.createNotification(notification);
+    public ResponseEntity<NotificationDTO> createNotification(@RequestBody NotificationDTO notification) {
+        NotificationDTO createdNotification = notificationService.createNotification(notification);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNotification);
     }
 
     @GetMapping("/{Id}")
-    public ResponseEntity<Notification> getNotificationById(@PathVariable Long Id) {
-        Notification notification = notificationService.getNotificationById(Id);
+    public ResponseEntity<NotificationDTO> getNotificationById(@PathVariable Long Id) {
+        NotificationDTO notification = notificationService.getNotificationById(Id);
         if (notification != null) {
             return ResponseEntity.ok(notification);
         } else {
@@ -36,8 +36,8 @@ public class NotificationController {
     }
 
     @PutMapping("/{Id}")
-    public ResponseEntity<Notification> updateNotification(@PathVariable Long Id, @RequestBody Notification updatedNotification) {
-        Notification notification = notificationService.updateNotification(Id, updatedNotification);
+    public ResponseEntity<NotificationDTO> updateNotification(@PathVariable Long Id, @RequestBody NotificationDTO updatedNotification) {
+        NotificationDTO notification = notificationService.updateNotification(Id, updatedNotification);
         if (notification != null) {
             return ResponseEntity.ok(notification);
         } else {

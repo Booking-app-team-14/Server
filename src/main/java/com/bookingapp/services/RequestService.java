@@ -53,8 +53,8 @@ public class RequestService {
 
         Set<GuestReservationDTO> historyReservations = new HashSet<>();
         for (RequestDTO reservation : reservations) {
-            GuestReservationDTO dto = new GuestReservationDTO(reservation.getUserId(),
-                    reservation.getUserId(), reservation.getStartDate(), reservation.getEndDate());
+            GuestReservationDTO dto = new GuestReservationDTO(reservation.getRequestId(),
+                    reservation.getRequestId(), reservation.getStartDate(), reservation.getEndDate());
 
             historyReservations.add(dto);
 
