@@ -40,4 +40,11 @@ public class OwnerReviewDTO {
         this.sentAt = sentAt;
     }
 
+    public OwnerReviewDTO() {
+    }
+
+    @Override
+    public String toString() {
+        return "test";
+    }
 }

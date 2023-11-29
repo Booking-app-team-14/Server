@@ -45,4 +45,8 @@ public class AccommodationReviewDTO {
         this.sentAt = sentAt;
     }
 
+    public AccommodationReviewDTO() {
+
+    }
+
 }

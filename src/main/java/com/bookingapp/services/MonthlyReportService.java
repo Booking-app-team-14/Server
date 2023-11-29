@@ -11,36 +11,43 @@ import java.util.Optional;
 @Service
 public class MonthlyReportService {
 
-    private final MonthlyReportRepository repository;
+//    private final MonthlyReportRepository repository;
 
-    @Autowired
-    public MonthlyReportService(MonthlyReportRepository repository) {
-        this.repository = repository;
-    }
+//    @Autowired
+//    public MonthlyReportService(MonthlyReportRepository repository) {
+//        this.repository = repository;
+//    }
 
     public List<MonthlyReportDTO> getAllReports() {
-        return repository.findAll();
+        //return repository.findAll();
+        return null;
     }
 
     public Optional<MonthlyReportDTO> getReportById(Long id) {
-        return repository.findById(id);
+
+//        return repository.findById(id);
+        return null;
     }
 
     public MonthlyReportDTO createReport(MonthlyReportDTO reportDTO) {
-        return repository.save(reportDTO);
+
+        return null;
+//        return repository.save(reportDTO);
     }
 
     public Optional<MonthlyReportDTO> updateReport(Long id, MonthlyReportDTO reportDTO) {
-        if (repository.existsById(id)) {
-            reportDTO.setId(id);
-            return Optional.of(repository.save(reportDTO));
-        } else {
-            return Optional.empty();
-        }
+//        if (repository.existsById(id)) {
+//            reportDTO.setId(id);
+//            return Optional.of(repository.save(reportDTO));
+//        } else {
+//            return Optional.empty();
+//        }
+        return null;
     }
 
     public void deleteReport(Long id) {
-        repository.deleteById(id);
+        return;
+//        repository.deleteById(id);
     }
 }
 

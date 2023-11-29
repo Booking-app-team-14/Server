@@ -10,44 +10,49 @@ import java.util.List;
 @Service
 public class AccommodationReportService {
 
-    private final AccommodationReportRepository reportRepository;
-
-    @Autowired
-    public AccommodationReportService(AccommodationReportRepository reportRepository) {
-        this.reportRepository = reportRepository;
-    }
+//    private final AccommodationReportRepository reportRepository;
+//
+//    @Autowired
+//    public AccommodationReportService(AccommodationReportRepository reportRepository) {
+//        this.reportRepository = reportRepository;
+//    }
 
     public List<AccommodationReportDTO> getAllReports() {
 
-        return reportRepository.findAll();
+//        return reportRepository.findAll();
+        return null;
     }
 
     public AccommodationReportDTO getReportById(Long id) {
 
-        return reportRepository.findById(id).orElse(null);
+//        return reportRepository.findById(id).orElse(null);
+        return null;
     }
 
     public AccommodationReportDTO createReport(AccommodationReportDTO reportDTO) {
 
-        return reportRepository.save(reportDTO);
+//        return reportRepository.save(reportDTO);
+        return null;
     }
 
     public AccommodationReportDTO updateReport(Long id, AccommodationReportDTO reportDTO) {
 
-        if (reportRepository.existsById(id)) {
-            reportDTO.setId(id);
-            return reportRepository.save(reportDTO);
-        } else {
-            return null;
-        }
+//        if (reportRepository.existsById(id)) {
+//            reportDTO.setId(id);
+//            return reportRepository.save(reportDTO);
+//        } else {
+//            return null;
+//        }
+        return null;
     }
     public boolean deleteReport(Long id) {
-        if (reportRepository.existsById(id)) {
-            reportRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+//        if (reportRepository.existsById(id)) {
+//            reportRepository.deleteById(id);
+//            return true;
+//        } else {
+//            return false;
+//        }
+        return false;
     }
 }
 

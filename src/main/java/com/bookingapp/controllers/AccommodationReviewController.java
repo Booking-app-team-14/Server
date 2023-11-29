@@ -31,20 +31,25 @@ public class AccommodationReviewController {
 
     @GetMapping(value = "/accommodations/{id}/accommodationReviews", name = "user gets all approved reviews for accommodation")
     public ResponseEntity<List<AccommodationReviewDTO>> getAccommodationReviews(@PathVariable Long id) {
-        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-
-        if (accommodation == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllApprovedByAccommodationId(id);
 
         List<AccommodationReviewDTO> accommodationReviewsDTO = new ArrayList<>();
-        for (AccommodationReview r : accommodationReviews) {
-            accommodationReviewsDTO.add(new AccommodationReviewDTO(r));
-        }
-
+        accommodationReviewsDTO.add(new AccommodationReviewDTO());
         return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
+
+//        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+//
+//        if (accommodation == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllApprovedByAccommodationId(id);
+//
+//        List<AccommodationReviewDTO> accommodationReviewsDTO = new ArrayList<>();
+//        for (AccommodationReview r : accommodationReviews) {
+//            accommodationReviewsDTO.add(new AccommodationReviewDTO(r));
+//        }
+//
+//        return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/accommodationReviews", name = "admin gets all pending reviews")
@@ -61,35 +66,38 @@ public class AccommodationReviewController {
 
     @PutMapping(value = "/accommodationReviews/{id}", consumes = "text/plain", name = "admin approves/rejects the review")
     public ResponseEntity<AccommodationReviewDTO> updateAccommodationReview(@PathVariable Long id, @RequestBody String status) {
-        AccommodationReview accommodationReview = accommodationReviewService.findById(id);
 
-        if (accommodationReview == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.OK);
 
-        switch (status) {
-            case "APPROVED" -> accommodationReview.setStatus(ReviewStatus.APPROVED);
-            case "REJECTED" -> accommodationReview.setStatus(ReviewStatus.REJECTED);
-            default -> {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        accommodationReviewService.save(accommodationReview);
-
-        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
+//        AccommodationReview accommodationReview = accommodationReviewService.findById(id);
+//
+//        if (accommodationReview == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        switch (status) {
+//            case "APPROVED" -> accommodationReview.setStatus(ReviewStatus.APPROVED);
+//            case "REJECTED" -> accommodationReview.setStatus(ReviewStatus.REJECTED);
+//            default -> {
+//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//            }
+//        }
+//
+//        accommodationReviewService.save(accommodationReview);
+//
+//        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
     }
 
     @PostMapping(value = "/accommodations/{id}/accommodationReviews", consumes = "application/json", name = "user adds a review for the accommodation")
     public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
-        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-
-        if (accommodation.isEmpty()) {
+//        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        Accommodation accommodation = new Accommodation();
+        if (accommodation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         AccommodationReview accommodationReview = new AccommodationReview();
-        accommodationReview.setAccommodation(accommodation.get());
+        accommodationReview.setAccommodation(new Accommodation());//accommodation.get());
         accommodationReview.setUser(userAccountService.getUserById(accommodationReviewDTO.getUserId()));
         accommodationReview.setComment(accommodationReviewDTO.getComment());
         accommodationReview.setRating(accommodationReviewDTO.getRating());
