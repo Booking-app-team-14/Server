@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/accommodations")
+@RequestMapping("api/accommodations")
 public class AccommodationController {
 
     private final AccommodationService accommodationService;
