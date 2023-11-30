@@ -9,12 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/accommodations")
+@RequestMapping("/api/accommodations")
 public class AccommodationController {
 
     private final AccommodationService accommodationService;
@@ -62,13 +62,15 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<OwnersAccommodationDTO> getAllOwnersAccommodation(@PathVariable Long id){
-        return (ResponseEntity<OwnersAccommodationDTO>) accommodationService.getAllOwnersAccommodation(id);
+    @GetMapping(value = "/owners/{ownerId}/accommodation", name = "gets all the accommodation of the owner")
+    public ResponseEntity<List<OwnersAccommodationDTO>> getAllOwnersAccommodation(Long ownerId){
+        List<OwnersAccommodationDTO> ownersAccommodationDTO = new ArrayList<>();
+        return new ResponseEntity<>(ownersAccommodationDTO, HttpStatus.OK);
     }
-    @GetMapping
-    public Set<BestOffersDTO> getBestOffers(){
-        return accommodationService.getBestOffers();
+    @GetMapping(value ="/accommodations", name = "gets the best offers")
+    public ResponseEntity<List<BestOffersDTO>> getBestOffers(){
+        List<BestOffersDTO> bestOffersDTO = new ArrayList<>();
+        return new ResponseEntity<>(bestOffersDTO, HttpStatus.OK);
     }
 }
 

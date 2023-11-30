@@ -17,9 +17,9 @@ public class UserAccountService {
         this.userAccountRepository = userAccountRepository;
     }
 
-    public UserAccount createUser(UserAccount userAccount) {
+    public UserAccount createUser() {
 
-        return userAccountRepository.save(userAccount);
+        return userAccountRepository.save();
     }
 
     public UserAccount getUserById(Long userId) {
@@ -28,7 +28,7 @@ public class UserAccountService {
         return userOptional.orElse(null);
     }
 
-    public UserAccount updateUser(Long userId, UserAccount updatedUser) {
+    public UserAccount updateUser(Long userId) {
 
         Optional<UserAccount> userOptional = userAccountRepository.findById(userId);
         if (userOptional.isPresent()) {

@@ -1,7 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.GuestReservationDTO;
-import com.bookingapp.dtos.RequestDTO;
+import com.bookingapp.entities.Request;
 import com.bookingapp.repositories.RequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +20,19 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public RequestDTO createRequest(RequestDTO request) {
+    public Request createRequest(Request request) {
         return requestRepository.save(request);
     }
 
-    public RequestDTO getRequestById(Long requestId) {
-        Optional<RequestDTO> requestOptional = requestRepository.findById(requestId);
+    public Request getRequestById(Long requestId) {
+        Optional<Request> requestOptional = requestRepository.findById(requestId);
         return requestOptional.orElse(null);
     }
 
-    public RequestDTO updateRequest(Long requestId, RequestDTO updatedRequest) {
-        Optional<RequestDTO> requestOptional = requestRepository.findById(requestId);
+    public Request updateRequest(Long requestId, Request updatedRequest) {
+        Optional<Request> requestOptional = requestRepository.findById(requestId);
         if (requestOptional.isPresent()) {
-            RequestDTO existingRequest = requestOptional.get();
+            Request existingRequest = requestOptional.get();
             return requestRepository.save(existingRequest);
         }
         return null;
@@ -47,14 +47,22 @@ public class RequestService {
         return false;
     }
 
+    public Request getGuestHistory(Long userId) {
+        Optional<Request> requestOptional = requestRepository.findById(userId);
+        if (requestOptional.isPresent()) {
+            Request existingRequest = requestOptional.get();
+            return  requestOptional.orElse(null);
+        }
+        return null;
+    }
     public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
 
-        Set<RequestDTO> reservations = requestRepository.findAllById(guestId);
+        Set<Request> reservations = requestRepository.findAllByRequestId(guestId);
 
         Set<GuestReservationDTO> historyReservations = new HashSet<>();
-        for (RequestDTO reservation : reservations) {
-            GuestReservationDTO dto = new GuestReservationDTO(reservation.getRequestId(),
-                    reservation.getRequestId(), reservation.getStartDate(), reservation.getEndDate());
+        for (Request reservation : reservations) {
+            GuestReservationDTO dto = new GuestReservationDTO(reservation.getUserId(), reservation.getUserId(),
+                     reservation.getStartDate(), reservation.getEndDate());
 
             historyReservations.add(dto);
 

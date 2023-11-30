@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping("/api")
 public class RequestController {
 
     private final RequestService requestService;
@@ -22,45 +23,33 @@ public class RequestController {
     }
 
 
-    @PostMapping(value = "/{id}", consumes = "application/json", name = "guest makes a request")
-    public ResponseEntity<RequestDTO> createReservationRequest(@RequestBody RequestDTO request) {
-        RequestDTO createdRequest = requestService.createRequest(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
-    }
+    @PostMapping(value = "/requests/{id}", consumes = "application/json", name = "guest makes a reservation request")
+    public ResponseEntity<RequestDTO> createReservationRequest(/*@RequestBody RequestDTO request*/) {
+
+            return new ResponseEntity<>(new RequestDTO(), HttpStatus.CREATED);
+        }
 
 
-    @GetMapping("/{Id}")
+    @GetMapping(value = "/requests/{id}", name = "gets a request by userId")
     public ResponseEntity<RequestDTO> getReservationRequestById(@PathVariable Long Id) {
-        RequestDTO request = requestService.getRequestById(Id);
-        if (request != null) {
-            return ResponseEntity.ok(request);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        RequestDTO requestDTO = new RequestDTO();
+        return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
 
 
-    @PutMapping("/{requestId}")
-    public ResponseEntity<RequestDTO> updateReservationRequest(@PathVariable Long requestId, @RequestBody RequestDTO updatedRequest) {
-        RequestDTO request = requestService.updateRequest(requestId, updatedRequest);
-        if (request != null) {
-            return ResponseEntity.ok(request);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping(value="/requests/{Id}",name="updates the status of the request")
+    public ResponseEntity<RequestDTO> updateReservationRequest(@PathVariable Long requestId/* @RequestBody RequestDTO updatedRequest*/) {
+        return new ResponseEntity<>(new RequestDTO(), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long id) {
-        boolean deleted = requestService.deleteRequest(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @DeleteMapping(value = "/requests/{id}")
+    public ResponseEntity<String> deleteReservationRequest(@PathVariable Long id) {
+      return new ResponseEntity<>("Deleted", HttpStatus.OK);
         }
-    }
+
     @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
-    public Set<GuestReservationDTO> getAllGuestHistoryReservations(@PathVariable Long Id) {
-        return requestService.getAllGuestHistoryReservations(Id);
-    }
+    public ResponseEntity<List<GuestReservationDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
+        List<GuestReservationDTO> guestHistory = new ArrayList<>();
+        return new ResponseEntity<>(guestHistory, HttpStatus.OK);
+        }
 }

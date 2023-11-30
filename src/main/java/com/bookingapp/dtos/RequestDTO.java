@@ -11,18 +11,22 @@ import java.time.LocalDate;
 public class RequestDTO {
 
 
-        private Long requestId;
+        private Long guestId;
         private LocalDate startDate;
         private LocalDate endDate;
         private int numberOfGuests;
         private RequestStatus requestStatus;
 
         public RequestDTO(Long id, LocalDate startDate, LocalDate endDate, int numberOfGuests, RequestStatus status){
-            this.requestId = id;
+            this.guestId = id;
             this.startDate = startDate;
             this.endDate = endDate;
             this.numberOfGuests = numberOfGuests;
             this.requestStatus = status;
         }
+
+    public RequestDTO() {
+
+    }
 }
 

@@ -1,6 +1,6 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.entities.UserAccount;
+import com.bookingapp.dtos.UserDTO;
 import com.bookingapp.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserAccountController {
 
     private final UserAccountService userAccountService;
@@ -18,53 +18,30 @@ public class UserAccountController {
     }
 
 
-    @PostMapping("/{Id}}")
-    public ResponseEntity<UserAccount> createUserAccount(@RequestBody UserAccount userAccount) {
-        UserAccount createdUser = userAccountService.createUser(userAccount);
-        return ResponseEntity.status(HttpStatus.OK).body(createdUser);
+    @PostMapping(value = "/users/{Id}}", name = "user is registered")
+    public ResponseEntity<UserDTO> createUserAccount() {
+        return new ResponseEntity<>(new UserDTO(), HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/{Id}")
-    public ResponseEntity<UserAccount> getUserAccountById(@PathVariable Long Id) {
-        UserAccount userAccount = userAccountService.getUserById(Id);
-        if (userAccount != null) {
-            return ResponseEntity.ok(userAccount);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping(value = "/users/{Id}", name = "for view of the profile")
+    public ResponseEntity<UserDTO> getUserAccountById(@PathVariable Long Id) {
+        UserDTO userDTO = new UserDTO();
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+    @PutMapping(value = "/users/{Id}", name = "increased number of reports or is blocked")
+    public ResponseEntity<UserDTO> updateUserAccount(@PathVariable Long Id/*UserDTO user*/) {
+        return new ResponseEntity<>(new UserDTO(), HttpStatus.OK);
     }
 
-
-    @PutMapping("/{Id}")
-    public ResponseEntity<UserAccount> updateUserAccount(@PathVariable Long Id, @RequestBody UserAccount updatedUser) {
-        UserAccount userAccount = userAccountService.updateUser(Id, updatedUser);
-        if (userAccount != null) {
-            return ResponseEntity.ok(userAccount);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping("/users/{Id}")
+    public ResponseEntity<String> deleteUserAccount(@PathVariable Long Id) {
+        return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
-    @DeleteMapping("/{Id}")
-    public ResponseEntity<Void> deleteUserAccount(@PathVariable Long Id) {
-        boolean deleted = userAccountService.deleteUser(Id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-
-    @GetMapping(value="/{Id}",consumes = "application/json")
-    public ResponseEntity<String> getUserRole(@PathVariable Long Id) {
-        String role = userAccountService.getUserRole(Id);
-        if (role != null) {
-            return ResponseEntity.ok(role);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping(value="/users/{Id}")
+    public ResponseEntity<UserDTO> getUserRole(@PathVariable Long Id) {
+        UserDTO userDTO = new UserDTO();
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
 

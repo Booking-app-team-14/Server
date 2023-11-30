@@ -15,5 +15,9 @@ public class NotificationDTO {
         this.sentBefore = sentBefore;
         this.description = description;
     }
+
+    public NotificationDTO() {
+
+    }
 }
 
