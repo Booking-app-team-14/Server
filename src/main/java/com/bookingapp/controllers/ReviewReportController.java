@@ -35,8 +35,8 @@ public class ReviewReportController {
         return new ResponseEntity<>(reviewReportsDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}", consumes = "text/plain", name = "admin approves/rejects the review report")
-    public ResponseEntity<ReviewReportDTO> approveReviewReport(Long id, String status) {
+    @PutMapping(value = "/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review report")
+    public ResponseEntity<ReviewReportDTO> approveReviewReport(Long id){//, String status) {
 
         return new ResponseEntity<>(new ReviewReportDTO(), HttpStatus.OK);
 
@@ -57,8 +57,8 @@ public class ReviewReportController {
 //        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}", consumes = "application/json", name = "owner reports a review")
-    public ResponseEntity<ReviewReportDTO> createReviewReport(@PathVariable Long id, @RequestBody ReviewReportDTO reviewReportDTO) {
+    @PostMapping(value = "/{id}", /*consumes = "application/json",*/ name = "owner reports a review")
+    public ResponseEntity<ReviewReportDTO> createReviewReport(@PathVariable Long id){//, @RequestBody ReviewReportDTO reviewReportDTO) {
 
         return new ResponseEntity<>(new ReviewReportDTO(), HttpStatus.CREATED);
 

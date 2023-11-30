@@ -41,8 +41,8 @@ public class OwnerReviewController {
 //        return new ResponseEntity<>(ownerReviewsDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value =  "/owners/{ownerId}/reviews", consumes = "application/json", name = "user adds a review for the owner")
-    public ResponseEntity<OwnerReviewDTO> addOwnerReview(@PathVariable Long ownerId, @RequestBody OwnerReviewDTO ownerReviewDTO) {
+    @PostMapping(value =  "/owners/{ownerId}/reviews"/*, consumes = "application/json"*/, name = "user adds a review for the owner")
+    public ResponseEntity<OwnerReviewDTO> addOwnerReview(@PathVariable Long ownerId) {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
         return new ResponseEntity<>(new OwnerReviewDTO(), HttpStatus.CREATED);
 
@@ -70,8 +70,8 @@ public class OwnerReviewController {
         return new ResponseEntity<>(ownerReviewsDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/ownerReviews/{id}", consumes = "text/plain", name = "admin approves/rejects the review")
-    public ResponseEntity<OwnerReviewDTO> updateOwnerReview(@PathVariable Long id, @RequestBody String status) {
+    @PutMapping(value = "/ownerReviews/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review")
+    public ResponseEntity<OwnerReviewDTO> updateOwnerReview(@PathVariable Long id){//, @RequestBody String status) {
 
         return new ResponseEntity<>(new OwnerReviewDTO(), HttpStatus.OK);
 
