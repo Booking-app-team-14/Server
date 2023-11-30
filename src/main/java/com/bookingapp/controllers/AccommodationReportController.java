@@ -44,7 +44,7 @@ public class AccommodationReportController {
     }
 
 
-    @PostMapping(value =  "/owners/{ownerId}/accommodation-reports"/*, consumes = "application/json"*/, name = "owner adds an accommodation report")
+    @PostMapping(value =  "/owners/{ownerId}"/*, consumes = "application/json"*/, name = "owner adds an accommodation report")
     public ResponseEntity<AccommodationReportDTO> addAccommodationReport(@PathVariable Long ownerId) {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
         return new ResponseEntity<>(new AccommodationReportDTO(), HttpStatus.CREATED);

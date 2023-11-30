@@ -38,7 +38,7 @@ public class MonthlyReportController {
     }
 
 
-    @PostMapping(value =  "/owners/{ownerId}/monthly-reports"/*, consumes = "application/json"*/, name = "owner adds an monthly report")
+    @PostMapping(value =  "/owners/{ownerId}"/*, consumes = "application/json"*/, name = "owner adds an monthly report")
     public ResponseEntity<MonthlyReportDTO> addMonthlyReport(@PathVariable Long ownerId) {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
         return new ResponseEntity<>(new MonthlyReportDTO(), HttpStatus.CREATED);

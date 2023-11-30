@@ -43,7 +43,7 @@ public class AccommodationController {
 //        return new ResponseEntity<>(accDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/owners/{ownerId}/accommodations", name = "get all accommodations for owner")
+    @GetMapping(value = "/owners/{ownerId}", name = "get all accommodations for owner")
     public ResponseEntity<List<AccommodationDTO>> getOwnerReviews(@PathVariable Long ownerId) {
 
 
@@ -55,7 +55,7 @@ public class AccommodationController {
 
     }
 
-    @PostMapping(value =  "/accommodations"/*, consumes = "application/json"*/, name = "owner adds an accommodation")
+    @PostMapping(/*, consumes = "application/json",*/ name = "owner adds an accommodation")
     public ResponseEntity<AccommodationDTO> addAccommodation() {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
         return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.CREATED);
