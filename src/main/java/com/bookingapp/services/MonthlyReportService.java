@@ -1,6 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.MonthlyReportDTO;
+import com.bookingapp.entities.MonthlyReport;
 import com.bookingapp.repositories.MonthlyReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,43 +12,38 @@ import java.util.Optional;
 @Service
 public class MonthlyReportService {
 
-//    private final MonthlyReportRepository repository;
+    private final MonthlyReportRepository repository;
 
-//    @Autowired
-//    public MonthlyReportService(MonthlyReportRepository repository) {
-//        this.repository = repository;
-//    }
-
-    public List<MonthlyReportDTO> getAllReports() {
-        //return repository.findAll();
-        return null;
+    @Autowired
+    public MonthlyReportService(MonthlyReportRepository repository) {
+        this.repository = repository;
     }
 
-    public Optional<MonthlyReportDTO> getReportById(Long id) {
-
-//        return repository.findById(id);
-        return null;
+    public List<MonthlyReport> getAllReports() {
+        return repository.findAll();
     }
 
-    public MonthlyReportDTO createReport(MonthlyReportDTO reportDTO) {
+    public Optional<MonthlyReport> getReportById(Long id) {
 
-        return null;
-//        return repository.save(reportDTO);
+        return repository.findById(id);
     }
 
-    public Optional<MonthlyReportDTO> updateReport(Long id, MonthlyReportDTO reportDTO) {
-//        if (repository.existsById(id)) {
-//            reportDTO.setId(id);
-//            return Optional.of(repository.save(reportDTO));
-//        } else {
-//            return Optional.empty();
-//        }
-        return null;
+    public MonthlyReport createReport(MonthlyReport report) {
+
+        return repository.save(report);
+    }
+
+    public Optional<MonthlyReport> updateReport(Long id, MonthlyReport report) {
+        if (repository.existsById(id)) {
+            report.setId(id);
+            return Optional.of(repository.save(report));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void deleteReport(Long id) {
-        return;
-//        repository.deleteById(id);
+       repository.deleteById(id);
     }
 }
 

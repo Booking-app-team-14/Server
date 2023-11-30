@@ -1,5 +1,6 @@
 package com.bookingapp.dtos;
 
+import com.bookingapp.entities.Request;
 import com.bookingapp.enums.RequestStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,14 @@ public class RequestDTO {
 
     public RequestDTO() {
 
+    }
+
+    public RequestDTO(Request r) {
+            this.guestId = r.getUserId();
+            this.requestStatus = r.getRequestStatus();
+            this.numberOfGuests = r.getNumberOfGuests();
+            this.startDate = r.getStartDate();
+            this.endDate = r.getEndDate();
     }
 }
 

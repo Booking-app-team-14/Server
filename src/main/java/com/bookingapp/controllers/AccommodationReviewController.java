@@ -64,8 +64,8 @@ public class AccommodationReviewController {
         return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/accommodationReviews/{id}", consumes = "text/plain", name = "admin approves/rejects the review")
-    public ResponseEntity<AccommodationReviewDTO> updateAccommodationReview(@PathVariable Long id, @RequestBody String status) {
+    @PutMapping(value = "/accommodationReviews/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review")
+    public ResponseEntity<AccommodationReviewDTO> updateAccommodationReview(@PathVariable Long id){//, @RequestBody String status) {
 
         return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.OK);
 
@@ -88,25 +88,28 @@ public class AccommodationReviewController {
 //        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/accommodations/{id}/accommodationReviews", consumes = "application/json", name = "user adds a review for the accommodation")
-    public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
+    @PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
+    public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
+
+        return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
+
 //        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-        Accommodation accommodation = new Accommodation();
-        if (accommodation == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        AccommodationReview accommodationReview = new AccommodationReview();
-        accommodationReview.setAccommodation(new Accommodation());//accommodation.get());
-        accommodationReview.setUser(userAccountService.getUserById(accommodationReviewDTO.getUserId()));
-        accommodationReview.setComment(accommodationReviewDTO.getComment());
-        accommodationReview.setRating(accommodationReviewDTO.getRating());
-        accommodationReview.setStatus(ReviewStatus.PENDING);
-        accommodationReview.setSentAt(accommodationReviewDTO.getSentAt());
-
-        accommodationReviewService.save(accommodationReview);
-
-        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.CREATED);
+//
+//        if (accommodation == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        AccommodationReview accommodationReview = new AccommodationReview();
+//        accommodationReview.setAccommodation(new Accommodation());//accommodation.get());
+//        accommodationReview.setUser(userAccountService.getUserById(accommodationReviewDTO.getUserId()));
+//        accommodationReview.setComment(accommodationReviewDTO.getComment());
+//        accommodationReview.setRating(accommodationReviewDTO.getRating());
+//        accommodationReview.setStatus(ReviewStatus.PENDING);
+//        accommodationReview.setSentAt(accommodationReviewDTO.getSentAt());
+//
+//        accommodationReviewService.save(accommodationReview);
+//
+//        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.CREATED);
     }
 
 

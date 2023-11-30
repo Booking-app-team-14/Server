@@ -1,5 +1,6 @@
 package com.bookingapp.dtos;
 
+import com.bookingapp.entities.Notification;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,5 +20,12 @@ public class NotificationDTO {
     public NotificationDTO() {
 
     }
+
+    public NotificationDTO(Notification n) {
+        this.userId = n.getUser().getId();
+        this.description = n.getDescription();
+        this.sentBefore = n.getSentBefore();
+    }
+
 }
 

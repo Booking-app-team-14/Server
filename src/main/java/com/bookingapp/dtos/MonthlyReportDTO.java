@@ -9,15 +9,16 @@ public class MonthlyReportDTO {
 
     private Long id;
     private Long accommodationId;
-    private String accommodationName;
     private int year;
     private String month;
 
+    public MonthlyReportDTO() {
+    }
 
-    public MonthlyReportDTO(Long id, Long accommodationId, String accommodationName, int year, String month) {
+
+    public MonthlyReportDTO(Long id, Long accommodationId, int year, String month) {
         this.id = id;
         this.accommodationId = accommodationId;
-        this.accommodationName = accommodationName;
         this.year = year;
         this.month=month;
 

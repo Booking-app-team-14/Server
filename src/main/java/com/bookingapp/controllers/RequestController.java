@@ -1,7 +1,7 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.dtos.GuestReservationDTO;
 import com.bookingapp.dtos.RequestDTO;
+import com.bookingapp.entities.Request;
 import com.bookingapp.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,8 +48,14 @@ public class RequestController {
         }
 
     @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
-    public ResponseEntity<List<GuestReservationDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
-        List<GuestReservationDTO> guestHistory = new ArrayList<>();
-        return new ResponseEntity<>(guestHistory, HttpStatus.OK);
+    public ResponseEntity<List<RequestDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
+        List<Request> reservations = requestService.findAllRequestsByUsername(Id);
+
+        List<RequestDTO> requestsDTO = new ArrayList<>();
+        for (Request r : reservations) {
+            requestsDTO.add(new RequestDTO(r));
+        }
+
+        return new ResponseEntity<>(requestsDTO, HttpStatus.OK);
         }
 }

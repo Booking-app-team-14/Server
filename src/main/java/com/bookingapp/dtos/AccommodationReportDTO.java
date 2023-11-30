@@ -1,6 +1,7 @@
 package com.bookingapp.dtos;
 
 
+import com.bookingapp.entities.AccommodationReport;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,5 +31,15 @@ public class AccommodationReportDTO {
         this.numberOfReservations = numberOfReservations;
         this.totalProfit = totalProfit;
     }
+
+    /*public AccommodationReportDTO(AccommodationReport r) {
+        this.id = r.getId();
+        this.accommodationId = getAccommodationId();
+        this.accommodationName = getAccommodationName();
+        this.startDate = getStartDate();
+        this.endDate = getEndDate();
+        this.numberOfReservations = getNumberOfReservations();
+        this.totalProfit = getTotalProfit();
+    }*/
 
 }

@@ -3,6 +3,7 @@ package com.bookingapp.services;
 import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.UserReport;
 import com.bookingapp.repositories.AccommodationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class AccommodationService {
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
         this.accommodationRepository = accommodationRepository;
+    }
+
+    public List<Accommodation> findAll() {
+        return accommodationRepository.findAll();
     }
 
     // CREATE

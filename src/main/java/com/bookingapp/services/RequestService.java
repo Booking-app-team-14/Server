@@ -6,9 +6,7 @@ import com.bookingapp.repositories.RequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RequestService {
@@ -55,11 +53,11 @@ public class RequestService {
         }
         return null;
     }
-    public Set<GuestReservationDTO> getAllGuestHistoryReservations(Long guestId) {
+    public List<Request> findAllRequestsByUsername(Long guestId) {
 
-        Set<Request> reservations = requestRepository.findAllByRequestId(guestId);
+        List<Request> reservations = (List<Request>) requestRepository.findAllByRequestId(guestId);
 
-        Set<GuestReservationDTO> historyReservations = new HashSet<>();
+        List<GuestReservationDTO> historyReservations = new ArrayList<>();
         for (Request reservation : reservations) {
             GuestReservationDTO dto = new GuestReservationDTO(reservation.getUserId(), reservation.getUserId(),
                      reservation.getStartDate(), reservation.getEndDate());
@@ -67,6 +65,7 @@ public class RequestService {
             historyReservations.add(dto);
 
         }
-        return historyReservations;
+        return null;
     }
+
 }
