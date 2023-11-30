@@ -1,6 +1,8 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.AccommodationDTO;
+import com.bookingapp.dtos.BestOffersDTO;
+import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.services.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/accommodations")
@@ -72,14 +73,20 @@ public class AccommodationController {
         return new ResponseEntity<>("Accommodation added", HttpStatus.OK);
 
     }*/
-
-
     @PutMapping(value = "/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the accommodation")
     public ResponseEntity<AccommodationDTO> updateOwnerReview(@PathVariable Long id){//, @RequestBody String status) {
 
         return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.OK);
-
-
+    }
+    @GetMapping(value = "/owners/{ownerId}/accommodation", name = "gets all the accommodation of the owner")
+    public ResponseEntity<List<OwnersAccommodationDTO>> getAllOwnersAccommodation(Long ownerId){
+        List<OwnersAccommodationDTO> ownersAccommodationDTO = new ArrayList<>();
+        return new ResponseEntity<>(ownersAccommodationDTO, HttpStatus.OK);
+    }
+    @GetMapping(value ="/accommodations", name = "gets the best offers")
+    public ResponseEntity<List<BestOffersDTO>> getBestOffers(){
+        List<BestOffersDTO> bestOffersDTO = new ArrayList<>();
+        return new ResponseEntity<>(bestOffersDTO, HttpStatus.OK);
     }
 
 

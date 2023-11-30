@@ -1,6 +1,6 @@
 package com.bookingapp.entities;
 
-import com.bookingapp.enums.Status;
+import com.bookingapp.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long requestId;
+    private Long Id;
 
 //    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
  //   private Guest from;
@@ -32,7 +32,7 @@ public class Request {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private RequestStatus requestStatus;
 
     public Request() {
 

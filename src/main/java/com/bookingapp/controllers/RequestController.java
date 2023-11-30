@@ -1,6 +1,6 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.dtos.GuestReservationDTO;
+import com.bookingapp.dtos.RequestDTO;
 import com.bookingapp.entities.Request;
 import com.bookingapp.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/requests")
+@RequestMapping("/api")
 public class RequestController {
 
     private final RequestService requestService;
@@ -22,46 +23,39 @@ public class RequestController {
     }
 
 
-    @PostMapping("/create")
-    public ResponseEntity<Request> createReservationRequest(@RequestBody Request request) {
-        Request createdRequest = requestService.createRequest(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRequest);
-    }
+    @PostMapping(value = "/requests/{id}", consumes = "application/json", name = "guest makes a reservation request")
+    public ResponseEntity<RequestDTO> createReservationRequest(/*@RequestBody RequestDTO request*/) {
 
-
-    @GetMapping("/{requestId}")
-    public ResponseEntity<Request> getReservationRequestById(@PathVariable Long requestId) {
-        Request request = requestService.getRequestById(requestId);
-        if (request != null) {
-            return ResponseEntity.ok(request);
-        } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(new RequestDTO(), HttpStatus.CREATED);
         }
+
+
+    @GetMapping(value = "/requests/{id}", name = "gets a request by userId")
+    public ResponseEntity<RequestDTO> getReservationRequestById(@PathVariable Long Id) {
+        RequestDTO requestDTO = new RequestDTO();
+        return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
 
 
-    @PutMapping("/{requestId}/update")
-    public ResponseEntity<Request> updateReservationRequest(@PathVariable Long requestId, @RequestBody Request updatedRequest) {
-        Request request = requestService.updateRequest(requestId, updatedRequest);
-        if (request != null) {
-            return ResponseEntity.ok(request);
-        } else {
-            return ResponseEntity.notFound().build();
+    @PutMapping(value="/requests/{Id}",name="updates the status of the request")
+    public ResponseEntity<RequestDTO> updateReservationRequest(@PathVariable Long requestId/* @RequestBody RequestDTO updatedRequest*/) {
+        return new ResponseEntity<>(new RequestDTO(), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/requests/{id}")
+    public ResponseEntity<String> deleteReservationRequest(@PathVariable Long id) {
+      return new ResponseEntity<>("Deleted", HttpStatus.OK);
         }
-    }
 
-    @DeleteMapping("/{requestId}/delete")
-    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long requestId) {
-        boolean deleted = requestService.deleteRequest(requestId);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
+    public ResponseEntity<List<RequestDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
+        List<Request> reservations = requestService.findAllRequestsByUsername(Id);
+
+        List<RequestDTO> requestsDTO = new ArrayList<>();
+        for (Request r : reservations) {
+            requestsDTO.add(new RequestDTO(r));
         }
-    }
-    @GetMapping(value = "/ussers/{usersId}/requests", name = "user gets reservation history")
-    public ResponseEntity<Set<GuestReservationDTO>> getOwnerReviews(@PathVariable Long userId) {
-        Set<GuestReservationDTO> guestHistory = requestService.getAllGuestHistoryReservations(userId);
-        return new ResponseEntity<>(guestHistory, HttpStatus.OK);
-    }
+
+        return new ResponseEntity<>(requestsDTO, HttpStatus.OK);
+        }
 }

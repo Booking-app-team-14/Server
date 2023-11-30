@@ -1,5 +1,5 @@
 package com.bookingapp.enums;
 
-public enum Status {
+public enum RequestStatus {
     SENT, ACCEPTED, DECLINED, CANCELLED
 }

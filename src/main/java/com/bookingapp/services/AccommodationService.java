@@ -1,5 +1,7 @@
 package com.bookingapp.services;
 
+import com.bookingapp.dtos.BestOffersDTO;
+import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.repositories.AccommodationRepository;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccommodationService {
@@ -57,6 +60,13 @@ public class AccommodationService {
         } else {
             return false;
         }
+    }
+    public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
+            return accommodationRepository.getOwnersAccommodations(ownerId);
+    }
+
+    public Set<BestOffersDTO> getBestOffers() {
+        return accommodationRepository.getBestOffers();
     }
 }
 

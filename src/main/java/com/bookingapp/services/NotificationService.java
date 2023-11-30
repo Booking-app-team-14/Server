@@ -1,10 +1,12 @@
 package com.bookingapp.services;
+
+import com.bookingapp.dtos.NotificationDTO;
 import com.bookingapp.entities.Notification;
 import com.bookingapp.repositories.NotificationIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class NotificationService {
@@ -16,24 +18,16 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public Notification createNotification(Notification notification) {
-        return notificationRepository.save(notification);
+    public NotificationDTO createNotification(NotificationDTO notification) {
+        return null;
     }
 
-    public Notification getNotificationById(Long notificationId) {
+    public NotificationDTO getNotificationById(Long notificationId) {
 
-        Optional<Notification> notificationOptional = notificationRepository.findById(notificationId);
-        return notificationOptional.orElse(null);
+        return null;
     }
 
-    public Notification updateNotification(Long notificationId, Notification updatedNotification) {
-
-        Optional<Notification> notificationOptional = notificationRepository.findById(notificationId);
-        if (notificationOptional.isPresent()) {
-            Notification existingNotification = notificationOptional.get();
-
-            return notificationRepository.save(existingNotification);
-        }
+    public NotificationDTO updateNotification(Long notificationId, NotificationDTO updatedNotification) {
         return null;
     }
 
@@ -47,4 +41,7 @@ public class NotificationService {
     }
 
 
+    public List<Notification> findAllNotificationsByUsername(Long userId) {
+        return null;
+    }
 }

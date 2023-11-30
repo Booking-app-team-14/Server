@@ -32,8 +32,8 @@ public class UserReportDTO {
 
     public UserReportDTO(UserReport report) {
         this.id = report.getId();
-        this.reportingUserId = report.getReportingUser().getUserId();
-        this.reportedUserId = report.getReportedUser().getUserId();
+        this.reportingUserId = report.getReportingUser().getId();
+        this.reportedUserId = report.getReportedUser().getId();
         this.reportingUserUsername = report.getReportingUser().getUsername();
         this.reportedUserUsername = report.getReportedUser().getUsername();
         this.reportingUserImagePath = report.getReportingUser().getImagePath();
