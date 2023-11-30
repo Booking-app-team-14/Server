@@ -27,7 +27,7 @@ public class AccommodationController {
 
     }
 
-    /*@GetMapping
+    @GetMapping
     public ResponseEntity<List<AccommodationDTO>> getAllAccommodations(){
         List<Accommodation> userReports = accommodationService.findAll();
 
@@ -37,7 +37,7 @@ public class AccommodationController {
         }
 
         return new ResponseEntity<>(accDTO, HttpStatus.OK);
-    }*/
+    }
 
     @GetMapping(value = "/owners/{ownerId}/accommodations", name = "get all accommodations for owner")
     public ResponseEntity<List<AccommodationDTO>> getOwnerReviews(@PathVariable Long ownerId) {

@@ -1,6 +1,8 @@
 package com.bookingapp.controllers;
 import com.bookingapp.dtos.AccommodationDTO;
 import com.bookingapp.dtos.AccommodationReportDTO;
+import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.AccommodationReport;
 import com.bookingapp.services.AccommodationReportService;
 import com.bookingapp.services.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +23,17 @@ public class AccommodationReportController {
     //private AccommodationService accommodationService;
     private AccommodationReportService accommodationreportService;
 
-    /*@GetMapping(value="api/accommodation-reports", name="get all accommodation reports")
-    public ResponseEntity<List<AccommodationReportDTO>> getAllAccommodationReports() {
 
-        List<AccommodationReportDTO> accommodationreportsDTO = new ArrayList<>();
+    /*@GetMapping
+    public ResponseEntity<List<AccommodationReportDTO>> getAllAccommodationReports(){
+        List<AccommodationReport> userReports = accommodationreportService.findAll();
 
-        return new ResponseEntity<>(accommodationreportsDTO, HttpStatus.OK);
+        List<AccommodationReportDTO> accDTO = new ArrayList<>();
+        for (AccommodationReport r : userReports) {
+            accDTO.add(new AccommodationReportDTO(r));
+        }
 
+        return new ResponseEntity<>(accDTO, HttpStatus.OK);
     }*/
 
     @GetMapping(value = "/{id}")

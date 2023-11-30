@@ -1,6 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationReportDTO;
+import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationReport;
 import com.bookingapp.repositories.AccommodationReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,10 @@ public class AccommodationReportService {
     @Autowired
     public AccommodationReportService(AccommodationReportRepository reportRepository) {
         this.reportRepository = reportRepository;
+    }
+
+    public List<AccommodationReport> findAll() {
+        return reportRepository.findAll();
     }
 
     public List<AccommodationReport> getAllReports() {
