@@ -1,5 +1,7 @@
 package com.bookingapp.dtos;
 
+import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.UserReport;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,6 +47,34 @@ public class AccommodationDTO {
         this.ownerId = ownerId;
     }
 
+    public AccommodationDTO() {
+    }
+
+
+
+    public AccommodationDTO(Accommodation accommodation) {
+        /*this.id = accommodation.getId();
+        this.name = accommodation.getName();
+        this.description = accommodation.getDescription();
+        this.locationId = accommodation.getLocation().getId();
+        this.accommodationtypeId = accommodation.getType().getId();
+        this.imageId = accommodation.getImages().stream()
+                .map(Image::getId)
+                .collect(Collectors.toSet());
+        this.amenitiyId = accommodation.getAmenities().stream()
+                .map(Amenity::getId)
+                .collect(Collectors.toSet());
+        this.rating = accommodation.getRating();
+        this.minNumberOfGuests = accommodation.getMinNumberOfGuests();
+        this.maxNumberOfGuests = accommodation.getMaxNumberOfGuests();
+        this.availabilityId = accommodation.getAvailability().stream()
+                .map(Availability::getId)
+                .collect(Collectors.toSet());
+        this.pricePerNight = accommodation.getPricePerNight();
+        this.pricePerGuest = accommodation.isPricePerGuest();
+        this.cancellationDeadline = accommodation.getCancellationDeadline();
+        this.ownerId = accommodation.getOwner().getId(); */
+    }
 
 }
 

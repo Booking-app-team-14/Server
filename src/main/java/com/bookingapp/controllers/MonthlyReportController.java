@@ -1,12 +1,15 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.AccommodationReportDTO;
 import com.bookingapp.dtos.MonthlyReportDTO;
+import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.MonthlyReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,43 +17,48 @@ import java.util.Optional;
 @RequestMapping("/api/monthly-reports")
 public class MonthlyReportController {
 
-    private final MonthlyReportService reportService;
-
     @Autowired
-    public MonthlyReportController(MonthlyReportService reportService) {
-        this.reportService = reportService;
+    //private AccommodationService accommodationService;
+    private MonthlyReportService monthlyreportService;
+
+    /*@GetMapping(value="api/monthly-reports", name="get all monthly reports")
+    public ResponseEntity<List<MonthlyReportDTO>> getAllMonthlyReports() {
+
+        List<MonthlyReportDTO> monthlyreportsDTO = new ArrayList<>();
+
+        return new ResponseEntity<>(monthlyreportsDTO, HttpStatus.OK);
+
+    }*/
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<MonthlyReportDTO> getMonthlyReport(@PathVariable Long id) {
+
+        return new ResponseEntity<>(new MonthlyReportDTO(), HttpStatus.OK);
+
     }
 
-    @GetMapping
-    public ResponseEntity<List<MonthlyReportDTO>> getAllReports() {
-        List<MonthlyReportDTO> reports = reportService.getAllReports();
-        return ResponseEntity.ok(reports);
+
+    @PostMapping(value =  "/owners/{ownerId}/monthly-reports"/*, consumes = "application/json"*/, name = "owner adds an monthly report")
+    public ResponseEntity<MonthlyReportDTO> addMonthlyReport(@PathVariable Long ownerId) {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
+
+        return new ResponseEntity<>(new MonthlyReportDTO(), HttpStatus.CREATED);
+
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MonthlyReportDTO> getReportById(@PathVariable Long id) {
-        Optional<MonthlyReportDTO> report = reportService.getReportById(id);
-        return report.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteMonthlyReport(@PathVariable Long id) {
+
+        return new ResponseEntity<>("Deleted MonthlyReport", HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<MonthlyReportDTO> createReport(@RequestBody MonthlyReportDTO reportDTO) {
-        MonthlyReportDTO createdReport = reportService.createReport(reportDTO);
-        return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<String> updateMonthlyReport(@PathVariable Long id) {
+
+        return new ResponseEntity<>("Monthly Report added", HttpStatus.OK);
+
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MonthlyReportDTO> updateReport(@PathVariable Long id, @RequestBody MonthlyReportDTO reportDTO) {
-        Optional<MonthlyReportDTO> updatedReport = reportService.updateReport(id, reportDTO);
-        return updatedReport.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
-        reportService.deleteReport(id);
-        return ResponseEntity.noContent().build();
-    }
+
 }
 
