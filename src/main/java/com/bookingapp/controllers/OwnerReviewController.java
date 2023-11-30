@@ -60,14 +60,16 @@ public class OwnerReviewController {
 
     @GetMapping(value = "/ownerReviews", name = "admin gets all pending reviews")
     public ResponseEntity<List<OwnerReviewDTO>> getOwnerReviews() {
-        List<OwnerReview> ownerReviews = ownerReviewService.findAllPending();
-
-        List<OwnerReviewDTO> ownerReviewsDTO = new ArrayList<>();
-        for (OwnerReview r : ownerReviews) {
-            ownerReviewsDTO.add(new OwnerReviewDTO(r));
-        }
-
-        return new ResponseEntity<>(ownerReviewsDTO, HttpStatus.OK);
+        List<OwnerReviewDTO> ownerReviews = new ArrayList<OwnerReviewDTO>();
+        return new ResponseEntity<>(ownerReviews, HttpStatus.OK);
+//        List<OwnerReview> ownerReviews = ownerReviewService.findAllPending();
+//
+//        List<OwnerReviewDTO> ownerReviewsDTO = new ArrayList<>();
+//        for (OwnerReview r : ownerReviews) {
+//            ownerReviewsDTO.add(new OwnerReviewDTO(r));
+//        }
+//
+//        return new ResponseEntity<>(ownerReviewsDTO, HttpStatus.OK);
     }
 
     @PutMapping(value = "/ownerReviews/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review")

@@ -9,5 +9,5 @@ import java.util.Set;
 @Repository
 public interface RequestIRepository extends JpaRepository<Request, Long> {
 
-    Set<Request> findAllByRequestId(Long Id);
+//    Set<Request> findAllByRequestId(Long Id);
 }

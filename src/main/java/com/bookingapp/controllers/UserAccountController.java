@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class UserAccountController {
 
-    private final UserAccountService userAccountService;
-    @Autowired
-    public UserAccountController(UserAccountService userAccountService) {
-        this.userAccountService = userAccountService;
-    }
+//    private final UserAccountService userAccountService;
+//    @Autowired
+//    public UserAccountController(UserAccountService userAccountService) {
+//        this.userAccountService = userAccountService;
+//    }
 
 
-    @PostMapping(value = "/users/{Id}}", name = "user is registered")
+    @PostMapping(value = "/users/{Id}", name = "user is registered")
     public ResponseEntity<UserDTO> createUserAccount() {
         return new ResponseEntity<>(new UserDTO(), HttpStatus.CREATED);
     }
@@ -38,11 +38,11 @@ public class UserAccountController {
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
-    @GetMapping(value="/users/{Id}")
-    public ResponseEntity<UserDTO> getUserRole(@PathVariable Long Id) {
-        UserDTO userDTO = new UserDTO();
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    }
+//    @GetMapping(value="/users/{Id}")
+//    public ResponseEntity<UserDTO> getUserRole(@PathVariable Long Id) {
+//        UserDTO userDTO = new UserDTO();
+//        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+//    }
 
 
 }

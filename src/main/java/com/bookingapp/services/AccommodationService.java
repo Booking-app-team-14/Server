@@ -15,58 +15,66 @@ import java.util.Set;
 @Service
 public class AccommodationService {
 
-    private final AccommodationRepository accommodationRepository;
+//    private final AccommodationRepository accommodationRepository;
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
-        this.accommodationRepository = accommodationRepository;
+//        this.accommodationRepository = accommodationRepository;
     }
 
     public List<Accommodation> findAll() {
-        return accommodationRepository.findAll();
+        return null;
+//        return accommodationRepository.findAll();
     }
 
     // CREATE
     public Accommodation createAccommodation(Accommodation accommodation) {
-        return accommodationRepository.save(accommodation);
+        return null;
+//        return accommodationRepository.save(accommodation);
     }
 
     // READ
     public List<Accommodation> getAllAccommodations() {
-        return accommodationRepository.findAll();
+        return null;
+//        return accommodationRepository.findAll();
     }
 
     public Optional<Accommodation> getAccommodationById(Long id) {
-        return accommodationRepository.findById(id);
+        return Optional.empty();
+//        return accommodationRepository.findById(id);
     }
 
     // UPDATE
     public Optional<Accommodation> updateAccommodation(Long id, Accommodation updatedAccommodation) {
-        Optional<Accommodation> existingAccommodation = accommodationRepository.findById(id);
-
-        if (existingAccommodation.isPresent()) {
-            updatedAccommodation.setId(id);
-            return Optional.of(accommodationRepository.save(updatedAccommodation));
-        } else {
-            return Optional.empty();
-        }
+//        Optional<Accommodation> existingAccommodation = accommodationRepository.findById(id);
+//
+//        if (existingAccommodation.isPresent()) {
+//            updatedAccommodation.setId(id);
+//            return Optional.of(accommodationRepository.save(updatedAccommodation));
+//        } else {
+//            return Optional.empty();
+//        }
+        return Optional.empty();
     }
 
     // DELETE
     public boolean deleteAccommodation(Long id) {
-        if (accommodationRepository.existsById(id)) {
-            accommodationRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+//        if (accommodationRepository.existsById(id)) {
+//            accommodationRepository.deleteById(id);
+//            return true;
+//        } else {
+//            return false;
+//        }
+        return false;
     }
     public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
-            return accommodationRepository.getOwnersAccommodations(ownerId);
+        return null;
+//            return accommodationRepository.getOwnersAccommodations(ownerId);
     }
 
     public Set<BestOffersDTO> getBestOffers() {
-        return accommodationRepository.getBestOffers();
+        return null;
+//        return accommodationRepository.getBestOffers();
     }
 }
 

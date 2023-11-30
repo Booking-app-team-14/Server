@@ -10,9 +10,9 @@ import java.util.Set;
 
 @Repository
 public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
-    Set<OwnersAccommodationDTO> getOwnersAccommodations(Long ownerId);
+//    Set<OwnersAccommodationDTO> getOwnersAccommodations(Long ownerId);
 
-    Set<BestOffersDTO> getBestOffers();
+//    Set<BestOffersDTO> getBestOffers();
 
     //List<Accommodation> findByName(String name);
 }

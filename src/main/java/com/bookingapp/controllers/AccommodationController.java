@@ -31,14 +31,16 @@ public class AccommodationController {
 
     @GetMapping
     public ResponseEntity<List<AccommodationDTO>> getAllAccommodations(){
-        List<Accommodation> userReports = accommodationService.findAll();
-
         List<AccommodationDTO> accDTO = new ArrayList<>();
-        for (Accommodation r : userReports) {
-            accDTO.add(new AccommodationDTO(r));
-        }
-
         return new ResponseEntity<>(accDTO, HttpStatus.OK);
+//        List<Accommodation> userReports = accommodationService.findAll();
+//
+//        List<AccommodationDTO> accDTO = new ArrayList<>();
+//        for (Accommodation r : userReports) {
+//            accDTO.add(new AccommodationDTO(r));
+//        }
+//
+//        return new ResponseEntity<>(accDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/owners/{ownerId}/accommodations", name = "get all accommodations for owner")

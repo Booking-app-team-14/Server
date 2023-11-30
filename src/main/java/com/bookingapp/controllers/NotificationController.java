@@ -32,14 +32,17 @@ public class NotificationController {
     @GetMapping(value = "/notifications", name = "gets all the notification for the user by the id")
     public ResponseEntity<List<NotificationDTO>> getNotificationsByUserId(@PathVariable Long userId)
     {
-        List<Notification> notifications = notificationService.findAllNotificationsByUsername(userId);
+        List<NotificationDTO> notifications = new ArrayList<NotificationDTO>();
+        return new ResponseEntity<>(notifications, HttpStatus.OK);
 
-        List<NotificationDTO> notificationsDTO = new ArrayList<>();
-        for (Notification n : notifications) {
-            notificationsDTO.add(new NotificationDTO(n));
-        }
-
-        return new ResponseEntity<>(notificationsDTO, HttpStatus.OK);
+//        List<Notification> notifications = notificationService.findAllNotificationsByUsername(userId);
+//
+//        List<NotificationDTO> notificationsDTO = new ArrayList<>();
+//        for (Notification n : notifications) {
+//            notificationsDTO.add(new NotificationDTO(n));
+//        }
+//
+//        return new ResponseEntity<>(notificationsDTO, HttpStatus.OK);
     }
 
     @PutMapping(value = "/notifications/{Id}",/*consumes = "text/plain",*/ name = "updates the time when the notification has been sent")

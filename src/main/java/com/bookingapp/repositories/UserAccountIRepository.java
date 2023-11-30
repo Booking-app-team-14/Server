@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserAccountIRepository extends JpaRepository<UserAccount, Long> {
 
-    UserAccount save();
+//    UserAccount save();
 }

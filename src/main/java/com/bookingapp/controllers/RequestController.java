@@ -49,13 +49,15 @@ public class RequestController {
 
     @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")
     public ResponseEntity<List<RequestDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
-        List<Request> reservations = requestService.findAllRequestsByUsername(Id);
-
-        List<RequestDTO> requestsDTO = new ArrayList<>();
-        for (Request r : reservations) {
-            requestsDTO.add(new RequestDTO(r));
-        }
-
-        return new ResponseEntity<>(requestsDTO, HttpStatus.OK);
+        List<RequestDTO> reservations = new ArrayList<RequestDTO>();
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+//        List<Request> reservations = requestService.findAllRequestsByUsername(Id);
+//
+//        List<RequestDTO> requestsDTO = new ArrayList<>();
+//        for (Request r : reservations) {
+//            requestsDTO.add(new RequestDTO(r));
+//        }
+//
+//        return new ResponseEntity<>(requestsDTO, HttpStatus.OK);
         }
 }
