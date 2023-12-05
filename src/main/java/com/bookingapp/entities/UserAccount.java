@@ -1,5 +1,6 @@
 package com.bookingapp.entities;
 
+import com.bookingapp.dtos.UserDTO;
 import com.bookingapp.enums.Role;
 import jakarta.persistence.*;
 
@@ -41,7 +42,7 @@ public class UserAccount {
     private String address;
 
     @NotBlank
-    @Pattern(regexp = "\\d{10}")
+    @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     @Column(nullable = false)
     private String phoneNumber;
 
@@ -53,19 +54,28 @@ public class UserAccount {
     private boolean isBlocked;
 
     @Column(nullable = false)
-    private String imagePath;
-
-    @Column(nullable = false)
     private int numberOfReports;
     public UserAccount() {
 
     }
 
-    public UserAccount(Long id, String username, String imagePath, Integer numberOfReports, Boolean blocked) {
+    public UserAccount(Long id, String username, Integer numberOfReports, Boolean blocked) {
         this.Id = id;
         this.username = username;
-        this.imagePath = imagePath;
         this.numberOfReports = numberOfReports;
         this.isBlocked = blocked;
     }
+
+    public UserAccount(UserDTO dto){
+        this.username = dto.getUsername();
+        this.password = dto.getPassword();
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.address = dto.getAddress();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.role = dto.getRole();
+        this.isBlocked = dto.isBlocked();
+        this.numberOfReports = dto.getNumberOfReports();
+    }
+
 }
