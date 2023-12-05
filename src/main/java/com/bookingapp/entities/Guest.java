@@ -18,8 +18,7 @@ public class Guest extends UserAccount {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Set<Accommodation> favouriteAccommodations;
 
-    @Column(nullable = false)
-    private int numberOfCancellations;
+    private int numberOfCancellations = 0;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Set<Accommodation> history;
