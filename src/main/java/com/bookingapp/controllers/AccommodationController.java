@@ -55,12 +55,19 @@ public class AccommodationController {
 
     }
 
-    @PostMapping(/*, consumes = "application/json",*/ name = "owner adds an accommodation")
+    /*@PostMapping(*//*, consumes = "application/json",*//* name = "owner adds an accommodation")
     public ResponseEntity<AccommodationDTO> addAccommodation() {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
         return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.CREATED);
 
 
+    }*/
+
+    @PostMapping(name = "owner adds an accommodation")
+    public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = new Accommodation(accommodationDTO);
+        accommodationService.save(accommodation);
+        return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

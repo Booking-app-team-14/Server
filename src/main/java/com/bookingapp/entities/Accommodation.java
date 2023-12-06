@@ -1,12 +1,18 @@
 package com.bookingapp.entities;
 
 
+import com.bookingapp.dtos.AccommodationDTO;
+import com.bookingapp.dtos.LocationDTO;
 import com.bookingapp.enums.AccommodationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -63,9 +69,20 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer cancellationDeadline;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Owner owner;
+    //@ManyToOne
+    //private Owner owner;
 
-    //@Column(nullable=false)
-    //private RequestHandling reservationRequestHandling;
+    public Accommodation(AccommodationDTO accommodationDTO) {
+        this.name = accommodationDTO.getName();
+        this.description = accommodationDTO.getDescription();
+        this.type = accommodationDTO.getType();
+        this.images = accommodationDTO.getImages();
+        this.rating = 5.0;
+        this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
+        this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
+        this.pricePerGuest = accommodationDTO.isPricePerGuest();
+        this.pricePerNight = accommodationDTO.getPricePerNight();
+        this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
+    }
+
 }

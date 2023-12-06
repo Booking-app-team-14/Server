@@ -1,6 +1,7 @@
 package com.bookingapp.entities;
 
 
+import com.bookingapp.dtos.LocationDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,4 +24,16 @@ public class Location {
 
     @Column(nullable=false)
     private String address;
+
+    public Location(LocationDTO locationDTO) {
+        this.country=locationDTO.getCountry();
+        this.city=locationDTO.getCity();
+        this.address=locationDTO.getAddress();
+    }
+
+    public Location( ) {
+        this.country=country;
+        this.city=city;
+        this.address=address;
+    }
 }
