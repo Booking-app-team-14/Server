@@ -17,44 +17,44 @@ import lombok.Setter;
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    protected Long Id;
 
     @NotBlank
     @Email
     @Column(nullable = false, unique = true)
-    private String username;
+    protected String username;
 
     @NotBlank
     @Size(min = 8)
     @Column(nullable = false)
-    private String password;
+    protected String password;
 
     @NotBlank
     @Column(nullable = false)
-    private String firstName;
+    protected String firstName;
 
     @NotBlank
     @Column(nullable = false)
-    private String lastName;
+    protected String lastName;
 
     @NotBlank
     @Column(nullable = false)
-    private String address;
+    protected String address;
 
     @NotBlank
     @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     @Column(nullable = false)
-    private String phoneNumber;
+    protected String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    protected Role role;
 
     @Column(nullable = false)
-    private boolean isBlocked;
+    protected boolean isBlocked;
 
     @Column(nullable = false)
-    private int numberOfReports;
+    protected int numberOfReports;
     public UserAccount() {
 
     }
