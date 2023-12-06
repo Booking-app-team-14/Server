@@ -15,7 +15,8 @@ import java.util.Set;
 @Service
 public class AccommodationService {
 
-//    private final AccommodationRepository accommodationRepository;
+    @Autowired
+    private AccommodationRepository accommodationRepository;
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
@@ -75,6 +76,10 @@ public class AccommodationService {
     public Set<BestOffersDTO> getBestOffers() {
         return null;
 //        return accommodationRepository.getBestOffers();
+    }
+
+    public void save(Accommodation accommodation) {
+        accommodationRepository.save(accommodation);
     }
 }
 

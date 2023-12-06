@@ -57,6 +57,9 @@ public class UserAccount {
 
     @Column(nullable = false)
     private int numberOfReports;
+
+    //@Column(nullable = false)
+    //private boolean active;
     public UserAccount() {
 
     }
