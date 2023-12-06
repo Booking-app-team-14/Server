@@ -87,7 +87,7 @@ public class Accommodation {
             amenitySet = accommodationDTO.getAmenityId().stream()
                     .filter(Objects::nonNull)  // Filtriranje null vrednosti
                     .map(amenityId -> {
-                        Amenity amenity = new Amenity();
+                        Amenity amenity = new Amenity(null);  //??
                         amenity.setId(amenityId);
                         return amenity;
                     })
