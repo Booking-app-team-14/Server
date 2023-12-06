@@ -9,48 +9,29 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class OwnerDTO {
+public class OwnerDTO extends UserDTO {
 
     private Set<Long> reservationsIds;
     private Set<Long> accommodationsIds;
 
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String address;
-    private String phoneNumber;
-    private boolean isBlocked;
-    private int numberOfReports;
-    private Role role;
-
-    public OwnerDTO(Owner owner) {
-        this.username = owner.getUsername();
-        this.password = owner.getPassword();
-        this.address = owner.getAddress();
-        this.firstName = owner.getFirstName();
-        this.lastName = owner.getLastName();
-        this.role = owner.getRole();
-        this.phoneNumber = owner.getPhoneNumber();
-        this.isBlocked = owner.isBlocked();
-        this.numberOfReports = owner.getNumberOfReports();
+    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, numberOfReports);
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
     }
 
-    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports) {
-        this.username = username;
-        this.password = password;
-        this.address = address;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = Role.GUEST;
-        this.phoneNumber = phoneNumber;
-        this.isBlocked = isBlocked;
-        this.numberOfReports = numberOfReports;
+    public OwnerDTO(Owner owner){
+        this.setUsername(owner.getUsername());
+        this.setPassword(owner.getPassword());
+        this.setAddress(owner.getAddress());
+        this.setFirstName(owner.getFirstName());
+        this.setLastName(owner.getLastName());
+        this.setRole(owner.getRole());
+        this.setPhoneNumber(owner.getPhoneNumber());
+        this.setBlocked(owner.isBlocked());
+        this.setNumberOfReports(owner.getNumberOfReports());
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
-
     }
 
     public OwnerDTO() { }

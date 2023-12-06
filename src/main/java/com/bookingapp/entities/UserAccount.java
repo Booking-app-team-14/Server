@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

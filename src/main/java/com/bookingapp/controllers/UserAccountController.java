@@ -4,10 +4,7 @@ import com.bookingapp.dtos.AdminDTO;
 import com.bookingapp.dtos.GuestDTO;
 import com.bookingapp.dtos.OwnerDTO;
 import com.bookingapp.dtos.UserDTO;
-import com.bookingapp.entities.Admin;
-import com.bookingapp.entities.Guest;
-import com.bookingapp.entities.Owner;
-import com.bookingapp.entities.UserAccount;
+import com.bookingapp.entities.*;
 import com.bookingapp.enums.Role;
 import com.bookingapp.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +19,51 @@ public class UserAccountController {
     @Autowired
     private UserAccountService userAccountService;
 
-    @PostMapping(value = "/users/guest", name = "guest is registered")
-    public ResponseEntity<Long> registerGuestAccount(@RequestBody GuestDTO guestDTO) {
-        Guest guest = new Guest(guestDTO);
-        userAccountService.save(guest);
-        return new ResponseEntity<>(guest.getId(), HttpStatus.CREATED);
+    @PostMapping(value = "/users", name = "register user") // api/users?type=GUEST
+    public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) {
+        UserAccount user = switch (role) {
+            case GUEST -> new Guest((GuestDTO) userDTO);
+            case OWNER -> new Owner((OwnerDTO) userDTO);
+            case ADMIN -> new Admin((AdminDTO) userDTO);
+            default -> null;
+        };
+        if (user == null) {
+            return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
+        }
+        user.setRole(role);
+        userAccountService.save(user);
+        return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/users/owner", name = "owner is registered")
-    public ResponseEntity<Long> registerOwnerAccount(@RequestBody OwnerDTO ownerDTO) {
-        Owner owner = new Owner(ownerDTO);
-        userAccountService.save(owner);
-        return new ResponseEntity<>(owner.getId(), HttpStatus.CREATED);
-    }
-
-    @PostMapping(value = "/users/admin", name = "admin is registered")
-    public ResponseEntity<Long> registerAdminAccount(@RequestBody AdminDTO adminDTO) {
-        Admin admin = new Admin(adminDTO);
-        userAccountService.save(admin);
-        return new ResponseEntity<>(admin.getId(), HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/users/{Id}", name = "user updates his profile")
-    public ResponseEntity<String> updateUserAccount(@PathVariable Long Id, @RequestBody UserDTO userDTO) {
-        UserAccount user = userAccountService.getUserById(Id);
+    @PutMapping(value = "/users/{id}", name = "user updates his profile")
+    public ResponseEntity<String> updateUserAccount(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        UserAccount user = userAccountService.getUserById(id);
         if (user == null) {
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
         }
+//        This is how we can update the user's special fields depending on his role
+//        switch (userDTO.getRole()) {
+//            case GUEST:
+//                GuestDTO guestDTO = (GuestDTO) userDTO;
+//                Guest g = (Guest) userAccountService.getUserById(id);
+//                Set<Accommodation> favouriteAccommodations = new HashSet<Accommodation>();
+//                for (Long accommodationId : guestDTO.getFavouriteAccommodationsIds()) {
+//                    Accommodation accommodation = accommodatiomService.getAccommodationById(accommodationId);
+//                    if (accommodation != null) {
+//                        favouriteAccommodations.add(accommodation);
+//                    }
+//                }
+//                g.setFavouriteAccommodations(favouriteAccommodations);
+//                // ...
+//                break;
+//            case OWNER:
+//                OwnerDTO ownerDTO = (OwnerDTO) userDTO;
+//                Owner o = (Owner) userAccountService.getUserById(id);
+//                // ...
+//                break;
+//            case ADMIN:
+//                break;
+//        }
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
         user.setFirstName(userDTO.getFirstName());
