@@ -67,7 +67,6 @@ public class AccommodationDTO {
         this.pricePerNight = accommodation.getPricePerNight();
         this.pricePerGuest = accommodation.isPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
-        this.ownerId = accommodation.getOwner().getId();
     }
 
 }

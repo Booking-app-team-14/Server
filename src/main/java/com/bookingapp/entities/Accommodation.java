@@ -63,8 +63,6 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer cancellationDeadline;
 
-    @ManyToOne
-    private Owner owner;
 
     //@Column(nullable=false)
     //private RequestHandling reservationRequestHandling;
