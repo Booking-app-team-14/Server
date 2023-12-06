@@ -20,10 +20,6 @@ public class UserReportDTO {
 
     private String reportedUserUsername;
 
-    private String reportingUserImagePath;
-
-    private String reportedUserImagePath;
-
     private Integer reportedUserNumberOfReports;
 
     private String description;
@@ -36,21 +32,17 @@ public class UserReportDTO {
         this.reportedUserId = report.getReportedUser().getId();
         this.reportingUserUsername = report.getReportingUser().getUsername();
         this.reportedUserUsername = report.getReportedUser().getUsername();
-        this.reportingUserImagePath = report.getReportingUser().getImagePath();
-        this.reportedUserImagePath = report.getReportedUser().getImagePath();
         this.reportedUserNumberOfReports = report.getReportedUser().getNumberOfReports();
         this.description = report.getDescription();
         this.sentAt = report.getSentAt();
     }
 
-    public UserReportDTO(Long id, Long reportingUserId, Long reportedUserId, String reportingUserUsername, String reportedUserUsername, String reportingUserImagePath, String reportedUserImagePath, Integer reportedUserNumberOfReports, String description, LocalDateTime sentAt) {
+    public UserReportDTO(Long id, Long reportingUserId, Long reportedUserId, String reportingUserUsername, String reportedUserUsername, Integer reportedUserNumberOfReports, String description, LocalDateTime sentAt) {
         this.id = id;
         this.reportingUserId = reportingUserId;
         this.reportedUserId = reportedUserId;
         this.reportingUserUsername = reportingUserUsername;
         this.reportedUserUsername = reportedUserUsername;
-        this.reportingUserImagePath = reportingUserImagePath;
-        this.reportedUserImagePath = reportedUserImagePath;
         this.reportedUserNumberOfReports = reportedUserNumberOfReports;
         this.description = description;
         this.sentAt = sentAt;

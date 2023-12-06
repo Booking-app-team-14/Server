@@ -63,7 +63,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer cancellationDeadline;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Owner owner;
 
     //@Column(nullable=false)
