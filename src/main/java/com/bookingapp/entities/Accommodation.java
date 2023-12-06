@@ -107,7 +107,7 @@ public class Accommodation {
             availabilitySet = accommodationDTO.getAvailabilityId().stream()
                     .filter(Objects::nonNull)  // Filtriranje null vrednosti
                     .map(availabilityId -> {
-                        Availability availability = new Availability();
+                        Availability availability = new Availability(null); //??
                         availability.setId(availabilityId);
                         return availability;
                     })

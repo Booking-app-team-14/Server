@@ -1,5 +1,6 @@
 package com.bookingapp.entities;
 
+import com.bookingapp.dtos.AvailabilityDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,11 +17,18 @@ public class Availability {
     private Long id;
 
     @Column(nullable=false)
-    private LocalDate start;
+    private LocalDate startDate;
 
     @Column(nullable=false)
-    private LocalDate end;
+    private LocalDate endDate;
 
     @Column(nullable=false)
     private Double specialPrice;
+
+    public Availability(AvailabilityDTO availabilityDTO) {
+        //this.id=availabilityDTO.getId();
+        this.startDate=availabilityDTO.getStartDate();
+        this.endDate=availabilityDTO.getEndDate();
+        this.specialPrice=availabilityDTO.getSpecialPrice();
+    }
 }
