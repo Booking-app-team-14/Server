@@ -30,4 +30,10 @@ public class Location {
         this.city=locationDTO.getCity();
         this.address=locationDTO.getAddress();
     }
+
+    public Location( ) {
+        this.country=country;
+        this.city=city;
+        this.address=address;
+    }
 }

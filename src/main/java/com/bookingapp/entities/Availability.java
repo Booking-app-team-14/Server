@@ -31,4 +31,11 @@ public class Availability {
         this.endDate=availabilityDTO.getEndDate();
         this.specialPrice=availabilityDTO.getSpecialPrice();
     }
+
+    public Availability() {
+        //this.id=availabilityDTO.getId();
+        this.startDate=this.getStartDate();
+        this.endDate=this.getEndDate();
+        this.specialPrice=this.getSpecialPrice();
+    }
 }

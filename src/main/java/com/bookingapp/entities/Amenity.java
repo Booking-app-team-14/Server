@@ -29,4 +29,11 @@ public class Amenity {
         this.description=amenityDTO.getDescription();
         this.icon=amenityDTO.getIcon();
     }
+
+    public Amenity() {
+        //this.id=amenityDTO.getId();
+        this.name=this.getName();
+        this.description=this.getDescription();
+        this.icon=this.getIcon();
+    }
 }

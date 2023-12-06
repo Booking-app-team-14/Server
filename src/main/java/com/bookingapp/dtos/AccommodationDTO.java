@@ -64,7 +64,7 @@ public class AccommodationDTO {
         this.locationId = accommodation.getLocation().getId();
         this.type = accommodation.getType();
         this.images = accommodation.getImages();
-        //this.amenityId = accommodation.getAmenities().getId();
+        //this.amenityId = accommodation.getAmenities().
         this.amenityId = accommodation.getAmenities().stream().map(Amenity::getId).collect(Collectors.toSet());
         this.rating = accommodation.getRating();
         this.minNumberOfGuests = accommodation.getMinNumberOfGuests();
