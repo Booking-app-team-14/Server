@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -29,7 +28,7 @@ public class AccommodationController {
     private AccommodationService accommodationService;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
+    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
 
         return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.OK);
 
@@ -61,12 +60,19 @@ public class AccommodationController {
 
     }
 
-    @PostMapping(/*, consumes = "application/json",*/ name = "owner adds an accommodation")
-    public ResponseEntity<String> addAccommodation() {//, @RequestBody AccommodationDTO ownerReviewDTO) {
+    /*@PostMapping(*//*, consumes = "application/json",*//* name = "owner adds an accommodation")
+    public ResponseEntity<AccommodationDTO> addAccommodation() {//, @RequestBody OwnerReviewDTO ownerReviewDTO) {
 
-        return new ResponseEntity<>("new AccommodationDTO()", HttpStatus.CREATED);
+        return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.CREATED);
 
 
+    }*/
+
+    @PostMapping(name = "owner adds an accommodation")
+    public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = new Accommodation(accommodationDTO);
+        accommodationService.save(accommodation);
+        return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -151,8 +157,8 @@ public class AccommodationController {
         if (accommodations == null)
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
-            for (Accommodation accommodation: accommodations)
-                result.add(new AccommodationSearchDTO(accommodation));
+        for (Accommodation accommodation: accommodations)
+            result.add(new AccommodationSearchDTO(accommodation));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -179,14 +185,8 @@ public class AccommodationController {
             result.add(new AccommodationSearchDTO(accommodation));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
+
+
 }
-
-
-
-
-
-
-
-
-
-

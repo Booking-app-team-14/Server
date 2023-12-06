@@ -3,6 +3,7 @@ package com.bookingapp.services;
 import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,12 @@ import java.util.Set;
 @Service
 public class AccommodationService {
 
-    private final AccommodationRepository accommodationRepository;
+    @Autowired
+    private AccommodationRepository accommodationRepository;
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
-         this.accommodationRepository = accommodationRepository;
+//        this.accommodationRepository = accommodationRepository;
     }
 
     public List<Accommodation> findAll() {
@@ -41,7 +43,8 @@ public class AccommodationService {
     }
 
     public Optional<Accommodation> getAccommodationById(Long id) {
-                return accommodationRepository.findById(id);
+        return Optional.empty();
+//        return accommodationRepository.findById(id);
     }
 
     // UPDATE
@@ -77,6 +80,9 @@ public class AccommodationService {
 //        return accommodationRepository.getBestOffers();
     }
 
+    public void save(Accommodation accommodation) {
+        accommodationRepository.save(accommodation);
+    }
     public List<Accommodation> filterAccommodations(Double minPrice, Double maxPrice, Double minRating,
                                                     Integer minGuests, Integer maxGuests,
                                                     Set<Long> amenityIds,
@@ -91,48 +97,47 @@ public class AccommodationService {
 
 
         if (startDate != null && endDate != null)
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByDateRange(startDate, endDate));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByDateRange(startDate, endDate));
 
         if (minPrice != null && maxPrice != null)
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByPriceRange(minPrice, maxPrice));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByPriceRange(minPrice, maxPrice));
 
         if (minRating != null)
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByMinRating(minRating));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByMinRating(minRating));
 
         if (minGuests != null && maxGuests != null)
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByGuestsRange(minGuests, maxGuests));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByGuestsRange(minGuests, maxGuests));
 
         if (!amenityIds.isEmpty())
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByAmmenities(amenityIds));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByAmmenities(amenityIds));
 
         if (accommodationType != null)
-                filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByType(accommodationType));
+            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByType(accommodationType));
 
 
         return filteredAccommodations;
     }
 
 
-        public List<Accommodation> findAllByPricePerNightAsc () {
-            return accommodationRepository.findAllByPricePerNightAsc();
-        }
+    public List<Accommodation> findAllByPricePerNightAsc () {
+        return accommodationRepository.findAllByPricePerNightAsc();
+    }
 
-        public List<Accommodation> findAllByPricePerNightDesc () {
-            return accommodationRepository.findAllByPricePerNightDesc();
-        }
+    public List<Accommodation> findAllByPricePerNightDesc () {
+        return accommodationRepository.findAllByPricePerNightDesc();
+    }
 
-        public List<Accommodation> findAllByRatingDesc () {
-            return accommodationRepository.findAllByRatingDesc();
-        }
+    public List<Accommodation> findAllByRatingDesc () {
+        return accommodationRepository.findAllByRatingDesc();
+    }
 
-        public List<Accommodation> findAllByRatingAsc () {
-            return accommodationRepository.findAllByRatingAsc();
-        }
+    public List<Accommodation> findAllByRatingAsc () {
+        return accommodationRepository.findAllByRatingAsc();
+    }
 
 
-        public List<Accommodation> searchAccommodations (String searchTerm){
-            return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
-        }
-
+    public List<Accommodation> searchAccommodations (String searchTerm){
+        return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
+    }
 }
 
