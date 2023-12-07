@@ -22,7 +22,7 @@ public class AccommodationService {
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
-//        this.accommodationRepository = accommodationRepository;
+       this.accommodationRepository = accommodationRepository;
     }
 
     public List<Accommodation> findAll() {
@@ -91,10 +91,6 @@ public class AccommodationService {
     {
 
         List<Accommodation> filteredAccommodations = accommodationRepository.findAll();
-        if (amenityIds == null || amenityIds.isEmpty())
-            return  null;
-
-
 
         if (startDate != null && endDate != null)
             filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByDateRange(startDate, endDate));
@@ -108,8 +104,6 @@ public class AccommodationService {
         if (minGuests != null && maxGuests != null)
             filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByGuestsRange(minGuests, maxGuests));
 
-        if (!amenityIds.isEmpty())
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByAmmenities(amenityIds));
 
         if (accommodationType != null)
             filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByType(accommodationType));

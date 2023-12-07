@@ -30,6 +30,7 @@ public class AccommodationController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
 
+
         return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.OK);
 
     }
@@ -112,7 +113,7 @@ public class AccommodationController {
         for (Accommodation accommodation: accommodations){
             result.add(new AccommodationSearchDTO(accommodation));
         }
-        return ResponseEntity.ok(result);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value="/filter")
@@ -138,7 +139,7 @@ public class AccommodationController {
             result.add(new AccommodationSearchDTO(accommodation));
         }
 
-        return ResponseEntity.ok(result);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @GetMapping("/sort/price/asc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByPriceAsc() {

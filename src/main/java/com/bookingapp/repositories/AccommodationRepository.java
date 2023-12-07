@@ -22,7 +22,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     //List<Accommodation> findByName(String name);
 
     @Query("SELECT a FROM Accommodation a JOIN a.availability av " +
-            "WHERE av.start <= :endDate AND av.end >= :startDate")
+            "WHERE av.startDate <= :endDate AND av.endDate >= :startDate")
     List<Accommodation> findAccommodationsByDateRange(LocalDate startDate, LocalDate endDate);
     @Query("SELECT a FROM Accommodation a WHERE a.pricePerNight BETWEEN :minPrice AND :maxPrice")
     List<Accommodation> findAccommodationsByPriceRange(Double minPrice, Double maxPrice);

@@ -77,7 +77,7 @@ public class Accommodation {
         this.description = accommodationDTO.getDescription();
         this.type = accommodationDTO.getType();
         this.images = accommodationDTO.getImages();
-        this.rating = 5.0;
+        this.rating = accommodationDTO.getRating();
         this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
         this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
         this.pricePerGuest = accommodationDTO.isPricePerGuest();
@@ -85,4 +85,7 @@ public class Accommodation {
         this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
     }
 
+    public Accommodation() {
+
+    }
 }
