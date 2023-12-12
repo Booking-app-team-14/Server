@@ -87,29 +87,16 @@ public class AccommodationService {
                                                     Integer minGuests, Integer maxGuests,
                                                     Set<Long> amenityIds,
                                                     AccommodationType accommodationType,
-                                                    LocalDate startDate, LocalDate endDate)
-    {
-
-        List<Accommodation> filteredAccommodations = accommodationRepository.findAll();
-
-        if (startDate != null && endDate != null)
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByDateRange(startDate, endDate));
-
-        if (minPrice != null && maxPrice != null)
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByPriceRange(minPrice, maxPrice));
-
-        if (minRating != null)
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByMinRating(minRating));
-
-        if (minGuests != null && maxGuests != null)
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByGuestsRange(minGuests, maxGuests));
+                                                    LocalDate startDate, LocalDate endDate) {
 
 
-        if (accommodationType != null)
-            filteredAccommodations.retainAll(accommodationRepository.findAccommodationsByType(accommodationType));
+        return accommodationRepository.filterAccommodations(minPrice, maxPrice, minRating, minGuests, maxGuests,
+                amenityIds, accommodationType, startDate, endDate);
 
+    }
 
-        return filteredAccommodations;
+    public List<Accommodation> searchAccommodations(String searchTerm) {
+        return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
     }
 
 
@@ -130,8 +117,6 @@ public class AccommodationService {
     }
 
 
-    public List<Accommodation> searchAccommodations (String searchTerm){
-        return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
-    }
+
 }
 

@@ -120,7 +120,7 @@ public class AccommodationController {
     public ResponseEntity<List<AccommodationSearchDTO>> filterAccommodations(
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-            @RequestParam(value = "minRating", required = false) Double minRating,
+            @RequestParam(value = "rating", required = false) Double minRating,
             @RequestParam(value = "minGuests", required = false) Integer minGuests,
             @RequestParam(value = "maxGuests", required = false) Integer maxGuests,
             @RequestParam(value = "amenityIds", required = false) Set<Long> amenityIds,
