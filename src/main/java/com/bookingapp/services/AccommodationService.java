@@ -3,7 +3,6 @@ package com.bookingapp.services;
 import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,7 @@ public class AccommodationService {
     }
 
     public List<Accommodation> findAll() {
-        return null;
-//        return accommodationRepository.findAll();
+        return accommodationRepository.findAll();
     }
 
     // CREATE
@@ -38,8 +36,7 @@ public class AccommodationService {
 
     // READ
     public List<Accommodation> getAllAccommodations() {
-        return null;
-//        return accommodationRepository.findAll();
+        return accommodationRepository.findAll();
     }
 
     public Optional<Accommodation> getAccommodationById(Long id) {
@@ -117,6 +114,8 @@ public class AccommodationService {
     }
 
 
-
+    public Optional<Accommodation> findById(Long id) {
+        return accommodationRepository.findById(id);
+    }
 }
 

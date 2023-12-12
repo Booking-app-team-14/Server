@@ -46,25 +46,28 @@ public class AccommodationController {
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
+    public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.findById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-
-        return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.OK);
-
+        AccommodationDTO result = new AccommodationDTO(accommodation.get());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+
     @GetMapping
-    public ResponseEntity<List<AccommodationDTO>> getAllAccommodations(){
-        List<AccommodationDTO> accDTO = new ArrayList<>();
-        return new ResponseEntity<>(accDTO, HttpStatus.OK);
-//        List<Accommodation> userReports = accommodationService.findAll();
-//
-//        List<AccommodationDTO> accDTO = new ArrayList<>();
-//        for (Accommodation r : userReports) {
-//            accDTO.add(new AccommodationDTO(r));
-//        }
-//
-//        return new ResponseEntity<>(accDTO, HttpStatus.OK);
+    public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodations(){
+        List<Accommodation> accommodations = accommodationService.findAll();
+        if (accommodations == null)
+            return null;
+
+        List<AccommodationSearchDTO> result = new ArrayList<>();
+
+        for (Accommodation accommodation: accommodations)
+            result.add(new AccommodationSearchDTO(accommodation));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/owners/{ownerId}", name = "get all accommodations for owner")

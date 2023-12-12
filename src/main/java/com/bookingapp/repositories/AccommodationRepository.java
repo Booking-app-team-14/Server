@@ -19,6 +19,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
 //    Set<BestOffersDTO> getBestOffers();
 
+
     //List<Accommodation> findByName(String name);
 
     @Query("SELECT DISTINCT a FROM Accommodation a " +

@@ -1,6 +1,5 @@
 package com.bookingapp.services;
 
-import com.bookingapp.dtos.GuestReservationDTO;
 import com.bookingapp.entities.Request;
 import com.bookingapp.repositories.RequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +10,18 @@ import java.util.*;
 @Service
 public class RequestService {
 
-//    private final RequestIRepository requestRepository;
+    @Autowired
+    private final RequestIRepository requestRepository;
 //
-//    @Autowired
-//    public RequestService(RequestIRepository requestRepository) {
-//        this.requestRepository = requestRepository;
+   @Autowired
+    public RequestService(RequestIRepository requestRepository) {
+        this.requestRepository = requestRepository;
+    }
+//
+    public void createRequest(Request request) {
+        requestRepository.save(request);
 //    }
 //
-//    public Request createRequest(Request request) {
-//        return requestRepository.save(request);
-//    }
-//
-//    public Request getRequestById(Long requestId) {
-//        Optional<Request> requestOptional = requestRepository.findById(requestId);
-//        return requestOptional.orElse(null);
-//    }
 //
 //    public Request updateRequest(Long requestId, Request updatedRequest) {
 //        Optional<Request> requestOptional = requestRepository.findById(requestId);
@@ -68,4 +64,9 @@ public class RequestService {
 ////        return null;
 //    }
 
+}
+
+    public Optional<Request> findById(Long id) {
+        return requestRepository.findById(id);
+    }
 }

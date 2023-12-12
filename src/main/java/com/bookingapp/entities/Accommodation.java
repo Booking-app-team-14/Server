@@ -51,7 +51,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Set<String> images;
 
-    @OneToMany (cascade = CascadeType.ALL)
+    @ManyToMany (cascade = CascadeType.ALL)
     private Set<Amenity> amenities;
 
     @Column(nullable=false)
@@ -63,7 +63,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer maxNumberOfGuests;
 
-    @OneToMany (cascade = CascadeType.ALL)
+    @ManyToMany (cascade = CascadeType.ALL)
     private Set<Availability> availability;
 
     @Column(nullable=false)
@@ -90,7 +90,6 @@ public class Accommodation {
                 .map(AmenityDTO::getId)
                 .collect(Collectors.toSet());
 
-        // Fetch Amenities from the database using AmenityRepository
         this.amenities= new HashSet<>();
         this.amenities.addAll(amenityService.findAllById(amenityIds));
 
