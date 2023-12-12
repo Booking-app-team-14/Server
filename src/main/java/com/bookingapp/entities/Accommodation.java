@@ -2,8 +2,13 @@ package com.bookingapp.entities;
 
 
 import com.bookingapp.dtos.AccommodationDTO;
+import com.bookingapp.dtos.AmenityDTO;
+import com.bookingapp.dtos.AvailabilityDTO;
 import com.bookingapp.dtos.LocationDTO;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.repositories.AmenityRepository;
+import com.bookingapp.services.AmenityService;
+import com.bookingapp.services.AvailabilityService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +35,8 @@ public class Accommodation {
     @Column(nullable=false)
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)
     private Location location;
 
     @Enumerated(EnumType.STRING)
@@ -72,10 +78,29 @@ public class Accommodation {
     //@ManyToOne
     //private Owner owner;
 
-    public Accommodation(AccommodationDTO accommodationDTO) {
+    public Accommodation(AccommodationDTO accommodationDTO, AmenityService amenityService, AvailabilityService availabilityService) {
         this.name = accommodationDTO.getName();
         this.description = accommodationDTO.getDescription();
+        Location location = new Location();
+        location.setId(accommodationDTO.getLocation().getId());
+        this.location = location;
         this.type = accommodationDTO.getType();
+
+        Set<Long> amenityIds = accommodationDTO.getAmenities().stream()
+                .map(AmenityDTO::getId)
+                .collect(Collectors.toSet());
+
+        // Fetch Amenities from the database using AmenityRepository
+        this.amenities= new HashSet<>();
+        this.amenities.addAll(amenityService.findAllById(amenityIds));
+
+        Set<Long> availabilityIds = accommodationDTO.getAvailability().stream()
+                .map(AvailabilityDTO::getId)
+                .collect(Collectors.toSet());
+
+        this.availability = new HashSet<>();
+        this.availability.addAll(availabilityService.findAllById(amenityIds));
+
         this.images = accommodationDTO.getImages();
         this.rating = accommodationDTO.getRating();
         this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();

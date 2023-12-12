@@ -5,9 +5,18 @@ import com.bookingapp.dtos.AccommodationSearchDTO;
 import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.Amenity;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.repositories.AmenityRepository;
 import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.AmenityService;
+import com.bookingapp.services.AvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping("/api/accommodations")
@@ -26,6 +37,13 @@ public class AccommodationController {
 
     @Autowired
     private AccommodationService accommodationService;
+
+    @Autowired
+    private AmenityService amenityService;
+
+    @Autowired
+    private AvailabilityService availabilityService;
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
@@ -71,7 +89,7 @@ public class AccommodationController {
 
     @PostMapping(name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = new Accommodation(accommodationDTO);
+        Accommodation accommodation = new Accommodation(accommodationDTO,amenityService, availabilityService);
         accommodationService.save(accommodation);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }

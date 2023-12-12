@@ -1,4 +1,5 @@
 package com.bookingapp.dtos;
+import com.bookingapp.entities.Location;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +15,12 @@ public class LocationDTO {
         this.country = country;
         this.city = city;
         this.address = address;
+    }
+
+    public LocationDTO(Location location) {
+        this.id = location.getId();
+        this.country = location.getCountry();
+        this.city = location.getCity();
+        this.address = location.getAddress();
     }
 }
