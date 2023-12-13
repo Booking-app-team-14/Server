@@ -19,7 +19,7 @@ public class UserAccountController {
     @Autowired
     private UserAccountService userAccountService;
 
-    @PostMapping(value = "/users", name = "register user") // api/users?type=GUEST
+    @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
     public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) {
         UserAccount user = switch (role) {
             case GUEST -> new Guest((GuestDTO) userDTO);

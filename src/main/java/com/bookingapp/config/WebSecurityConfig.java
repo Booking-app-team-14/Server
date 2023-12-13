@@ -105,7 +105,8 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
-                            auth.requestMatchers(antMatcher("/api/users/login")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
+                            auth.requestMatchers(antMatcher("/api/login")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
@@ -132,7 +133,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers
-                (antMatcher(HttpMethod.POST, "/api/users/login"), antMatcher("/h2/**"));
+                (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"), antMatcher("/h2/**"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {

@@ -24,7 +24,7 @@ import com.bookingapp.util.TokenUtils;
 
 //Kontroler zaduzen za autentifikaciju korisnika
 @RestController
-@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 //@CrossOrigin(origins = "http://localhost:4200")
 public class AuthenticationController {
 
@@ -41,7 +41,7 @@ public class AuthenticationController {
     // Prvi endpoint koji pogadja korisnik kada se loguje.
     // Tada zna samo svoje korisnicko ime i lozinku i to prosledjuje na backend.
     @PostMapping("/login")
-    public ResponseEntity<UserTokenState> createAuthenticationToken(
+    public ResponseEntity<String> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
         // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
         // AuthenticationException
@@ -55,14 +55,15 @@ public class AuthenticationController {
         // Kreiraj token za tog korisnika
         UserAccount user = (UserAccount) authentication.getPrincipal();
         String jwt = tokenUtils.generateToken(user.getUsername());
-        int expiresIn = tokenUtils.getExpiredIn();
+        //int expiresIn = tokenUtils.getExpiredIn();
+        return ResponseEntity.ok(jwt);
 
         // Vrati token kao odgovor na uspesnu autentifikaciju
-        return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
+        //return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
     }
 
     // Endpoint za registraciju novog korisnika
-    @PostMapping("/signup")
+    /*@PostMapping("/signup")
     public ResponseEntity<UserAccount> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
         UserAccount existUser = this.userService.findByUsername(userRequest.getUsername());
 
@@ -73,5 +74,5 @@ public class AuthenticationController {
         UserAccount user = this.userService.save(userRequest);
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
-    }
+    }*/
 }

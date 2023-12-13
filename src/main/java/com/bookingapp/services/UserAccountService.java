@@ -70,6 +70,7 @@ public class UserAccountService implements UserDetailsService {
     }
 
     public void save(UserAccount account) {
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
         userAccountRepository.save(account);
     }
 

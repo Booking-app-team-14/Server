@@ -54,7 +54,7 @@ public class TokenUtils {
      * @param username Korisničko ime korisnika kojem se token izdaje
      * @return JWT token
      */
-    public String generateToken(String username) {
+    /*public String generateToken(String username) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(username)
@@ -62,6 +62,19 @@ public class TokenUtils {
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
                 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();
+
+
+        // moguce je postavljanje proizvoljnih podataka u telo JWT tokena pozivom funkcije .claim("key", value), npr. .claim("role", user.getRole())
+    }*/
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setIssuer("booking-app")
+                .setSubject(username)
+                .setAudience("web")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(generateExpirationDate())
+                .signWith(SignatureAlgorithm.HS256, "somesecret").compact();
 
 
         // moguce je postavljanje proizvoljnih podataka u telo JWT tokena pozivom funkcije .claim("key", value), npr. .claim("role", user.getRole())
