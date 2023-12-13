@@ -1,9 +1,6 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.dtos.AccommodationDTO;
-import com.bookingapp.dtos.AccommodationSearchDTO;
-import com.bookingapp.dtos.BestOffersDTO;
-import com.bookingapp.dtos.OwnersAccommodationDTO;
+import com.bookingapp.dtos.*;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.services.AccommodationService;
@@ -20,9 +17,20 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/accommodations")
-
+@CrossOrigin(origins = "http://localhost:4200")
 public class AccommodationController {
 
+    // TODO: make accommodationRequests service and repository
+    // temporary for testing
+    private List<AccommodationRequestDTO> accommodationRequests = new ArrayList<>();
+    public AccommodationController(){
+        this.accommodationRequests.add(new AccommodationRequestDTO(1L, "name1", "address1", "description1", "location1", "Apartment", 10.0, 15, "png", new byte[0], "ownerUsername1", "18th October 2023", "new", "Lorem ipsum 1 ...", 5, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(2L, "name2", "address2", "description2", "location2", "Studio", 20.0, 20, "jpg", new byte[0], "ownerUsername2", "17th October 2023", "updated", "Lorem ipsum 2 ...", 4, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(3L, "name3", "address3", "description3", "location3", "Apartment", 30.0, 25, "png", new byte[0], "ownerUsername3", "16th October 2023", "new", "Lorem ipsum 3 ...", 3, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(4L, "name4", "address4", "description4", "location4", "Studio", 40.0, 30, "jpg", new byte[0], "ownerUsername4", "15th October 2023", "updated", "Lorem ipsum 4 ...", 2, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(5L, "name5", "address5", "description5", "location5", "Apartment", 50.0, 35, "png", new byte[0], "ownerUsername5", "14th October 2023", "new", "Lorem ipsum 5 ...", 1, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(6L, "name6", "address6", "description6", "location6", "Studio", 60.0, 40, "jpg", new byte[0], "ownerUsername6", "13th October 2023", "updated", "Lorem ipsum 6 ...", 5, "png", new byte[0]));
+    }
 
     @Autowired
     private AccommodationService accommodationService;
@@ -47,6 +55,29 @@ public class AccommodationController {
 //        }
 //
 //        return new ResponseEntity<>(accDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/requests", name = "admin gets all the accommodation requests for creation and update")
+    public ResponseEntity<List<AccommodationRequestDTO>> getAccommodationRequests() {
+        return new ResponseEntity<>(this.accommodationRequests, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/requests/{id}", name = "admin approves the accommodation request")
+    public ResponseEntity<AccommodationRequestDTO> approveAccommodationRequest(@PathVariable Long id) {
+        for (AccommodationRequestDTO r : this.accommodationRequests) {
+            if (r.getId().equals(id)) {
+//                r.setRequestType("approved");
+                this.accommodationRequests.remove(r);
+                return new ResponseEntity<>(r, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping(value = "/requests/{id}", name = "admin rejects the accommodation request")
+    public ResponseEntity<Boolean> rejectAccommodationRequest(@PathVariable Long id) {
+        boolean deleted = this.accommodationRequests.removeIf(r -> r.getId().equals(id));
+        return new ResponseEntity<>(deleted, HttpStatus.OK);
     }
 
     @GetMapping(value = "/owners/{ownerId}", name = "get all accommodations for owner")
@@ -82,12 +113,12 @@ public class AccommodationController {
         return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
-   /* @PutMapping(value = "/{id}")
-    public ResponseEntity<String> updateAccommodation(@PathVariable Long id) {
+    /* @PutMapping(value = "/{id}")
+     public ResponseEntity<String> updateAccommodation(@PathVariable Long id) {
 
-        return new ResponseEntity<>("Accommodation added", HttpStatus.OK);
+         return new ResponseEntity<>("Accommodation added", HttpStatus.OK);
 
-    }*/
+     }*/
     @PutMapping(value = "/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the accommodation")
     public ResponseEntity<AccommodationDTO> updateOwnerReview(@PathVariable Long id){//, @RequestBody String status) {
 
