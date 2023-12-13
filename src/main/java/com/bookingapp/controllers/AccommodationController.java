@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/accommodations")
 
 public class AccommodationController {
