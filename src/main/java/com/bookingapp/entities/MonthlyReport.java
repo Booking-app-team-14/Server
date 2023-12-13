@@ -15,9 +15,9 @@ public class MonthlyReport {
     @OneToOne(fetch = FetchType.EAGER)
     private Accommodation accommodation;
 
-    @Column(nullable=false)
-    private int year;
+    //@Column(nullable=false)
+    //private int year;
 
     @Column(nullable=false)
-    private String month;
+    private String monthName;
 }
