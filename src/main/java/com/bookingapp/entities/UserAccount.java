@@ -2,6 +2,7 @@ package com.bookingapp.entities;
 
 import com.bookingapp.dtos.UserDTO;
 import com.bookingapp.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Email;
@@ -10,12 +11,22 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class UserAccount {
+public class UserAccount implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long Id;
@@ -46,6 +57,18 @@ public class UserAccount {
     @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     @Column(nullable = false)
     protected String phoneNumber;
+
+    /*@Column(name = "enabled")
+    private boolean enabled;
+
+    @Column(name = "last_password_reset_date")
+    private Timestamp lastPasswordResetDate;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private List<Role> roles;*/
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -78,5 +101,51 @@ public class UserAccount {
         this.isBlocked = dto.isBlocked();
         this.numberOfReports = dto.getNumberOfReports();
     }
+
+   /* public void setPassword(String password) {
+        Timestamp now = new Timestamp(new Date().getTime());
+        this.setLastPasswordResetDate(now);
+        this.password = password;
+    }*/
+
+    /*@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.role;
+    }*/
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Convert Role enum to GrantedAuthority
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    /*@Override
+    public boolean isEnabled() {
+        return enabled;
+    }*/
+   /* public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }*/
+
 
 }
