@@ -1,14 +1,11 @@
 package com.bookingapp.util;
 
 import com.bookingapp.entities.UserAccount;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
-
 import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,12 +13,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 
-// Utility klasa za rad sa JSON Web Tokenima
+import java.util.Date;
+
 @Component
 public class TokenUtils {
-
     // Izdavac tokena
-    @Value("spring-security-example")
+    @Value("booking-app")
     private String APP_NAME;
 
     // Tajna koju samo backend aplikacija treba da zna kako bi mogla da generise i proveri JWT https://jwt.io/
@@ -112,6 +109,7 @@ public class TokenUtils {
      */
     public String getToken(HttpServletRequest request) {
         String authHeader = getAuthHeaderFromHeader(request);
+
         // JWT se prosledjuje kroz header 'Authorization' u formatu:
         // Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 
@@ -241,8 +239,7 @@ public class TokenUtils {
 
         // Token je validan kada:
         return (username != null // korisnicko ime nije null
-                && username.equals(userDetails.getUsername())); // korisnicko ime iz tokena se podudara sa korisnickom imenom koje pise u bazi
-                //&& !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())); // nakon kreiranja tokena korisnik nije menjao svoju lozinku
+                && username.equals(userDetails.getUsername())); // nakon kreiranja tokena korisnik nije menjao svoju lozinku
     }
 
     /**
@@ -277,5 +274,4 @@ public class TokenUtils {
     public String getAuthHeaderFromHeader(HttpServletRequest request) {
         return request.getHeader(AUTH_HEADER);
     }
-
 }

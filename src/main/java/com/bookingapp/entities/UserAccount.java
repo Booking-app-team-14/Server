@@ -58,6 +58,9 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected String phoneNumber;
 
+    @Column(name = "last_password_reset_date")
+    private Timestamp lastPasswordResetDate;
+
     /*@Column(name = "enabled")
     private boolean enabled;
 
@@ -102,21 +105,17 @@ public class UserAccount implements UserDetails {
         this.numberOfReports = dto.getNumberOfReports();
     }
 
-   /* public void setPassword(String password) {
+    /*public void setPassword(String password) {
         Timestamp now = new Timestamp(new Date().getTime());
         this.setLastPasswordResetDate(now);
         this.password = password;
     }*/
 
-    /*@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.role;
-    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Convert Role enum to GrantedAuthority
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

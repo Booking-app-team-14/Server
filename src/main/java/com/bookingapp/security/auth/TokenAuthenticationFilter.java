@@ -1,50 +1,53 @@
 package com.bookingapp.security.auth;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+
 import com.bookingapp.util.TokenUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
-// Filter koji ce presretati SVAKI zahtev klijenta ka serveru
-// (sem nad putanjama navedenim u WebSecurityCustomizer webSecurityCustomizer(web)
-// Filter proverava da li JWT token postoji u Authorization header-u u zahtevu koji stize od klijenta
-// Ukoliko token postoji, proverava se da li je validan. Ukoliko je sve u redu, postavlja se autentifikacija
-// u SecurityContext holder kako bi podaci o korisniku bili dostupni u ostalim delovima aplikacije gde su neophodni
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-
     private TokenUtils tokenUtils;
 
     private UserDetailsService userDetailsService;
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
 
     public TokenAuthenticationFilter(TokenUtils tokenHelper, UserDetailsService userDetailsService) {
         this.tokenUtils = tokenHelper;
         this.userDetailsService = userDetailsService;
     }
 
+
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
+        final String authorizationHeader = request.getHeader("Authorization");
+
         String username;
 
         // 1. Preuzimanje JWT tokena iz zahteva
-        String authToken = tokenUtils.getToken(request);
+        String authToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            authToken = authorizationHeader.substring(7);
 
+        }
         try {
 
             if (authToken != null) {
+
                 // 2. Citanje korisnickog imena iz tokena
                 username = tokenUtils.getUsernameFromToken(authToken);
 
@@ -63,10 +66,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     }
                 }
             }
+
+        } catch (Exception ex) {
+
         }
-        catch (ExpiredJwtException ex) {
-            LOGGER.debug("Token expired!");
-        }
+
         // prosledi request dalje u sledeci filter
         chain.doFilter(request, response);
     }
