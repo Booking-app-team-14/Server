@@ -106,7 +106,7 @@ public class WebSecurityConfig {
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
                             auth.requestMatchers(antMatcher("/api/users/login")).permitAll();
-                            auth.requestMatchers(antMatcher("/h2-console/**")).permitAll();
+                            auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
@@ -132,7 +132,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers
-                (antMatcher(HttpMethod.POST, "/api/users/login"), antMatcher("/h2-console/**"));
+                (antMatcher(HttpMethod.POST, "/api/users/login"), antMatcher("/h2/**"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {
