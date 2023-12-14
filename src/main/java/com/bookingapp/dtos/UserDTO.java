@@ -17,17 +17,18 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
 
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String address;
-    private String phoneNumber;
-    private boolean isBlocked;
-    private int numberOfReports;
-    private Role role;
+    protected String username;
+    protected String password;
+    protected String firstName;
+    protected String lastName;
+    protected String address;
+    protected String phoneNumber;
+    protected boolean isBlocked;
+    protected int numberOfReports;
+    protected Role role;
+    protected String profilePicturePath;
 
-    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports){
+    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath){
         this.username = username;
         this.password = password;
         this.address = address;
@@ -37,6 +38,7 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
         this.isBlocked = isBlocked;
         this.numberOfReports = numberOfReports;
+        this.profilePicturePath = profilePicturePath;
     }
 
     public UserDTO(UserAccount user){
@@ -49,6 +51,7 @@ public class UserDTO {
         this.phoneNumber = user.getPhoneNumber();
         this.isBlocked = user.isBlocked();
         this.numberOfReports = user.getNumberOfReports();
+        this.profilePicturePath = user.getProfilePicturePath();
     }
 
     public UserDTO(){ }
