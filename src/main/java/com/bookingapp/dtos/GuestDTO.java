@@ -34,6 +34,7 @@ public class GuestDTO extends UserDTO {
         this.setPhoneNumber(guest.getPhoneNumber());
         this.setBlocked(guest.isBlocked());
         this.setNumberOfReports(guest.getNumberOfReports());
+        this.profilePicturePath = guest.getProfilePicturePath();
         this.numberOfCancellations = guest.getNumberOfCancellations();
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();

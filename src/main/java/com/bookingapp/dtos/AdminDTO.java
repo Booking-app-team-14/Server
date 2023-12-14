@@ -23,6 +23,7 @@ public class AdminDTO extends UserDTO {
         this.setPhoneNumber(admin.getPhoneNumber());
         this.setBlocked(admin.isBlocked());
         this.setNumberOfReports(admin.getNumberOfReports());
+        this.setProfilePicturePath(admin.getProfilePicturePath());
     }
 
     public AdminDTO() { }

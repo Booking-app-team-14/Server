@@ -17,16 +17,16 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
 
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String address;
-    private String phoneNumber;
-    private boolean isBlocked;
-    private int numberOfReports;
-    private Role role;
-    private String profilePicturePath;
+    protected String username;
+    protected String password;
+    protected String firstName;
+    protected String lastName;
+    protected String address;
+    protected String phoneNumber;
+    protected boolean isBlocked;
+    protected int numberOfReports;
+    protected Role role;
+    protected String profilePicturePath;
 
     public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath){
         this.username = username;
