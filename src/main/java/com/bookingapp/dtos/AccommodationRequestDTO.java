@@ -1,5 +1,6 @@
 package com.bookingapp.dtos;
 
+import jakarta.persistence.Lob;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,31 +9,23 @@ import lombok.Setter;
 public class AccommodationRequestDTO {
 
     private Long id;
-    private String name;
-    private String address;
-    private String description;
-    private String location;
-    private String type;
-    private double price;
-    private int postedAgo;
-    private String ownerImageType;
+    private String name; // accommodation name
+    private String type; // accommodation type
+    private int postedAgo; // minutes since requested
+    private String ownerImageType; // owner profile picture type (jpg, png, etc.)
     private byte[] ownerProfilePictureBytes;
     private String ownerUsername;
-    private String dateRequested;
-    private String requestType;
+    private String dateRequested; // date requested, string formatted
+    private String requestType; // request type (new, updated)
     private String message;
     private int stars;
-    private String imageType;
+    private String imageType; // accommodation main picture type (jpg, png, etc.)
     private byte[] mainPictureBytes;
 
-    public AccommodationRequestDTO(Long id, String name, String address, String description, String location, String type, double price, int postedAgo, String ownerImageType, byte[] ownerProfilePictureBytes, String ownerUsername, String dateRequested, String requestType, String message, int stars, String imageType, byte[] mainPictureBytes){
+    public AccommodationRequestDTO(Long id, String name, String type, int postedAgo, String ownerImageType, byte[] ownerProfilePictureBytes, String ownerUsername, String dateRequested, String requestType, String message, int stars, String imageType, byte[] mainPictureBytes) {
         this.id = id;
         this.name = name;
-        this.address = address;
-        this.description = description;
-        this.location = location;
         this.type = type;
-        this.price = price;
         this.postedAgo = postedAgo;
         this.ownerImageType = ownerImageType;
         this.ownerProfilePictureBytes = ownerProfilePictureBytes;

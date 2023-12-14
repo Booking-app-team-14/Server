@@ -26,8 +26,9 @@ public class UserDTO {
     private boolean isBlocked;
     private int numberOfReports;
     private Role role;
+    private String profilePicturePath;
 
-    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports){
+    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath){
         this.username = username;
         this.password = password;
         this.address = address;
@@ -37,6 +38,7 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
         this.isBlocked = isBlocked;
         this.numberOfReports = numberOfReports;
+        this.profilePicturePath = profilePicturePath;
     }
 
     public UserDTO(UserAccount user){
@@ -49,6 +51,7 @@ public class UserDTO {
         this.phoneNumber = user.getPhoneNumber();
         this.isBlocked = user.isBlocked();
         this.numberOfReports = user.getNumberOfReports();
+        this.profilePicturePath = user.getProfilePicturePath();
     }
 
     public UserDTO(){ }

@@ -3,6 +3,7 @@ package com.bookingapp.controllers;
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.services.AccommodationRequestService;
 import com.bookingapp.services.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,13 +25,18 @@ public class AccommodationController {
     // temporary for testing
     private List<AccommodationRequestDTO> accommodationRequests = new ArrayList<>();
     public AccommodationController(){
-        this.accommodationRequests.add(new AccommodationRequestDTO(1L, "name1", "address1", "description1", "location1", "Apartment", 10.0, 15, "png", new byte[0], "ownerUsername1", "18th October 2023", "new", "Lorem ipsum 1 ...", 5, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(2L, "name2", "address2", "description2", "location2", "Studio", 20.0, 20, "jpg", new byte[0], "ownerUsername2", "17th October 2023", "updated", "Lorem ipsum 2 ...", 4, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(3L, "name3", "address3", "description3", "location3", "Apartment", 30.0, 25, "png", new byte[0], "ownerUsername3", "16th October 2023", "new", "Lorem ipsum 3 ...", 3, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(4L, "name4", "address4", "description4", "location4", "Studio", 40.0, 30, "jpg", new byte[0], "ownerUsername4", "15th October 2023", "updated", "Lorem ipsum 4 ...", 2, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(5L, "name5", "address5", "description5", "location5", "Apartment", 50.0, 35, "png", new byte[0], "ownerUsername5", "14th October 2023", "new", "Lorem ipsum 5 ...", 1, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(6L, "name6", "address6", "description6", "location6", "Studio", 60.0, 40, "jpg", new byte[0], "ownerUsername6", "13th October 2023", "updated", "Lorem ipsum 6 ...", 5, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(1L, "Accommodation 1", "Apartment", 6, "jpg", new byte[0], "owner1", "18th October 2023", "new", "Lorem ipsum 1 ...", 5, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(2L, "Accommodation 2", "Studio", 11, "png", new byte[0], "owner2", "16th October 2023", "updated", "Lorem ipsum 2 ...", 5, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(3L, "Accommodation 3", "Apartment", 15, "jpg", new byte[0], "owner3", "15th October 2023", "updated", "Lorem ipsum 3 ...", 5, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(4L, "Accommodation 4", "Studio", 20, "png", new byte[0], "owner4", "14th October 2023", "new", "Lorem ipsum 4 ...", 5, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(5L, "Accommodation 5", "Apartment", 25, "jpg", new byte[0], "owner5", "13th October 2023", "new", "Lorem ipsum 5 ...", 5, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(6L, "Accommodation 6", "Studio", 30, "png", new byte[0], "owner6", "12th October 2023", "updated", "Lorem ipsum 6 ...", 5, "jpg", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(7L, "Accommodation 7", "Apartment", 35, "jpg", new byte[0], "owner7", "11th October 2023", "new", "Lorem ipsum 7 ...", 5, "png", new byte[0]));
+        this.accommodationRequests.add(new AccommodationRequestDTO(8L, "Accommodation 8", "Studio", 40, "png", new byte[0], "owner8", "10th October 2023", "updated", "Lorem ipsum 8 ...", 5, "jpg", new byte[0]));
     }
+
+    @Autowired
+    private AccommodationRequestService accommodationRequestService;
 
     @Autowired
     private AccommodationService accommodationService;
@@ -59,6 +65,7 @@ public class AccommodationController {
 
     @GetMapping(value = "/requests", name = "admin gets all the accommodation requests for creation and update")
     public ResponseEntity<List<AccommodationRequestDTO>> getAccommodationRequests() {
+//        return new ResponseEntity<>(accommodationRequestService.getAllAccommodationRequests(), HttpStatus.OK);
         return new ResponseEntity<>(this.accommodationRequests, HttpStatus.OK);
     }
 

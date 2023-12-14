@@ -53,6 +53,8 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected String address;
 
+    protected String profilePicturePath;
+
     @NotBlank
     @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     @Column(nullable = false)
@@ -82,15 +84,23 @@ public class UserAccount implements UserDetails {
 
     @Column(nullable = false)
     protected int numberOfReports;
+
     public UserAccount() {
 
     }
 
-    public UserAccount(Long id, String username, Integer numberOfReports, Boolean blocked) {
+    public UserAccount(Long id, String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath) {
         this.Id = id;
         this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.isBlocked = isBlocked;
         this.numberOfReports = numberOfReports;
-        this.isBlocked = blocked;
+        this.profilePicturePath = profilePicturePath;
     }
 
     public UserAccount(UserDTO dto){
@@ -103,6 +113,7 @@ public class UserAccount implements UserDetails {
         this.role = dto.getRole();
         this.isBlocked = dto.isBlocked();
         this.numberOfReports = dto.getNumberOfReports();
+        this.profilePicturePath = dto.getProfilePicturePath();
     }
 
     /*public void setPassword(String password) {
