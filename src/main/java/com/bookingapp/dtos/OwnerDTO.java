@@ -14,8 +14,8 @@ public class OwnerDTO extends UserDTO {
     private Set<Long> reservationsIds;
     private Set<Long> accommodationsIds;
 
-    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports) {
-        super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, numberOfReports);
+    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports, String profilePicturePath) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, numberOfReports, profilePicturePath);
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
     }
@@ -30,6 +30,7 @@ public class OwnerDTO extends UserDTO {
         this.setPhoneNumber(owner.getPhoneNumber());
         this.setBlocked(owner.isBlocked());
         this.setNumberOfReports(owner.getNumberOfReports());
+        this.profilePicturePath = owner.getProfilePicturePath();
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
     }
