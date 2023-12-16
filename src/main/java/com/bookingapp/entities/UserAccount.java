@@ -85,6 +85,9 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected int numberOfReports;
 
+   /* @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean isActive;*/
+
     public UserAccount() {
 
     }
@@ -101,6 +104,7 @@ public class UserAccount implements UserDetails {
         this.isBlocked = isBlocked;
         this.numberOfReports = numberOfReports;
         this.profilePicturePath = profilePicturePath;
+        //this.isActive = isActive;
     }
 
     public UserAccount(UserDTO dto){
@@ -148,6 +152,7 @@ public class UserAccount implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 
     /*@Override
     public boolean isEnabled() {

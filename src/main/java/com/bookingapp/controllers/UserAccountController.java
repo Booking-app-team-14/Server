@@ -6,11 +6,20 @@ import com.bookingapp.dtos.OwnerDTO;
 import com.bookingapp.dtos.UserDTO;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.Role;
+import com.bookingapp.services.ActivationService;
 import com.bookingapp.services.UserAccountService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -19,8 +28,17 @@ public class UserAccountController {
     @Autowired
     private UserAccountService userAccountService;
 
+    /*@Autowired
+    private EmailService emailService;  // injektovan servis za slanje emaila*/
+
+    @Autowired
+    private ActivationService activationService;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
     @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
-    public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) {
+    public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) throws MessagingException, UnsupportedEncodingException {
         UserAccount user = switch (role) {
             case GUEST -> new Guest((GuestDTO) userDTO);
             case OWNER -> new Owner((OwnerDTO) userDTO);
@@ -31,8 +49,57 @@ public class UserAccountController {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
         user.setRole(role);
+        //user.setActive(false);
         userAccountService.save(user);
+
+        Activation activation = new Activation();
+        activation.setId(Math.toIntExact(user.getId()));
+        activation.setUser(user);
+        activation.setCreationDate(LocalDateTime.now());
+        activation.setExpirationDate(LocalDateTime.now().plusHours(24));
+
+        activationService.save(activation);
+
+        //this.userAccountService.sendMail(Math.toIntExact(user.getId()));
+
+        String subject = "Please verify your registration";
+        String senderName = "BookingApp14";
+
+        String mailContent = "<p>Dear, </p>"+ user.getFirstName()+ " "+ user.getLastName();
+        mailContent +="<p>Please click the link below to verify your registration:</p>";
+        mailContent += "<p><span style='color: red;'>Link expires in 24 hours</span></p>";
+
+        mailContent +="<h3><a href=\"" + "http://localhost:4200/login" + "\">VERIFY</a></h3>";
+        mailContent +="<p>Thank you, <br>BookingApp Team 14</p>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom("bookingappteam448@gmail.com", senderName);
+        //helper.setTo("zivanovicmarija895@gmail.com");
+        helper.setTo(user.getUsername());
+        helper.setSubject(subject);
+        helper.setText(mailContent, true);
+
+        mailSender.send(message);
         return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
+
+        // Generišite i čuvajte aktivacioni token
+       /* String activationToken = generateActivationToken(user.getId());
+        userAccountService.saveActivationToken(user.getId(), activationToken, LocalDateTime.now().plusHours(24));*/
+
+        // Slanje emaila
+        /*emailService.sendActivationEmail(userDTO.getUsername(), activationToken);
+
+        return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);*/
+        // new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
+    }
+
+    private String generateActivationToken(Long userId) {
+        // Implementirajte logiku za generisanje aktivacionog tokena
+        // Možete koristiti neki algoritam ili biblioteku za generisanje tokena
+        // Na primer, možete koristiti UUID.randomUUID().toString()
+        return UUID.randomUUID().toString();
     }
 
     @PutMapping(value = "/users/{id}", name = "user updates his profile")
