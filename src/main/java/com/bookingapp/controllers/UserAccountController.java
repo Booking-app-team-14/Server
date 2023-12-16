@@ -10,6 +10,7 @@ import com.bookingapp.services.ActivationService;
 import com.bookingapp.services.UserAccountService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -27,9 +27,6 @@ public class UserAccountController {
 
     @Autowired
     private UserAccountService userAccountService;
-
-    /*@Autowired
-    private EmailService emailService;  // injektovan servis za slanje emaila*/
 
     @Autowired
     private ActivationService activationService;
@@ -60,7 +57,6 @@ public class UserAccountController {
 
         activationService.save(activation);
 
-        //this.userAccountService.sendMail(Math.toIntExact(user.getId()));
 
         String subject = "Please verify your registration";
         String senderName = "BookingApp14";
@@ -69,7 +65,7 @@ public class UserAccountController {
         mailContent +="<p>Please click the link below to verify your registration:</p>";
         mailContent += "<p><span style='color: red;'>Link expires in 24 hours</span></p>";
 
-        mailContent +="<h3><a href=\"" + "http://localhost:4200/login" + "\">VERIFY</a></h3>";
+        mailContent +="<h3><a href=\"" + "http://localhost:4200/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
         mailContent +="<p>Thank you, <br>BookingApp Team 14</p>";
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -84,23 +80,31 @@ public class UserAccountController {
         mailSender.send(message);
         return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
 
-        // Generišite i čuvajte aktivacioni token
-       /* String activationToken = generateActivationToken(user.getId());
-        userAccountService.saveActivationToken(user.getId(), activationToken, LocalDateTime.now().plusHours(24));*/
-
-        // Slanje emaila
-        /*emailService.sendActivationEmail(userDTO.getUsername(), activationToken);
-
-        return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);*/
-        // new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
     }
 
-    private String generateActivationToken(Long userId) {
-        // Implementirajte logiku za generisanje aktivacionog tokena
-        // Možete koristiti neki algoritam ili biblioteku za generisanje tokena
-        // Na primer, možete koristiti UUID.randomUUID().toString()
-        return UUID.randomUUID().toString();
+
+    /*@PutMapping("/verify/users")
+    public ResponseEntity<String> verifyUserAccount(@RequestParam("userId") Long userId) {
+        try {
+            userAccountService.verifyUserAccount(userId);
+            return new ResponseEntity<>("User successfully verified.", HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+        }
+    }*/
+
+    @PutMapping(value = "/verify/users/{id}", name = "activate profile")
+    public ResponseEntity<String> verifyUserAccount(@PathVariable Long id) {
+        UserAccount user = userAccountService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+
+        userAccountService.verifyUserAccount(id);
+        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
+
+
 
     @PutMapping(value = "/users/{id}", name = "user updates his profile")
     public ResponseEntity<String> updateUserAccount(@PathVariable Long id, @RequestBody UserDTO userDTO) {

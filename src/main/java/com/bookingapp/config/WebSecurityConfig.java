@@ -107,6 +107,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->{
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/verify/users/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }

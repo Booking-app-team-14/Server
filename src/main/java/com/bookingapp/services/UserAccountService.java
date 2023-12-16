@@ -6,6 +6,7 @@ import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.UserAccountRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -185,4 +186,13 @@ public class UserAccountService implements UserDetailsService {
 
         mailSender.send(message);
     }*/
+
+
+    public void verifyUserAccount(Long userId) {
+        UserAccount user = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setVerified(true);
+        userAccountRepository.save(user);
+    }
 }
