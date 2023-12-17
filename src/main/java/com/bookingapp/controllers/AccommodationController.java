@@ -60,7 +60,7 @@ public class AccommodationController {
     }
 
 
-    @GetMapping
+    @GetMapping(value = "/get")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodations(){
         List<Accommodation> accommodations = accommodationService.findAll();
         if (accommodations == null)
