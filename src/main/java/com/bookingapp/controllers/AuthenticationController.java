@@ -35,41 +35,24 @@ public class AuthenticationController {
     @Autowired
     private UserAccountService userService;
 
-    // Prvi endpoint koji pogadja korisnik kada se loguje.
-    // Tada zna samo svoje korisnicko ime i lozinku i to prosledjuje na backend.
+
     @PostMapping("/login")
     public ResponseEntity<String> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
-        // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
-        // AuthenticationException
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-        // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
-        // kontekst
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Kreiraj token za tog korisnika
         UserAccount user = (UserAccount) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user.getUsername());
-        //int expiresIn = tokenUtils.getExpiredIn();
-        return ResponseEntity.ok(jwt);
 
-        // Vrati token kao odgovor na uspesnu autentifikaciju
-        //return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
-    }
-
-    // Endpoint za registraciju novog korisnika
-    /*@PostMapping("/signup")
-    public ResponseEntity<UserAccount> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
-        UserAccount existUser = this.userService.findByUsername(userRequest.getUsername());
-
-        if (existUser != null) {
-            throw new ResourceConflictException(userRequest.getId(), "Username already exists");
+        if (!user.isVerified()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not verified");
         }
 
-        UserAccount user = this.userService.save(userRequest);
+        String jwt = tokenUtils.generateToken(user.getUsername());
+        return ResponseEntity.ok(jwt);
 
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
-    }*/
+    }
+
 }
