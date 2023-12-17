@@ -83,17 +83,17 @@ public class UserAccountController {
     }
 
 
-    /*@PutMapping("/verify/users")
-    public ResponseEntity<String> verifyUserAccount(@RequestParam("userId") Long userId) {
+    @PutMapping("/verify/users/{userId}")
+    public ResponseEntity<String> verifyUserAccount(@PathVariable Long userId) {
         try {
             userAccountService.verifyUserAccount(userId);
             return new ResponseEntity<>("User successfully verified.", HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 
-    @PutMapping(value = "/verify/users/{id}", name = "activate profile")
+    /*@PutMapping(value = "/verify/users/{id}", name = "activate profile")
     public ResponseEntity<String> verifyUserAccount(@PathVariable Long id) {
         UserAccount user = userAccountService.getUserById(id);
         if (user == null) {
@@ -102,7 +102,7 @@ public class UserAccountController {
 
         userAccountService.verifyUserAccount(id);
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
-    }
+    }*/
 
 
 
@@ -163,6 +163,16 @@ public class UserAccountController {
             Admin admin = (Admin) user;
             return new ResponseEntity<>(new AdminDTO(admin), HttpStatus.OK);
         }
+    }
+
+    @GetMapping(value = "/users/byUsername/{username}")
+    public ResponseEntity<?> getUserAccountByUsername(@PathVariable String username) {
+        UserAccount user = userAccountService.findByUsername(username);
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping(value = "/users/{id}/image", name = "user uploads avatar image for his profile")

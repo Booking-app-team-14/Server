@@ -82,7 +82,7 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected boolean isBlocked;
 
-    @Column(nullable = false, name = "verified")
+    @Column(name = "verified", nullable = false, columnDefinition = "boolean default false")
     private boolean verified;
 
     @Column(nullable = false)

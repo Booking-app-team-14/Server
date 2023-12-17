@@ -23,4 +23,10 @@ public class Activation {
 
     private LocalDateTime expirationDate;
 
+
+    //da li je aktivacija istekla
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expirationDate);
+    }
+
 }
