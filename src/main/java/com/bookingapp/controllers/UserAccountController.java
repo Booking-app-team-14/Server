@@ -45,10 +45,11 @@ public class UserAccountController {
         if (user == null) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
+        //cuvanje korisnika
         user.setRole(role);
-        //user.setActive(false);
         userAccountService.save(user);
 
+        // aktivacioni token
         Activation activation = new Activation();
         activation.setId(Math.toIntExact(user.getId()));
         activation.setUser(user);
@@ -57,22 +58,25 @@ public class UserAccountController {
 
         activationService.save(activation);
 
+        //slanje mejla
 
         String subject = "Please verify your registration";
         String senderName = "BookingApp14";
 
-        String mailContent = "<p>Dear, </p>"+ user.getFirstName()+ " "+ user.getLastName();
-        mailContent +="<p>Please click the link below to verify your registration:</p>";
-        mailContent += "<p><span style='color: red;'>Link expires in 24 hours</span></p>";
+        String mailContent = "<div style='text-align: center; font-family: Arial, sans-serif;'>";
+        mailContent += "<h1 style='color: #007BFF;'>VERIFY YOUR ACCOUNT</h1>";
+        mailContent += "<p>Dear " + user.getFirstName() + " " + user.getLastName() + ",</p>";
+        mailContent += "<p>Please click the link below to verify your registration:</p>";
+        mailContent += "<p><span style='color: #800080;'>Link expires in 24 hours</span></p>";
 
-        mailContent +="<h3><a href=\"" + "http://localhost:4200/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
-        mailContent +="<p>Thank you, <br>BookingApp Team 14</p>";
+        mailContent += "<h3><a href=\"http://localhost:4200/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
+        mailContent += "<p>Thank you,<br>BookingApp Team 14</p>";
+        mailContent += "</div>";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setFrom("bookingappteam448@gmail.com", senderName);
-        //helper.setTo("zivanovicmarija895@gmail.com");
         helper.setTo(user.getUsername());
         helper.setSubject(subject);
         helper.setText(mailContent, true);
@@ -86,6 +90,12 @@ public class UserAccountController {
     @PutMapping("/verify/users/{userId}")
     public ResponseEntity<String> verifyUserAccount(@PathVariable Long userId) {
         try {
+            Activation activation= activationService.getActivationByUserId(userId);
+
+            // check if activation is expired
+            if (activation.isExpired()) {
+                return new ResponseEntity<>("Activation link has expired.", HttpStatus.BAD_REQUEST);
+            }
             userAccountService.verifyUserAccount(userId);
             return new ResponseEntity<>("User successfully verified.", HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -93,16 +103,6 @@ public class UserAccountController {
         }
     }
 
-    /*@PutMapping(value = "/verify/users/{id}", name = "activate profile")
-    public ResponseEntity<String> verifyUserAccount(@PathVariable Long id) {
-        UserAccount user = userAccountService.getUserById(id);
-        if (user == null) {
-            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
-        }
-
-        userAccountService.verifyUserAccount(id);
-        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
-    }*/
 
 
 
