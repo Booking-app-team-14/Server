@@ -97,7 +97,7 @@ public class AccommodationController {
         return new ResponseEntity<>(deleted, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/owners/{ownerId}", name = "get all accommodations for owner")
+    @GetMapping(value="/create", name = "get all accommodations for owner")
     public ResponseEntity<List<AccommodationDTO>> getOwnerReviews(@PathVariable Long ownerId) {
 
 
@@ -117,7 +117,7 @@ public class AccommodationController {
 
     }*/
 
-    @PostMapping(name = "owner adds an accommodation")
+    @PostMapping(value = "/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = new Accommodation(accommodationDTO,amenityService,availabilityService);
         accommodationService.save(accommodation);

@@ -16,8 +16,8 @@ public class GuestDTO extends UserDTO {
     private int numberOfCancellations;
     private Set<Long> accommodationHistoryIds;
 
-    public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports, int numberOfCancellations, String profilePicturePath) {
-        super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, numberOfReports, profilePicturePath);
+    public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePicturePath) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePicturePath);
         this.numberOfCancellations = numberOfCancellations;
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();

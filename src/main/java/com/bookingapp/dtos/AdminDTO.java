@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class AdminDTO extends UserDTO {
 
-    public AdminDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, int numberOfReports, String profilePicturePath) {
-        super(username, password, firstName, lastName, address, phoneNumber, Role.ADMIN, isBlocked, numberOfReports, profilePicturePath);
+    public AdminDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified,int numberOfReports, String profilePicturePath) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.ADMIN, isBlocked, verified, numberOfReports, profilePicturePath);
     }
 
     public AdminDTO(Admin admin){

@@ -2,10 +2,14 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.UserRequest;
 import com.bookingapp.entities.UserAccount;
-import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.UserAccountRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +35,11 @@ public class UserAccountService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     public UserAccount getUserById(Long userId) {
         Optional<UserAccount> userOptional = userAccountRepository.findById(userId);
@@ -151,5 +162,37 @@ public class UserAccountService implements UserDetailsService {
         } else {
             return user;
         }
+    }
+
+
+/*
+    public void sendMail(Integer id) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Please verify your registration";
+        String senderName = "BookingApp14";
+
+        String mailContent = "<p>Dear, user </p>";
+        mailContent +="<p>Please click the link below to verify your registration:</p>";
+        mailContent +="<h3><a href=\"" + "http://localhost:4200/login" + id + "\">VERIFY</a></h3>";
+        mailContent +="<p>Thank you<br>BookingApp Team 14</p>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom("bookingappteam448@gmail.com", senderName);
+        //helper.setTo("zivanovicmarija895@gmail.com");
+        //helper.setTo(userAccountRepository.findByUsername());
+        helper.setSubject(subject);
+        helper.setText(mailContent, true);
+
+        mailSender.send(message);
+    }*/
+
+
+    public void verifyUserAccount(Long userId) {
+        UserAccount user = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setVerified(true);
+        userAccountRepository.save(user);
     }
 }

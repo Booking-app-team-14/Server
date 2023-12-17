@@ -105,8 +105,12 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
+                            auth.requestMatchers(antMatcher("/api/accommodations/create")).hasRole("OWNER");
+                            ///api/amenities
+                            auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/verify/users/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
@@ -133,14 +137,14 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers
-                (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"), antMatcher("/h2/**"));
+                (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"),antMatcher(HttpMethod.PUT, "/api/verify/users/{userId}"), antMatcher("/h2/**"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST", "PUT", "DELETE").allowedHeaders("*");;
             }
         };
     }

@@ -24,11 +24,12 @@ public class UserDTO {
     protected String address;
     protected String phoneNumber;
     protected boolean isBlocked;
+    protected boolean verified;
     protected int numberOfReports;
     protected Role role;
     protected String profilePicturePath;
 
-    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath){
+    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePicturePath){
         this.username = username;
         this.password = password;
         this.address = address;
@@ -37,6 +38,7 @@ public class UserDTO {
         this.role = role;
         this.phoneNumber = phoneNumber;
         this.isBlocked = isBlocked;
+        this.verified=verified;
         this.numberOfReports = numberOfReports;
         this.profilePicturePath = profilePicturePath;
     }
@@ -50,6 +52,7 @@ public class UserDTO {
         this.role = user.getRole();
         this.phoneNumber = user.getPhoneNumber();
         this.isBlocked = user.isBlocked();
+        this.verified=user.isVerified();
         this.numberOfReports = user.getNumberOfReports();
         this.profilePicturePath = user.getProfilePicturePath();
     }

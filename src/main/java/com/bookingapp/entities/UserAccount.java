@@ -82,14 +82,20 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected boolean isBlocked;
 
+    @Column(name = "verified", nullable = false, columnDefinition = "boolean default false")
+    private boolean verified;
+
     @Column(nullable = false)
     protected int numberOfReports;
+
+   /* @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean isActive;*/
 
     public UserAccount() {
 
     }
 
-    public UserAccount(Long id, String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, int numberOfReports, String profilePicturePath) {
+    public UserAccount(Long id, String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePicturePath) {
         this.Id = id;
         this.username = username;
         this.password = password;
@@ -99,8 +105,10 @@ public class UserAccount implements UserDetails {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.isBlocked = isBlocked;
+        this.verified=verified;
         this.numberOfReports = numberOfReports;
         this.profilePicturePath = profilePicturePath;
+        //this.isActive = isActive;
     }
 
     public UserAccount(UserDTO dto){
@@ -112,6 +120,7 @@ public class UserAccount implements UserDetails {
         this.phoneNumber = dto.getPhoneNumber();
         this.role = dto.getRole();
         this.isBlocked = dto.isBlocked();
+        this.verified=dto.isVerified();
         this.numberOfReports = dto.getNumberOfReports();
         this.profilePicturePath = dto.getProfilePicturePath();
     }
@@ -148,6 +157,7 @@ public class UserAccount implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 
     /*@Override
     public boolean isEnabled() {
