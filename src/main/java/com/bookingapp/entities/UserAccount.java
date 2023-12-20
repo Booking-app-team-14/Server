@@ -122,7 +122,6 @@ public class UserAccount implements UserDetails {
         this.isBlocked = dto.isBlocked();
         this.verified=dto.isVerified();
         this.numberOfReports = dto.getNumberOfReports();
-        this.profilePicturePath = dto.getProfilePicturePath();
     }
 
     /*public void setPassword(String password) {

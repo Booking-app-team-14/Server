@@ -21,4 +21,8 @@ public class ActivationService {
         return activationRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Activation not found for User with ID: " + userId));
     }
+
+    public void deleteActivation(Activation a) {
+        activationRepository.delete(a);
+    }
 }

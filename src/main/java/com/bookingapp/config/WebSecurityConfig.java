@@ -112,6 +112,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
                             auth.requestMatchers(antMatcher("/api/verify/users/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/users/token/{token}")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )

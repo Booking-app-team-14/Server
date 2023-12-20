@@ -16,7 +16,7 @@ public class Activation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private UserAccount user;
 
     private LocalDateTime creationDate;

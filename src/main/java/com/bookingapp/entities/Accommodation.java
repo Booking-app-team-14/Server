@@ -30,7 +30,7 @@ public class Accommodation {
     @Column(nullable=false)
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Location location;
 
     @Enumerated(EnumType.STRING)
@@ -69,6 +69,9 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer cancellationDeadline;
 
+    @Column(nullable=false)
+    private boolean approved;
+
     //@ManyToOne
     //private Owner owner;
 
@@ -83,6 +86,7 @@ public class Accommodation {
         this.pricePerGuest = accommodationDTO.isPricePerGuest();
         this.pricePerNight = accommodationDTO.getPricePerNight();
         this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
+        this.approved = false;
     }
 
     public Accommodation() {
