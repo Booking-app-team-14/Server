@@ -137,11 +137,6 @@ public class UserAccountController {
         user.setLastName(userDTO.getLastName());
         user.setAddress(userDTO.getAddress());
         user.setPhoneNumber(userDTO.getPhoneNumber());
-        if (userDTO.getProfilePictureBytes() != null) {
-            try {
-                imagesRepository.addImage(userDTO.getProfilePictureBytes(), userDTO.getProfilePictureType(), "userAvatars/user-" + user.getId() + "." + userDTO.getProfilePictureType());
-            } catch (IOException e) { };
-        }
         userAccountService.save(user);
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
@@ -176,7 +171,7 @@ public class UserAccountController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/users/{id}/image", name = "user uploads avatar image for his profile")
+    @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")
     public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody String imageBytes) {
         boolean ok = userAccountService.uploadAvatarImage(id, imageBytes);
         if (!ok) {
@@ -211,6 +206,9 @@ public class UserAccountController {
             // check if owner has active requests
 //            return new ResponseEntity<>("Owner has active requests", HttpStatus.BAD_REQUEST);
         }
+
+        Activation a = activationService.getActivationByUserId(Id);
+        activationService.deleteActivation(a);
 
         userAccountService.deleteUser(Id);
         userAccountService.deleteUserImage(Id);
