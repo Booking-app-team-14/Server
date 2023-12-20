@@ -4,12 +4,15 @@ import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
+import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +30,9 @@ public class AccommodationService {
     private AmenityService amenityService;
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    ImagesRepository imagesRepository;
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
@@ -184,6 +190,48 @@ public class AccommodationService {
 
     public List<Accommodation> searchAccommodations (String searchTerm){
         return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
+    }
+
+    public boolean uploadAccommodationImage(Long id, String imageBytes) {
+        String imageType = null;
+        try {
+            imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException e) {
+            return false;
+        }
+
+        deleteAccommodationImage(id);
+
+        String relativePath = String.format("userAvatars\\user-%d", id);
+        relativePath += "." + imageType;
+        try {
+            imagesRepository.addImage(imageBytes, imageType, relativePath);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteAccommodationImage(Long id) {
+        String relativePath = findAccommodationImageName(id);
+        if (relativePath == null) {
+            return false;
+        }
+        return imagesRepository.deleteImage(relativePath);
+    }
+
+    private String findAccommodationImageName(Long id) {
+        File directory = new File("src\\main\\resources\\images\\accommodations");
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String filename = file.getName();
+                if (filename.startsWith("accommodation-" + id)) {
+                    return "accommodations\\" + file.getName();
+                }
+            }
+        }
+        return null;
     }
 }
 

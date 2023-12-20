@@ -117,15 +117,20 @@ public class AccommodationController {
     @PostMapping(value = "/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = accommodationService.save(accommodationDTO);
-        AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
-        ZoneId zoneId = ZoneId.systemDefault();
-        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
-        accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
-        // TODO: send a message with the DTO as well
-        accommodationRequestDTO.setMessage("I'm posting my new accommodation, please approve! Thanks.");
-        accommodationRequestDTO.setRequestType("new");
-        accommodationRequestService.save(accommodationRequestDTO);
+
+        accommodationRequestService.saveRequestFromAccommodation(accommodation);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
+    }
+
+
+    //upload slike za accommodation
+    @PostMapping(value = "/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
+    public ResponseEntity<Long> uploadAccommodationImage(@PathVariable Long id, @RequestBody String imageBytes) {
+        boolean ok = accommodationService.uploadAccommodationImage(id, imageBytes);
+        if (!ok) {
+            return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
     /*@PostMapping(value = "/create", name = "owner adds an accommodation")
