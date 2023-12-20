@@ -30,7 +30,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
             "AND (:minPrice IS NULL OR :maxPrice IS NULL OR a.pricePerNight BETWEEN :minPrice AND :maxPrice) " +
             "AND (:minRating IS NULL OR a.rating >= :minRating) " +
             "AND (:minGuests IS NULL OR :maxGuests IS NULL OR " +
-            "(a.minNumberOfGuests <= :maxGuests AND a.maxNumberOfGuests >= :minGuests)) " +
+            "(:minGuests BETWEEN a.minNumberOfGuests AND a.maxNumberOfGuests)) " +
             "AND (:amenityIds IS NULL OR amen.id IN :amenityIds) " +
             "AND (:accommodationType IS NULL OR a.type = :accommodationType)")
     List<Accommodation> filterAccommodations(@Param("minPrice") Double minPrice,

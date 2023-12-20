@@ -40,8 +40,7 @@ public class AccommodationService {
     }
 
     public Optional<Accommodation> getAccommodationById(Long id) {
-        return Optional.empty();
-//        return accommodationRepository.findById(id);
+       return accommodationRepository.findById(id);
     }
 
     // UPDATE
@@ -117,5 +116,6 @@ public class AccommodationService {
     public Optional<Accommodation> findById(Long id) {
         return accommodationRepository.findById(id);
     }
+
 }
 

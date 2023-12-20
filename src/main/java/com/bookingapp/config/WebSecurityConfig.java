@@ -119,6 +119,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/accommodations/sort/rating/asc")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/sort/price/desc")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/sort/price/asc")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/requests")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
@@ -151,7 +152,8 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/desc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/asc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/desc"),
-                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"));
+                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"),
+                        antMatcher(HttpMethod.POST, "/api/requests"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {
