@@ -57,6 +57,7 @@ public class UserAccountController {
         }
         //cuvanje korisnika
         user.setRole(role);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userAccountService.save(user);
 
         // aktivacioni token

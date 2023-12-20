@@ -2,6 +2,7 @@ package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.services.AccommodationRequestService;
 import com.bookingapp.services.AccommodationService;
@@ -12,28 +13,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/accommodations")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AccommodationController {
-
-    // TODO: make accommodationRequests service and repository
-    // temporary for testing
-    private List<AccommodationRequestDTO> accommodationRequests = new ArrayList<>();
-    public AccommodationController(){
-        this.accommodationRequests.add(new AccommodationRequestDTO(1L, "Accommodation 1", "Apartment", 6, "jpg", new byte[0], "owner1", "18th October 2023", "new", "Lorem ipsum 1 ...", 5, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(2L, "Accommodation 2", "Studio", 11, "png", new byte[0], "owner2", "16th October 2023", "updated", "Lorem ipsum 2 ...", 5, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(3L, "Accommodation 3", "Apartment", 15, "jpg", new byte[0], "owner3", "15th October 2023", "updated", "Lorem ipsum 3 ...", 5, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(4L, "Accommodation 4", "Studio", 20, "png", new byte[0], "owner4", "14th October 2023", "new", "Lorem ipsum 4 ...", 5, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(5L, "Accommodation 5", "Apartment", 25, "jpg", new byte[0], "owner5", "13th October 2023", "new", "Lorem ipsum 5 ...", 5, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(6L, "Accommodation 6", "Studio", 30, "png", new byte[0], "owner6", "12th October 2023", "updated", "Lorem ipsum 6 ...", 5, "jpg", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(7L, "Accommodation 7", "Apartment", 35, "jpg", new byte[0], "owner7", "11th October 2023", "new", "Lorem ipsum 7 ...", 5, "png", new byte[0]));
-        this.accommodationRequests.add(new AccommodationRequestDTO(8L, "Accommodation 8", "Studio", 40, "png", new byte[0], "owner8", "10th October 2023", "updated", "Lorem ipsum 8 ...", 5, "jpg", new byte[0]));
-    }
 
     @Autowired
     private AccommodationRequestService accommodationRequestService;
@@ -65,16 +55,20 @@ public class AccommodationController {
 
     @GetMapping(value = "/requests", name = "admin gets all the accommodation requests for creation and update")
     public ResponseEntity<List<AccommodationRequestDTO>> getAccommodationRequests() {
-//        return new ResponseEntity<>(accommodationRequestService.getAllAccommodationRequests(), HttpStatus.OK);
-        return new ResponseEntity<>(this.accommodationRequests, HttpStatus.OK);
+        return new ResponseEntity<List<AccommodationRequestDTO>>(accommodationRequestService.getAllAccommodationRequests(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/requests/{id}", name = "admin approves the accommodation request")
     public ResponseEntity<AccommodationRequestDTO> approveAccommodationRequest(@PathVariable Long id) {
-        for (AccommodationRequestDTO r : this.accommodationRequests) {
-            if (r.getId().equals(id)) {
-//                r.setRequestType("approved");
-                this.accommodationRequests.remove(r);
+        List<AccommodationRequestDTO> accommodationRequests = accommodationRequestService.getAllAccommodationRequests();
+        for (AccommodationRequestDTO r : accommodationRequests) {
+            if (r.getAccommodationId().equals(id)) {
+                Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+                if (accommodation.isPresent()) {
+                    Accommodation a = accommodation.get();
+                    a.setApproved(true);
+                    accommodationService.save(a);
+                }
                 return new ResponseEntity<>(r, HttpStatus.OK);
             }
         }
@@ -83,8 +77,14 @@ public class AccommodationController {
 
     @DeleteMapping(value = "/requests/{id}", name = "admin rejects the accommodation request")
     public ResponseEntity<Boolean> rejectAccommodationRequest(@PathVariable Long id) {
-        boolean deleted = this.accommodationRequests.removeIf(r -> r.getId().equals(id));
-        return new ResponseEntity<>(deleted, HttpStatus.OK);
+        List<AccommodationRequestDTO> accommodationRequests = accommodationRequestService.getAllAccommodationRequests();
+        for (AccommodationRequestDTO r : accommodationRequests) {
+            if (r.getAccommodationId().equals(id)) {
+                boolean deleted = accommodationService.deleteAccommodation(id);
+                return new ResponseEntity<>(deleted, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(false, HttpStatus.OK);
     }
 
     @GetMapping(value="/create", name = "get all accommodations for owner")
@@ -111,6 +111,14 @@ public class AccommodationController {
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = new Accommodation(accommodationDTO);
         accommodationService.save(accommodation);
+        AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
+        ZoneId zoneId = ZoneId.systemDefault();
+        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
+        accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
+        // TODO: send a message with the DTO as well
+        accommodationRequestDTO.setMessage("I'm posting my new accommodation, please approve! Thanks.");
+        accommodationRequestDTO.setRequestType("new");
+        accommodationRequestService.save(accommodationRequestDTO);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
 

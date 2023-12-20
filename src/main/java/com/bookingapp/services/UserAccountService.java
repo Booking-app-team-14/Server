@@ -83,7 +83,6 @@ public class UserAccountService implements UserDetailsService {
     }
 
     public void save(UserAccount account) {
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
         userAccountRepository.save(account);
     }
 
@@ -210,4 +209,7 @@ public class UserAccountService implements UserDetailsService {
         return user.getId();
     }
 
+    public Iterable<Object> getOwners() {
+        return userAccountRepository.findAllOwners();
+    }
 }
