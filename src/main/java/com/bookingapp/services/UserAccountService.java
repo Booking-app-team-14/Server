@@ -4,6 +4,7 @@ import com.bookingapp.dtos.UserRequest;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.UserAccountRepository;
+import com.bookingapp.util.TokenUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,7 +37,8 @@ public class UserAccountService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -100,7 +102,7 @@ public class UserAccountService implements UserDetailsService {
         return this.userAccountRepository.save(u);
     }
 
-    public boolean uploadAvatarImage(Long id, byte[] imageBytes) {
+    public boolean uploadAvatarImage(Long id, String imageBytes) {
         String imageType = null;
         try {
             imageType = imagesRepository.getImageType(imageBytes);
@@ -128,7 +130,7 @@ public class UserAccountService implements UserDetailsService {
         return imagesRepository.deleteImage(relativePath);
     }
 
-    public byte[] getUserImage(Long id) {
+    public String getUserImage(Long id) {
         String relativePath = findUserImageName(id);
         if (relativePath == null) {
             return null;
@@ -195,4 +197,17 @@ public class UserAccountService implements UserDetailsService {
         user.setVerified(true);
         userAccountRepository.save(user);
     }
+
+    public Long getUserIdByToken(String token) {
+        String username = tokenUtils.getUsernameFromToken(token);
+        if (username == null) {
+            return null;
+        }
+        UserAccount user = userAccountRepository.findByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        return user.getId();
+    }
+
 }

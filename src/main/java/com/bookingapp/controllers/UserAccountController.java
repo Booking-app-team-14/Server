@@ -6,6 +6,7 @@ import com.bookingapp.dtos.OwnerDTO;
 import com.bookingapp.dtos.UserDTO;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.Role;
+import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.ActivationService;
 import com.bookingapp.services.UserAccountService;
 import jakarta.mail.MessagingException;
@@ -16,8 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
@@ -33,6 +36,13 @@ public class UserAccountController {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private ImagesRepository imagesRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
 
     @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
     public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) throws MessagingException, UnsupportedEncodingException {
@@ -103,7 +113,14 @@ public class UserAccountController {
         }
     }
 
-
+    @GetMapping(value = "/users/token/{token}", name = "get user id by bearer token")
+    public ResponseEntity<Long> getUserAccountByToken(@PathVariable String token) {
+        Long userId = userAccountService.getUserIdByToken(token);
+        if (userId == null) {
+            return new ResponseEntity<>((long) -1, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userId, HttpStatus.OK);
+    }
 
 
     @PutMapping(value = "/users/{id}", name = "user updates his profile")
@@ -112,35 +129,19 @@ public class UserAccountController {
         if (user == null) {
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
         }
-//        This is how we can update the user's special fields depending on his role
-//        switch (userDTO.getRole()) {
-//            case GUEST:
-//                GuestDTO guestDTO = (GuestDTO) userDTO;
-//                Guest g = (Guest) userAccountService.getUserById(id);
-//                Set<Accommodation> favouriteAccommodations = new HashSet<Accommodation>();
-//                for (Long accommodationId : guestDTO.getFavouriteAccommodationsIds()) {
-//                    Accommodation accommodation = accommodatiomService.getAccommodationById(accommodationId);
-//                    if (accommodation != null) {
-//                        favouriteAccommodations.add(accommodation);
-//                    }
-//                }
-//                g.setFavouriteAccommodations(favouriteAccommodations);
-//                // ...
-//                break;
-//            case OWNER:
-//                OwnerDTO ownerDTO = (OwnerDTO) userDTO;
-//                Owner o = (Owner) userAccountService.getUserById(id);
-//                // ...
-//                break;
-//            case ADMIN:
-//                break;
-//        }
         user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
+        if (userDTO.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setAddress(userDTO.getAddress());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        if (userDTO.getProfilePictureBytes() != null) {
+            try {
+                imagesRepository.addImage(userDTO.getProfilePictureBytes(), userDTO.getProfilePictureType(), "userAvatars/user-" + user.getId() + "." + userDTO.getProfilePictureType());
+            } catch (IOException e) { };
+        }
         userAccountService.save(user);
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
@@ -176,7 +177,7 @@ public class UserAccountController {
     }
 
     @PostMapping(value = "/users/{id}/image", name = "user uploads avatar image for his profile")
-    public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody byte[] imageBytes) {
+    public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody String imageBytes) {
         boolean ok = userAccountService.uploadAvatarImage(id, imageBytes);
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
@@ -185,8 +186,8 @@ public class UserAccountController {
     }
 
     @GetMapping(value = "/users/{Id}/image")
-    public ResponseEntity<byte[]> getUserImage(@PathVariable Long Id) {
-        byte[] imageBytes = userAccountService.getUserImage(Id);
+    public ResponseEntity<String> getUserImage(@PathVariable Long Id) {
+        String imageBytes = userAccountService.getUserImage(Id);
         if (imageBytes == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }

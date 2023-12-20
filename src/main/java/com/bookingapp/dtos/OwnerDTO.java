@@ -4,18 +4,26 @@ import com.bookingapp.entities.Owner;
 import com.bookingapp.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import com.bookingapp.repositories.ImagesRepository;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@Component
 public class OwnerDTO extends UserDTO {
 
     private Set<Long> reservationsIds;
     private Set<Long> accommodationsIds;
 
-    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, String profilePicturePath) {
-        super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, verified, numberOfReports, profilePicturePath);
+    @Autowired
+    private ImagesRepository imagesRepository;
+
+    public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
     }
@@ -30,7 +38,13 @@ public class OwnerDTO extends UserDTO {
         this.setPhoneNumber(owner.getPhoneNumber());
         this.setBlocked(owner.isBlocked());
         this.setNumberOfReports(owner.getNumberOfReports());
-        this.profilePicturePath = owner.getProfilePicturePath();
+        try{
+            this.profilePictureBytes = imagesRepository.getImageBytes(owner.getProfilePicturePath());
+            this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
+        } catch (Exception e) {
+            this.profilePictureBytes = "";
+            this.profilePictureType = "png";
+        }
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
     }

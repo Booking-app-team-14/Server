@@ -2,10 +2,13 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.enums.Role;
+import com.bookingapp.repositories.ImagesRepository;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "role")
 @JsonSubTypes({
@@ -15,7 +18,11 @@ import lombok.Setter;
 })
 @Getter
 @Setter
+@Component
 public class UserDTO {
+
+    @Autowired
+    private ImagesRepository imagesRepository;
 
     protected String username;
     protected String password;
@@ -27,9 +34,10 @@ public class UserDTO {
     protected boolean verified;
     protected int numberOfReports;
     protected Role role;
-    protected String profilePicturePath;
+    protected String profilePictureType;
+    protected String profilePictureBytes;
 
-    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePicturePath){
+    public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes){
         this.username = username;
         this.password = password;
         this.address = address;
@@ -40,7 +48,8 @@ public class UserDTO {
         this.isBlocked = isBlocked;
         this.verified=verified;
         this.numberOfReports = numberOfReports;
-        this.profilePicturePath = profilePicturePath;
+        this.profilePictureType = profilePictureType;
+        this.profilePictureBytes = profilePictureBytes;
     }
 
     public UserDTO(UserAccount user){
@@ -54,7 +63,13 @@ public class UserDTO {
         this.isBlocked = user.isBlocked();
         this.verified=user.isVerified();
         this.numberOfReports = user.getNumberOfReports();
-        this.profilePicturePath = user.getProfilePicturePath();
+        try{
+            this.profilePictureBytes = imagesRepository.getImageBytes(user.getProfilePicturePath());
+            this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
+        } catch (Exception e) {
+            this.profilePictureBytes = "";
+            this.profilePictureType = "png";
+        }
     }
 
     public UserDTO(){ }

@@ -2,22 +2,29 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.Guest;
 import com.bookingapp.enums.Role;
+import com.bookingapp.repositories.ImagesRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@Component
 public class GuestDTO extends UserDTO {
 
     private Set<Long> favouriteAccommodationsIds;
     private int numberOfCancellations;
     private Set<Long> accommodationHistoryIds;
 
-    public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePicturePath) {
-        super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePicturePath);
+    @Autowired
+    private ImagesRepository imagesRepository;
+
+    public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePictureType, String profilePictureBytes) {
+        super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
         this.numberOfCancellations = numberOfCancellations;
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();
@@ -34,7 +41,13 @@ public class GuestDTO extends UserDTO {
         this.setPhoneNumber(guest.getPhoneNumber());
         this.setBlocked(guest.isBlocked());
         this.setNumberOfReports(guest.getNumberOfReports());
-        this.profilePicturePath = guest.getProfilePicturePath();
+        try{
+            this.profilePictureBytes = imagesRepository.getImageBytes(guest.getProfilePicturePath());
+            this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
+        } catch (Exception e) {
+            this.profilePictureBytes = "";
+            this.profilePictureType = "png";
+        }
         this.numberOfCancellations = guest.getNumberOfCancellations();
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();
