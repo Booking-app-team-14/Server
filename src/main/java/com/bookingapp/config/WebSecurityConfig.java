@@ -105,12 +105,21 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
-                            auth.requestMatchers(antMatcher("/api/accommodations/create")).hasRole("OWNER");
+                            auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
                             ///api/amenities
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
                             auth.requestMatchers(antMatcher("/api/verify/users/{userId}")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/get")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/filter")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/search")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/sort/rating/desc")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/sort/rating/asc")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/sort/price/desc")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/sort/price/asc")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/requests")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/token/{token}")).permitAll();
                             auth.anyRequest().authenticated();
@@ -138,7 +147,14 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers
-                (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"),antMatcher(HttpMethod.PUT, "/api/verify/users/{userId}"), antMatcher("/h2/**"));
+                (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"),antMatcher(HttpMethod.PUT, "/api/verify/users/{userId}"), antMatcher("/h2/**"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/get"), antMatcher(HttpMethod.GET, "/api/accommodations/{id}"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/search"), antMatcher(HttpMethod.GET, "/api/accommodations/filter"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/desc"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/asc"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/desc"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"),
+                        antMatcher(HttpMethod.POST, "/api/requests"), antMatcher(HttpMethod.GET, "/api/users/token/{token}"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {

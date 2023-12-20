@@ -1,9 +1,13 @@
 package com.bookingapp.entities;
 
-
 import com.bookingapp.dtos.AccommodationDTO;
+import com.bookingapp.dtos.AmenityDTO;
+import com.bookingapp.dtos.AvailabilityDTO;
 import com.bookingapp.dtos.LocationDTO;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.repositories.AmenityRepository;
+import com.bookingapp.services.AmenityService;
+import com.bookingapp.services.AvailabilityService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,22 +34,26 @@ public class Accommodation {
     @Column(nullable=false)
     private String description;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)
     private Location location;
 
     @Enumerated(EnumType.STRING)
     private AccommodationType type;
 
-
-    //@Lob
-    //@Column(nullable=false)
-    //private Set<byte[]> images;
-
     @ElementCollection
     @Column(nullable=false)
     private Set<String> images;
 
-    @OneToMany (cascade = CascadeType.ALL)
+    /*@ManyToMany (cascade = CascadeType.ALL)
+    private Set<Amenity> amenities;*/
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "accmmodation_amenities",
+            joinColumns = @JoinColumn(name = "accommodation_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenity_id")
+    )
     private Set<Amenity> amenities;
 
     @Column(nullable=false)
@@ -72,24 +80,15 @@ public class Accommodation {
     @Column(nullable=false)
     private boolean approved;
 
-    //@ManyToOne
-    //private Owner owner;
-
-    public Accommodation(AccommodationDTO accommodationDTO) {
-        this.name = accommodationDTO.getName();
-        this.description = accommodationDTO.getDescription();
-        this.type = accommodationDTO.getType();
-        this.images = accommodationDTO.getImages();
-        this.rating = accommodationDTO.getRating();
-        this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
-        this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
-        this.pricePerGuest = accommodationDTO.isPricePerGuest();
-        this.pricePerNight = accommodationDTO.getPricePerNight();
-        this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
-        this.approved = false;
-    }
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private UserAccount owner;
 
     public Accommodation() {
+        this.amenities= new HashSet<>();
+        this.availability = new HashSet<Availability>();
 
     }
+
+
 }

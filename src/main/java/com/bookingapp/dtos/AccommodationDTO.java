@@ -18,38 +18,41 @@ public class AccommodationDTO {
     private Long id;
     private String name;
     private String description;
-    private Long locationId;
+    private LocationDTO location;
     private AccommodationType type;
     private Set<String> images;
-    private Set<Long> amenityId;
+    private Set<AmenityDTO> amenities;
     private Double rating;
     private Integer minNumberOfGuests;
     private Integer maxNumberOfGuests;
-    private Set<Long> availabilityId;
+    private Set<AvailabilityDTO> availability;
     private Double pricePerNight;
     private boolean pricePerGuest;
     private Integer cancellationDeadline;
-    //private Long ownerId;
+    private Long owner_Id;
 
-    public AccommodationDTO(Long id, String name, String description, Long locationId, AccommodationType type,
-                            Set<String> images, Set<Long> amenityId, Double rating, Integer minNumberOfGuests,
-                            Integer maxNumberOfGuests, Set<Long> availabilityId, Double pricePerNight,
-                            boolean pricePerGuest, Integer cancellationDeadline) {
+    public AccommodationDTO(
+            Long id, String name, String description, LocationDTO location,
+            AccommodationType type, Set<String> images, Set<AmenityDTO> amenities,
+            Double rating, Integer minNumberOfGuests, Integer maxNumberOfGuests,
+            Set<AvailabilityDTO> availability, Double pricePerNight,
+            boolean pricePerGuest, Integer cancellationDeadline, Long owner_Id
+    ) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.locationId = locationId;
-        this.type=type;
+        this.location = location;
+        this.type = type;
         this.images = images;
-        this.amenityId = amenityId;
+        this.amenities = amenities;
         this.rating = rating;
         this.minNumberOfGuests = minNumberOfGuests;
         this.maxNumberOfGuests = maxNumberOfGuests;
-        this.availabilityId = availabilityId;
+        this.availability = availability;
         this.pricePerNight = pricePerNight;
         this.pricePerGuest = pricePerGuest;
         this.cancellationDeadline = cancellationDeadline;
-        //this.ownerId = ownerId;
+        this.owner_Id=owner_Id;
     }
 
     public AccommodationDTO() {
@@ -61,21 +64,21 @@ public class AccommodationDTO {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
-        this.locationId = accommodation.getLocation().getId();
+        this.location = new LocationDTO(accommodation.getLocation());
         this.type = accommodation.getType();
         this.images = accommodation.getImages();
-        //this.amenityId = accommodation.getAmenities().
-        this.amenityId = accommodation.getAmenities().stream().map(Amenity::getId).collect(Collectors.toSet());
+        this.amenities = accommodation.getAmenities().stream()
+                .map(amenity -> new AmenityDTO(amenity.getId(), amenity.getName(), amenity.getDescription(), amenity.getIcon()))
+                .collect(Collectors.toSet());
         this.rating = accommodation.getRating();
         this.minNumberOfGuests = accommodation.getMinNumberOfGuests();
         this.maxNumberOfGuests = accommodation.getMaxNumberOfGuests();
-        //this.availabilityId = getAvailabilityId();
-        this.availabilityId = accommodation.getAvailability().stream().map(Availability::getId).collect(Collectors.toSet());
+        this.availability = accommodation.getAvailability().stream()
+                .map(availability -> new AvailabilityDTO(availability.getId(), availability.getStartDate(), availability.getEndDate(), availability.getSpecialPrice(), availability.getAccommodation().getId()))
+                .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
         this.pricePerGuest = accommodation.isPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
-        //this.ownerId = accommodation.getOwner().getId();
+        this.owner_Id=accommodation.getOwner().getId();
     }
-
 }
-

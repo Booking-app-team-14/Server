@@ -19,29 +19,31 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
 //    Set<BestOffersDTO> getBestOffers();
 
+
     //List<Accommodation> findByName(String name);
 
-    @Query("SELECT a FROM Accommodation a JOIN a.availability av " +
-            "WHERE av.startDate <= :endDate AND av.endDate >= :startDate")
-    List<Accommodation> findAccommodationsByDateRange(LocalDate startDate, LocalDate endDate);
-    @Query("SELECT a FROM Accommodation a WHERE a.pricePerNight BETWEEN :minPrice AND :maxPrice")
-    List<Accommodation> findAccommodationsByPriceRange(Double minPrice, Double maxPrice);
-
-    @Query("SELECT a FROM Accommodation a WHERE a.rating >= :minRating")
-    List<Accommodation> findAccommodationsByMinRating(Double minRating);
-
-    @Query("SELECT a FROM Accommodation a " +
-            "WHERE a.minNumberOfGuests <= :maxGuests AND a.maxNumberOfGuests >= :minGuests")
-    List<Accommodation> findAccommodationsByGuestsRange(Integer minGuests, Integer maxGuests);
-
-    @Query("SELECT a FROM Accommodation a JOIN a.amenities amen WHERE amen.id IN :amenityIds")
-    List<Accommodation> findAccommodationsByAmmenities(@Param("amenityIds") Set<Long> amenityIds);
-    @Query("SELECT a FROM Accommodation a WHERE a.type = :type")
-    List<Accommodation> findAccommodationsByType(AccommodationType type);
-
-    @Query("SELECT a FROM Accommodation a WHERE a.name LIKE %:searchTerm% OR a.location.city LIKE %:searchTerm%")
+    @Query("SELECT DISTINCT a FROM Accommodation a " +
+            "LEFT JOIN FETCH a.availability av " +
+            "LEFT JOIN FETCH a.amenities amen " +
+            "WHERE (:startDate IS NULL OR av.startDate <= :endDate) " +
+            "AND (:endDate IS NULL OR av.endDate >= :startDate) " +
+            "AND (:minPrice IS NULL OR :maxPrice IS NULL OR a.pricePerNight BETWEEN :minPrice AND :maxPrice) " +
+            "AND (:minRating IS NULL OR a.rating >= :minRating) " +
+            "AND (:minGuests IS NULL OR :maxGuests IS NULL OR " +
+            "(:minGuests BETWEEN a.minNumberOfGuests AND a.maxNumberOfGuests)) " +
+            "AND (:amenityIds IS NULL OR amen.id IN :amenityIds) " +
+            "AND (:accommodationType IS NULL OR a.type = :accommodationType)")
+    List<Accommodation> filterAccommodations(@Param("minPrice") Double minPrice,
+                                             @Param("maxPrice") Double maxPrice,
+                                             @Param("minRating") Double minRating,
+                                             @Param("minGuests") Integer minGuests,
+                                             @Param("maxGuests") Integer maxGuests,
+                                             @Param("amenityIds") Set<Long> amenityIds,
+                                             @Param("accommodationType") AccommodationType accommodationType,
+                                             @Param("startDate") LocalDate startDate,
+                                             @Param("endDate") LocalDate endDate);
+    @Query("SELECT a FROM Accommodation a LEFT JOIN FETCH a.location al WHERE LOWER(a.name) LIKE %:searchTerm% OR LOWER(al.city) LIKE %:searchTerm%")
     List<Accommodation> findAccommodationsByNameOrLocation(@Param("searchTerm") String searchTerm);
-
     @Query("SELECT a FROM Accommodation a ORDER BY a.pricePerNight ASC")
     List<Accommodation> findAllByPricePerNightAsc();
 

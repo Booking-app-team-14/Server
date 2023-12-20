@@ -13,13 +13,17 @@ public class RequestDTO {
 
 
         private Long guestId;
+        private Long accommodationId;
         private LocalDate startDate;
         private LocalDate endDate;
-        private int numberOfGuests;
+        private int numberOfGuests ;
+        private double totalPrice;
         private RequestStatus requestStatus;
 
-        public RequestDTO(Long id, LocalDate startDate, LocalDate endDate, int numberOfGuests, RequestStatus status){
-            this.guestId = id;
+        public RequestDTO(Long guestId,Long accommodationId,double totalPrice, LocalDate startDate, LocalDate endDate, int numberOfGuests, RequestStatus status){
+            this.guestId = guestId;
+            this.accommodationId = accommodationId;
+            this.totalPrice = totalPrice;
             this.startDate = startDate;
             this.endDate = endDate;
             this.numberOfGuests = numberOfGuests;
@@ -32,7 +36,9 @@ public class RequestDTO {
 
     public RequestDTO(Request r) {
             this.guestId = r.getUserId();
+            this.accommodationId = r.getAccommodationId();
             this.requestStatus = r.getRequestStatus();
+            this.totalPrice = r.getTotalPrice();
             this.numberOfGuests = r.getNumberOfGuests();
             this.startDate = r.getStartDate();
             this.endDate = r.getEndDate();

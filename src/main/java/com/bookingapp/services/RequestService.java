@@ -1,31 +1,81 @@
 package com.bookingapp.services;
 
-import com.bookingapp.dtos.GuestReservationDTO;
+import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.Request;
 import com.bookingapp.repositories.RequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
-public class RequestService {
+public  class RequestService {
 
-//    private final RequestIRepository requestRepository;
+    @Autowired
+    private RequestIRepository requestRepository;
+
+    @Autowired
+    AccommodationService accommodationService;
+
+    public void createRequest(Request reservation) {
+        LocalDate startDate = reservation.getStartDate();
+        LocalDate endDate = reservation.getEndDate();
+        LocalDate today = LocalDate.now();
+        Optional<Accommodation> ac1= accommodationService.getAccommodationById(reservation.getAccommodationId());
+
+        // Check-out date should be after the check-in date
+        if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
+            throw new IllegalArgumentException("Check-out date should be after the check-in date");
+        }
+
+        // Minimum reservation duration is one night
+        if (ChronoUnit.DAYS.between(startDate, endDate) < 1) {
+            throw new IllegalArgumentException("Minimum reservation duration is one night");
+        }
+
+        // Check-in date should be at least one day after today
+        if (startDate.isBefore(today.plusDays(1))) {
+            throw new IllegalArgumentException("Check-in date should be at least one day after today");
+        }
+
+        // Additional validations based on reservation requirements
+        if (reservation.getNumberOfGuests() < ac1.get().getMinNumberOfGuests() || reservation.getNumberOfGuests() > ac1.get().getMaxNumberOfGuests()) {
+            throw new IllegalArgumentException("Guest count should be at least 1");
+        }
+        if(ac1.isPresent()) {
+            // Check availability of accommodations between chosen dates
+            Accommodation accommodation = ac1.get();
+            Set<Availability> availabilities = accommodation.getAvailability();
+            List<Request> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId());
+
+            boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
+                boolean startDateOverlaps =
+                        (startDate.isBefore(existingRequest.getEndDate()) && startDate.isAfter(existingRequest.getStartDate())) ||
+                                startDate.isEqual(existingRequest.getStartDate()) || startDate.isEqual(existingRequest.getEndDate());
+
+                boolean endDateOverlaps =
+                        (endDate.isAfter(existingRequest.getStartDate()) && endDate.isBefore(existingRequest.getEndDate())) ||
+                                endDate.isEqual(existingRequest.getStartDate()) || endDate.isEqual(existingRequest.getEndDate());
+
+                boolean newRequestCoversExisting =
+                        startDate.isBefore(existingRequest.getStartDate()) && endDate.isAfter(existingRequest.getEndDate());
+
+                return startDateOverlaps || endDateOverlaps || newRequestCoversExisting;
+            });
+
+            if (isReserved) {
+                throw new IllegalArgumentException("Accommodation is not available for the chosen dates");
+            }
+            requestRepository.save(reservation);
+        }
+        else {
+            throw new IllegalArgumentException("Accommodation does not exist");
+        }
+    }
 //
-//    @Autowired
-//    public RequestService(RequestIRepository requestRepository) {
-//        this.requestRepository = requestRepository;
-//    }
-//
-//    public Request createRequest(Request request) {
-//        return requestRepository.save(request);
-//    }
-//
-//    public Request getRequestById(Long requestId) {
-//        Optional<Request> requestOptional = requestRepository.findById(requestId);
-//        return requestOptional.orElse(null);
-//    }
 //
 //    public Request updateRequest(Long requestId, Request updatedRequest) {
 //        Optional<Request> requestOptional = requestRepository.findById(requestId);
@@ -68,4 +118,8 @@ public class RequestService {
 ////        return null;
 //    }
 
+
+    public Optional<Request> findById(Long id) {
+        return requestRepository.findById(id);
+    }
 }

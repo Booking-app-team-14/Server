@@ -13,11 +13,13 @@ public class AvailabilityDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double specialPrice;
+    private Long accommodation_Id;
 
-    public AvailabilityDTO(Long id, LocalDate start, LocalDate end, Double specialPrice) {
+    public AvailabilityDTO(Long id, LocalDate start, LocalDate end, Double specialPrice, Long accommodation_Id) {
         this.id = id;
         this.startDate = start;
         this.endDate = end;
         this.specialPrice = specialPrice;
+        this.accommodation_Id=accommodation_Id;
     }
 }

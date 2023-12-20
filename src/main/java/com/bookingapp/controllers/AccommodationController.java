@@ -6,6 +6,8 @@ import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.services.AccommodationRequestService;
 import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.AmenityService;
+import com.bookingapp.services.AvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -31,12 +33,20 @@ public class AccommodationController {
     @Autowired
     private AccommodationService accommodationService;
 
+    @Autowired
+    private AmenityService amenityService;
+    @Autowired
+    private AvailabilityService availabilityService;
+
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
+    public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-
-        return new ResponseEntity<>(new AccommodationDTO(), HttpStatus.OK);
-
+        AccommodationDTO result = new AccommodationDTO(accommodation.get());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping
@@ -109,7 +119,26 @@ public class AccommodationController {
 
     @PostMapping(value = "/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = new Accommodation(accommodationDTO);
+        Accommodation accommodation = accommodationService.save(accommodationDTO);
+
+        accommodationRequestService.saveRequestFromAccommodation(accommodation);
+        return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
+    }
+
+
+    //upload slike za accommodation
+    @PostMapping(value = "/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
+    public ResponseEntity<Long> uploadAccommodationImage(@PathVariable Long id, @RequestBody String imageBytes) {
+        boolean ok = accommodationService.uploadAccommodationImage(id, imageBytes);
+        if (!ok) {
+            return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
+    }
+
+    /*@PostMapping(value = "/create", name = "owner adds an accommodation")
+    public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = new Accommodation(accommodationDTO,amenityService,availabilityService);
         accommodationService.save(accommodation);
         AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
         ZoneId zoneId = ZoneId.systemDefault();
@@ -120,7 +149,7 @@ public class AccommodationController {
         accommodationRequestDTO.setRequestType("new");
         accommodationRequestService.save(accommodationRequestDTO);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
-    }
+    }*/
 
     @PutMapping(value = "/update", name = "owner updates an accommodation")
     public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
@@ -172,7 +201,8 @@ public class AccommodationController {
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
         for (Accommodation accommodation: accommodations){
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -197,7 +227,8 @@ public class AccommodationController {
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
         for (Accommodation accommodation: accommodations){
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -209,7 +240,8 @@ public class AccommodationController {
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
         for (Accommodation accommodation: accommodations)
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -220,7 +252,8 @@ public class AccommodationController {
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
         for (Accommodation accommodation: accommodations)
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -231,7 +264,8 @@ public class AccommodationController {
             return null;
         List<AccommodationSearchDTO> result = new ArrayList<>();
         for (Accommodation accommodation: accommodations)
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -244,7 +278,8 @@ public class AccommodationController {
         List<AccommodationSearchDTO> result = new ArrayList<>();
 
         for (Accommodation accommodation: accommodations)
-            result.add(new AccommodationSearchDTO(accommodation));
+            if (accommodation.isApproved())
+                result.add(new AccommodationSearchDTO(accommodation));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

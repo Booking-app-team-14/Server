@@ -25,6 +25,10 @@ public class Availability {
     @Column(nullable=false)
     private Double specialPrice;
 
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
+    private Accommodation accommodation;
+
     public Availability(AvailabilityDTO availabilityDTO) {
         //this.id=availabilityDTO.getId();
         this.startDate=availabilityDTO.getStartDate();
