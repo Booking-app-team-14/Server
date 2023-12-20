@@ -122,6 +122,21 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
 
+    @PutMapping(value = "/update", name = "owner updates an accommodation")
+    public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = new Accommodation(accommodationDTO);
+        accommodation.setApproved(false);
+        accommodationService.save(accommodation);
+        AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
+        ZoneId zoneId = ZoneId.systemDefault();
+        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
+        accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
+        accommodationRequestDTO.setMessage("I'm updating the details my accommodation, please approve! Thanks.");
+        accommodationRequestDTO.setRequestType("updated");
+        accommodationRequestService.save(accommodationRequestDTO);
+        return new ResponseEntity<>(accommodation.getId(), HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteAccommodation(@PathVariable Long id) {
 
