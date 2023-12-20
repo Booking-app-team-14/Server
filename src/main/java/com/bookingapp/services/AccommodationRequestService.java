@@ -9,6 +9,8 @@ import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.AccommodationRequestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +29,8 @@ public class AccommodationRequestService {
     private AccommodationRepository accommodationRepository;
     @Autowired
     private UserAccountService userAccountService;
+    @Autowired
+    private AccommodationService accommodationService;
 
 //    @Autowired
 //    private AccommodationRequestMapper modelMapper;
@@ -87,4 +91,46 @@ public class AccommodationRequestService {
         }
         return dtos;
     }
+
+    public void save(AccommodationRequestDTO accommodationRequestDTO) {
+        AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO);
+        accommodationRequestRepository.save(accommodationRequest);
+    }
+
+    public void saveUpdateRequestFromAccommodation(Accommodation accommodation) {
+        AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
+        ZoneId zoneId = ZoneId.systemDefault();
+        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
+        accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
+        accommodationRequestDTO.setMessage("I'm updating the details my accommodation, please approve! Thanks.");
+        accommodationRequestDTO.setRequestType("updated");
+        AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO);
+        accommodationRequestRepository.save(accommodationRequest);
+    }
+
+    public ResponseEntity<AccommodationRequestDTO> adminApprove(List<AccommodationRequestDTO> accommodationRequests, Long id) {
+        for (AccommodationRequestDTO r : accommodationRequests) {
+            if (r.getAccommodationId().equals(id)) {
+                Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+                if (accommodation.isPresent()) {
+                    Accommodation a = accommodation.get();
+                    a.setApproved(true);
+                    accommodationService.save(a);
+                }
+                return new ResponseEntity<>(r, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<Boolean> adminReject(List<AccommodationRequestDTO> accommodationRequests, Long id) {
+        for (AccommodationRequestDTO r : accommodationRequests) {
+            if (r.getAccommodationId().equals(id)) {
+                boolean deleted = accommodationService.deleteAccommodation(id);
+                return new ResponseEntity<>(deleted, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(false, HttpStatus.OK);
+    }
+
 }

@@ -80,9 +80,23 @@ public class Accommodation {
     @Column(nullable=false)
     private boolean approved;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserAccount owner;
+
+    public Accommodation(AccommodationDTO accommodationDTO) {
+        this.name = accommodationDTO.getName();
+        this.description = accommodationDTO.getDescription();
+        this.type = accommodationDTO.getType();
+        this.images = accommodationDTO.getImages();
+        this.rating = accommodationDTO.getRating();
+        this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
+        this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
+        this.pricePerGuest = accommodationDTO.isPricePerGuest();
+        this.pricePerNight = accommodationDTO.getPricePerNight();
+        this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
+        this.approved = false;
+    }
 
     public Accommodation() {
         this.amenities= new HashSet<>();

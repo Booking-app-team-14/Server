@@ -35,12 +35,6 @@ public class UserAccountController {
     private ActivationService activationService;
 
     @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private ImagesRepository imagesRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
 
@@ -69,32 +63,9 @@ public class UserAccountController {
 
         activationService.save(activation);
 
-        //slanje mejla
+        activationService.sendActivationEmail(user);
 
-        String subject = "Please verify your registration";
-        String senderName = "BookingApp14";
-
-        String mailContent = "<div style='text-align: center; font-family: Arial, sans-serif;'>";
-        mailContent += "<h1 style='color: #007BFF;'>VERIFY YOUR ACCOUNT</h1>";
-        mailContent += "<p>Dear " + user.getFirstName() + " " + user.getLastName() + ",</p>";
-        mailContent += "<p>Please click the link below to verify your registration:</p>";
-        mailContent += "<p><span style='color: #800080;'>Link expires in 24 hours</span></p>";
-
-        mailContent += "<h3><a href=\"http://localhost:4200/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
-        mailContent += "<p>Thank you,<br>BookingApp Team 14</p>";
-        mailContent += "</div>";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        helper.setFrom("bookingappteam448@gmail.com", senderName);
-        helper.setTo(user.getUsername());
-        helper.setSubject(subject);
-        helper.setText(mailContent, true);
-
-        mailSender.send(message);
         return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
-
     }
 
 
