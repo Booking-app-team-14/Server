@@ -18,13 +18,13 @@ public class AccommodationImageService {
     public void saveImageForAccommodation(Long accommodationId, MultipartFile file) {
 
         /* byte[] imageData = // Convert file to byte[] or handle as per your requirements
-         */        Optional<Accommodation> accommodation = accommodationService.findById(accommodationId);
+         */        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
         //accommodation.getImages().add(imageData);
        // accommodationService.save(accommodation);
     }
 
     public List<String> getAccommodationImages(Long accommodationId) {
-        Optional<Accommodation> accommodation = accommodationService.findById(accommodationId);
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
         return new ArrayList<>(accommodation.get().getImages());
     }
 }

@@ -21,9 +21,10 @@ public class AccommodationSearchDTO {
     private Double rating;
     private Integer maxNumberOfGuests;
     private Double pricePerNight;
+    private boolean approved;
 
     public AccommodationSearchDTO(Long id, String name, String description, AccommodationType accommodationType,
-                            String image, Double rating, Integer maxNumberOfGuests, Double pricePerNight) {
+                            String image, Double rating, Integer maxNumberOfGuests, Double pricePerNight, boolean approved) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -32,6 +33,7 @@ public class AccommodationSearchDTO {
         this.rating = rating;
         this.maxNumberOfGuests = maxNumberOfGuests;
         this.pricePerNight = pricePerNight;
+        this.approved = approved;
     }
 
     public AccommodationSearchDTO() {
@@ -48,6 +50,7 @@ public class AccommodationSearchDTO {
         this.rating = accommodation.getRating();
         this.maxNumberOfGuests = accommodation.getMaxNumberOfGuests();
         this.pricePerNight = accommodation.getPricePerNight();
+        this.approved = accommodation.isApproved();
     }
 
 }

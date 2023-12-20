@@ -29,13 +29,14 @@ public class AccommodationDTO {
     private Double pricePerNight;
     private boolean pricePerGuest;
     private Integer cancellationDeadline;
+    private Long owner_Id;
 
     public AccommodationDTO(
             Long id, String name, String description, LocationDTO location,
             AccommodationType type, Set<String> images, Set<AmenityDTO> amenities,
             Double rating, Integer minNumberOfGuests, Integer maxNumberOfGuests,
             Set<AvailabilityDTO> availability, Double pricePerNight,
-            boolean pricePerGuest, Integer cancellationDeadline
+            boolean pricePerGuest, Integer cancellationDeadline, Long owner_Id
     ) {
         this.id = id;
         this.name = name;
@@ -51,6 +52,7 @@ public class AccommodationDTO {
         this.pricePerNight = pricePerNight;
         this.pricePerGuest = pricePerGuest;
         this.cancellationDeadline = cancellationDeadline;
+        this.owner_Id=owner_Id;
     }
 
     public AccommodationDTO() {
@@ -72,11 +74,11 @@ public class AccommodationDTO {
         this.minNumberOfGuests = accommodation.getMinNumberOfGuests();
         this.maxNumberOfGuests = accommodation.getMaxNumberOfGuests();
         this.availability = accommodation.getAvailability().stream()
-                .map(availability -> new AvailabilityDTO(availability.getId(), availability.getStartDate(), availability.getEndDate(), availability.getSpecialPrice()))
+                .map(availability -> new AvailabilityDTO(availability.getId(), availability.getStartDate(), availability.getEndDate(), availability.getSpecialPrice(), availability.getAccommodation().getId()))
                 .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
         this.pricePerGuest = accommodation.isPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
+        this.owner_Id=accommodation.getOwner().getId();
     }
 }
-

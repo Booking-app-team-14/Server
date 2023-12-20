@@ -1,6 +1,5 @@
 package com.bookingapp.entities;
 
-
 import com.bookingapp.dtos.AccommodationDTO;
 import com.bookingapp.dtos.AmenityDTO;
 import com.bookingapp.dtos.AvailabilityDTO;
@@ -42,16 +41,19 @@ public class Accommodation {
     @Enumerated(EnumType.STRING)
     private AccommodationType type;
 
-
-    //@Lob
-    //@Column(nullable=false)
-    //private Set<byte[]> images;
-
     @ElementCollection
     @Column(nullable=false)
     private Set<String> images;
 
-    @ManyToMany (cascade = CascadeType.ALL)
+    /*@ManyToMany (cascade = CascadeType.ALL)
+    private Set<Amenity> amenities;*/
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "accmmodation_amenities",
+            joinColumns = @JoinColumn(name = "accommodation_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenity_id")
+    )
     private Set<Amenity> amenities;
 
     @Column(nullable=false)
@@ -63,7 +65,7 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer maxNumberOfGuests;
 
-    @ManyToMany (cascade = CascadeType.ALL)
+    @OneToMany (cascade = CascadeType.ALL)
     private Set<Availability> availability;
 
     @Column(nullable=false)
@@ -75,41 +77,18 @@ public class Accommodation {
     @Column(nullable=false)
     private Integer cancellationDeadline;
 
-    //@ManyToOne
-    //private Owner owner;
+    @Column(nullable=false)
+    private boolean approved;
 
-    public Accommodation(AccommodationDTO accommodationDTO, AmenityService amenityService, AvailabilityService availabilityService) {
-        this.name = accommodationDTO.getName();
-        this.description = accommodationDTO.getDescription();
-        Location location = new Location();
-        location.setId(accommodationDTO.getLocation().getId());
-        this.location = location;
-        this.type = accommodationDTO.getType();
-
-        Set<Long> amenityIds = accommodationDTO.getAmenities().stream()
-                .map(AmenityDTO::getId)
-                .collect(Collectors.toSet());
-
-        this.amenities= new HashSet<>();
-        this.amenities.addAll(amenityService.findAllById(amenityIds));
-
-        Set<Long> availabilityIds = accommodationDTO.getAvailability().stream()
-                .map(AvailabilityDTO::getId)
-                .collect(Collectors.toSet());
-
-        this.availability = new HashSet<>();
-        this.availability.addAll(availabilityService.findAllById(amenityIds));
-
-        this.images = accommodationDTO.getImages();
-        this.rating = accommodationDTO.getRating();
-        this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
-        this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
-        this.pricePerGuest = accommodationDTO.isPricePerGuest();
-        this.pricePerNight = accommodationDTO.getPricePerNight();
-        this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
-    }
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private UserAccount owner;
 
     public Accommodation() {
+        this.amenities= new HashSet<>();
+        this.availability = new HashSet<Availability>();
 
     }
+
+
 }
