@@ -1,24 +1,32 @@
 package com.bookingapp.services;
 
-import com.bookingapp.dtos.BestOffersDTO;
-import com.bookingapp.dtos.OwnersAccommodationDTO;
-import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.UserReport;
+import com.bookingapp.dtos.*;
+import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
+import com.bookingapp.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AccommodationService {
 
     @Autowired
     private AccommodationRepository accommodationRepository;
+
+    @Autowired
+    private AmenityService amenityService;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
@@ -80,9 +88,53 @@ public class AccommodationService {
 //        return accommodationRepository.getBestOffers();
     }
 
+    public Accommodation save(AccommodationDTO accommodationDTO) {
+
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+
+
+        Accommodation accommodation = new Accommodation();
+        accommodation.setName(accommodationDTO.getName());
+        accommodation.setDescription(accommodationDTO.getDescription());
+
+        Location location = new Location(accommodationDTO.getLocation());
+        locationRepository.save(location);
+        accommodation.setLocation(location);
+        accommodation.setType(accommodationDTO.getType());
+
+        Set<Long> amenityIds = accommodationDTO.getAmenities().stream()
+                .map(AmenityDTO::getId)
+                .collect(Collectors.toSet());
+
+        accommodation.setAmenities(new HashSet<>(amenityService.findAllById(amenityIds)));
+
+        Set<Availability> availabilities = new HashSet<>();
+        for(AvailabilityDTO availabilityDTO : accommodationDTO.getAvailability()){
+            Availability availability = new Availability(availabilityDTO);
+            availability.setAccommodation(accommodation);
+            availabilities.add(availability);
+        }
+
+        accommodation.setAvailability(availabilities);
+
+        accommodation.setImages(accommodationDTO.getImages());
+        accommodation.setRating(accommodationDTO.getRating());
+        accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
+        accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
+        accommodation.setPricePerGuest(accommodationDTO.isPricePerGuest());
+        accommodation.setPricePerNight(accommodationDTO.getPricePerNight());
+        accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
+        accommodation.setApproved(false);
+        accommodation.setOwner(user);
+
+        accommodationRepository.save(accommodation);
+        return accommodation;
+    }
     public void save(Accommodation accommodation) {
         accommodationRepository.save(accommodation);
     }
+
     public List<Accommodation> filterAccommodations(Double minPrice, Double maxPrice, Double minRating,
                                                     Integer minGuests, Integer maxGuests,
                                                     Set<Long> amenityIds,

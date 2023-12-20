@@ -6,6 +6,8 @@ import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.services.AccommodationRequestService;
 import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.AmenityService;
+import com.bookingapp.services.AvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,11 @@ public class AccommodationController {
 
     @Autowired
     private AccommodationService accommodationService;
+
+    @Autowired
+    private AmenityService amenityService;
+    @Autowired
+    private AvailabilityService availabilityService;
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
@@ -109,8 +116,7 @@ public class AccommodationController {
 
     @PostMapping(value = "/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = new Accommodation(accommodationDTO);
-        accommodationService.save(accommodation);
+        Accommodation accommodation = accommodationService.save(accommodationDTO);
         AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
         ZoneId zoneId = ZoneId.systemDefault();
         long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
@@ -121,6 +127,13 @@ public class AccommodationController {
         accommodationRequestService.save(accommodationRequestDTO);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
+
+    /*@PostMapping(value = "/create", name = "owner adds an accommodation")
+    public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+        Accommodation accommodation = new Accommodation(accommodationDTO,amenityService,availabilityService);
+        accommodationService.save(accommodation);
+        return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
+    }*/
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteAccommodation(@PathVariable Long id) {

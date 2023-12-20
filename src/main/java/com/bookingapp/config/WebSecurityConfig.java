@@ -105,7 +105,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
-                            auth.requestMatchers(antMatcher("/api/accommodations/create")).hasRole("OWNER");
+                            auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
                             ///api/amenities
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login

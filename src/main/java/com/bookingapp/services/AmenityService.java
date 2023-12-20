@@ -7,6 +7,9 @@ import com.bookingapp.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class AmenityService {
 
@@ -15,5 +18,9 @@ public class AmenityService {
 
     public void save(Amenity amenity) {
         amenityRepository.save(amenity);
+    }
+
+    public List<Amenity> findAllById(Set<Long> amenityIds) {
+        return amenityRepository.findAllById(amenityIds);
     }
 }
