@@ -21,4 +21,12 @@ public class AmenityService {
     public List<Amenity> findAllById(Set<Long> amenityIds) {
         return amenityRepository.findAllById(amenityIds);
     }
+
+    public Amenity findById(Long id) {
+        if (this.amenityRepository == null) {
+            System.out.println("AmenityRepository is null???????????????");
+        }
+
+        return this.amenityRepository.findById(id).get();
+    }
 }
