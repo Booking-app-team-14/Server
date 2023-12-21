@@ -61,18 +61,20 @@ public class AccommodationRequestService {
         accommodationRequest.setName(accommodation.getName());
         accommodationRequest.setType(accommodation.getType().toString());
 
-        userAccountService.getOwners().forEach(o -> {
-            Owner owner = (Owner) o;
-            if (owner.getAccommodations().contains(accommodation)) {
-                accommodationRequest.setOwnerUsername(owner.getUsername());
-                String profilePicturePath = owner.getProfilePicturePath();
-                ImagesRepository imagesRepository = new ImagesRepository();
-                try {
-                    accommodationRequest.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(profilePicturePath));
-                    accommodationRequest.setOwnerImageType(imagesRepository.getImageType(accommodationRequest.getOwnerProfilePictureBytes()));
-                } catch (Exception e) { }
-            }
-        });
+        accommodationRequest.setOwnerUsername(accommodation.getOwner().getUsername());
+
+//        userAccountService.getOwners().forEach(o -> {
+//            Owner owner = (Owner) o;
+//            if (owner.getAccommodations().contains(accommodation)) {
+//                accommodationRequest.setOwnerUsername(owner.getUsername());
+//                String profilePicturePath = owner.getProfilePicturePath();
+//                ImagesRepository imagesRepository = new ImagesRepository();
+//                try {
+//                    accommodationRequest.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(profilePicturePath));
+//                    accommodationRequest.setOwnerImageType(imagesRepository.getImageType(accommodationRequest.getOwnerProfilePictureBytes()));
+//                } catch (Exception e) { }
+//            }
+//        });
 
             accommodationRequest.setStars(0);
 
@@ -116,6 +118,7 @@ public class AccommodationRequestService {
                     Accommodation a = accommodation.get();
                     a.setApproved(true);
                     accommodationService.save(a);
+                    accommodationRequestRepository.deleteById(r.getAccommodationId());
                 }
                 return new ResponseEntity<>(r, HttpStatus.OK);
             }
@@ -127,6 +130,7 @@ public class AccommodationRequestService {
         for (AccommodationRequestDTO r : accommodationRequests) {
             if (r.getAccommodationId().equals(id)) {
                 boolean deleted = accommodationService.deleteAccommodation(id);
+                accommodationRequestRepository.deleteById(r.getAccommodationId());
                 return new ResponseEntity<>(deleted, HttpStatus.OK);
             }
         }

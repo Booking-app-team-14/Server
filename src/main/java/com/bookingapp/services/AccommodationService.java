@@ -75,13 +75,12 @@ public class AccommodationService {
 
     // DELETE
     public boolean deleteAccommodation(Long id) {
-//        if (accommodationRepository.existsById(id)) {
-//            accommodationRepository.deleteById(id);
-//            return true;
-//        } else {
-//            return false;
-//        }
-        return false;
+        if (accommodationRepository.existsById(id)) {
+            accommodationRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
     public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
         return null;

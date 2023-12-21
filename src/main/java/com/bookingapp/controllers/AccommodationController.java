@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/accommodations")
+    @RequestMapping("/api/accommodations")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AccommodationController {
 

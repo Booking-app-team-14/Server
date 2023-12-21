@@ -80,7 +80,7 @@ public class Accommodation {
     @Column(nullable=false)
     private boolean approved;
 
-    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
+    @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserAccount owner;
 
