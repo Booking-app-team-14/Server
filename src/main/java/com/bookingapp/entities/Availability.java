@@ -37,9 +37,9 @@ public class Availability {
     }
 
     public Availability() {
-        //this.id=availabilityDTO.getId();
-        this.startDate=this.getStartDate();
-        this.endDate=this.getEndDate();
-        this.specialPrice=this.getSpecialPrice();
+        this.startDate=LocalDate.now();
+        this.endDate=LocalDate.now();
+        this.specialPrice=0.0;
+        this.accommodation=null;
     }
 }

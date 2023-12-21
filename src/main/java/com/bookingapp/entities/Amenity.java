@@ -31,9 +31,8 @@ public class Amenity {
     }
 
     public Amenity() {
-        //this.id=amenityDTO.getId();
-        this.name=this.getName();
-        this.description=this.getDescription();
-        this.icon=this.getIcon();
+        this.name = "Test";
+        this.description = "Test";
+        this.icon = "Test";
     }
 }

@@ -1,5 +1,6 @@
 package com.bookingapp.services;
 
+import com.bookingapp.entities.Amenity;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.repositories.AvailabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,5 +19,13 @@ public class AvailabilityService {
 
     public List<Availability> findAllById(Set<Long> amenityIds) {
         return availabilityRepository.findAllById(amenityIds);
+    }
+
+    public Availability findById(Long id) {
+        if (this.availabilityRepository == null) {
+            System.out.println("AmenityRepository is null???????????????");
+        }
+
+        return availabilityRepository.findById(id).get();
     }
 }
