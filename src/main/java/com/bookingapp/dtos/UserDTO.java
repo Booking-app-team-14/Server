@@ -21,8 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDTO {
 
-    @Autowired
-    private ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     protected String username;
     protected String password;

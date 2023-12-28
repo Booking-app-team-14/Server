@@ -8,19 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.bookingapp.repositories.ImagesRepository;
 
+import java.io.IOException;
+
 @Getter
 @Setter
 @Component
 public class AdminDTO extends UserDTO {
 
-    @Autowired
-    private ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     public AdminDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified,int numberOfReports, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.ADMIN, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
     }
 
-    public AdminDTO(Admin admin){
+    public AdminDTO(Admin admin) {
         this.setUsername(admin.getUsername());
         this.setPassword(admin.getPassword());
         this.setAddress(admin.getAddress());

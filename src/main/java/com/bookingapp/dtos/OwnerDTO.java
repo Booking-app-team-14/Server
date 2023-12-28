@@ -19,8 +19,7 @@ public class OwnerDTO extends UserDTO {
     private Set<Long> reservationsIds;
     private Set<Long> accommodationsIds;
 
-    @Autowired
-    private ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);

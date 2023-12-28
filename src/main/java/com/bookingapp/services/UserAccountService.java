@@ -31,8 +31,7 @@ public class UserAccountService implements UserDetailsService {
     @Autowired
     private UserAccountRepository userAccountRepository;
 
-    @Autowired
-    ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     @Autowired
     private PasswordEncoder passwordEncoder;

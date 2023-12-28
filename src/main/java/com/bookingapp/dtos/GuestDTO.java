@@ -20,8 +20,7 @@ public class GuestDTO extends UserDTO {
     private int numberOfCancellations;
     private Set<Long> accommodationHistoryIds;
 
-    @Autowired
-    private ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);

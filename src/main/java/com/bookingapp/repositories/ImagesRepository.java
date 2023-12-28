@@ -1,6 +1,7 @@
 package com.bookingapp.repositories;
 
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
@@ -10,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
 
-@Repository
+@Component
 public class ImagesRepository {
 
     public void addImage(String imageBytes, String imageType, String relativePath) throws IOException {
