@@ -31,8 +31,7 @@ public class AccommodationService {
     @Autowired
     private LocationRepository locationRepository;
 
-    @Autowired
-    ImagesRepository imagesRepository;
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
     @Autowired
     public AccommodationService(AccommodationRepository accommodationRepository) {
@@ -201,18 +200,39 @@ public class AccommodationService {
         return imagesRepository.deleteImage(relativePath);
     }
 
+    public String getAccommodationImage(Long id) {
+        String relativePath = findAccommodationImageName(id);
+        if (relativePath == null) {
+            return null;
+        }
+        try {
+            return imagesRepository.getImageBytes(relativePath);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     private String findAccommodationImageName(Long id) {
-        File directory = new File("src\\main\\resources\\images\\accommodations");
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                String filename = file.getName();
-                if (filename.startsWith("accommodation-" + id)) {
-                    return "accommodations\\" + file.getName();
+        File mainDirectory = new File("src\\main\\resources\\images\\accommodations");
+
+        File[] accommodationDirectories = mainDirectory.listFiles();
+        if (accommodationDirectories != null) {
+            for (File accommodationDirectory : accommodationDirectories) {
+                if (accommodationDirectory.isDirectory()) {
+                    File[] filesInAccommodation = accommodationDirectory.listFiles();
+                    if (filesInAccommodation != null) {
+                        for (File file : filesInAccommodation) {
+                            String filename = file.getName();
+                            if (filename.startsWith("accommodation-" + id)) {
+                                return "accommodations\\" + accommodationDirectory.getName() + "\\" + file.getName();
+                            }
+                        }
+                    }
                 }
             }
         }
         return null;
     }
+
 }
 

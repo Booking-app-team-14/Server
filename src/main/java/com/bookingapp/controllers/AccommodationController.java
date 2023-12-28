@@ -192,4 +192,12 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/accommodations/{Id}/image")
+    public ResponseEntity<String> getAccommodationImage(@PathVariable Long Id) {
+        String imageBytes = accommodationService.getAccommodationImage(Id);
+        if (imageBytes == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(imageBytes, HttpStatus.OK);
+    }
 }
