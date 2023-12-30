@@ -5,9 +5,11 @@ import com.bookingapp.entities.Amenity;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.repositories.ImagesRepository;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,12 +17,16 @@ import java.util.stream.Collectors;
 @Setter
 public class AccommodationDTO {
 
+    private ImagesRepository imagesRepository = new ImagesRepository();
+
     private Long id;
     private String name;
     private String description;
     private LocationDTO location;
     private AccommodationType type;
     private Set<String> images;
+    private Set<String> imageTypes;
+    private Set<String> imageBytes;
     private Set<AmenityDTO> amenities;
     private Double rating;
     private Integer minNumberOfGuests;
@@ -80,5 +86,16 @@ public class AccommodationDTO {
         this.pricePerGuest = accommodation.isPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
+        for (Object imagePath:accommodation.getImages().toArray()){
+        try{
+            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation_1.jpg"*/);
+            String imageType = imagesRepository.getImageType(imageBytes);
+            this.imageTypes.add(imageType);
+            this.imageBytes.add(imageBytes);
+        } catch (Exception e) {
+            this.imageTypes = new HashSet<>();
+            this.imageBytes = new HashSet<>();
+        }
+        }
     }
 }
