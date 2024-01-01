@@ -114,7 +114,7 @@ public class UserAccountController {
     }
 
     @GetMapping(value = "/users/{Id}")
-    public ResponseEntity<?> getUserAccountById(@PathVariable Long Id) {
+    public ResponseEntity<?> getUserAccountById(@PathVariable Long Id){
         UserAccount user = userAccountService.getUserById(Id);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

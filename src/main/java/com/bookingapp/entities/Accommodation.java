@@ -84,6 +84,7 @@ public class Accommodation {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserAccount owner;
 
+
     public Accommodation(AccommodationDTO accommodationDTO) {
         this.name = accommodationDTO.getName();
         this.description = accommodationDTO.getDescription();
