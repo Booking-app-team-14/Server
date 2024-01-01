@@ -97,6 +97,15 @@ public class Accommodation {
         this.pricePerNight = accommodationDTO.getPricePerNight();
         this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
         this.approved = false;
+        this.location = new Location(accommodationDTO.getLocation());
+        AmenityService amenityService = new AmenityService();
+        this.amenities = accommodationDTO.getAmenities().stream()
+                .map(amenityDTO -> amenityService.findById(amenityDTO.getId()))
+                .collect(Collectors.toSet());
+        AvailabilityService availabilityService = new AvailabilityService();
+        this.availability = accommodationDTO.getAvailability().stream()
+                .map(availabilityDTO -> availabilityService.findById(availabilityDTO.getId()))
+                .collect(Collectors.toSet());
     }
 
     public Accommodation() {
