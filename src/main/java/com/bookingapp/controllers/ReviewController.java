@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -35,6 +36,16 @@ public class ReviewController {
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
-    // delete
+    ///api/reviews/{reviewId}
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId) {
+        Optional<Review> reviewToDelete = reviewService.getReviewById(reviewId);
+        if (reviewToDelete.isPresent()) {
+            reviewService.deleteReviewById(reviewId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

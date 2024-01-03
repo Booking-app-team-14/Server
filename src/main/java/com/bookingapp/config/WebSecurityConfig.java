@@ -110,6 +110,8 @@ public class WebSecurityConfig {
                     ///api/reviews/owner/{ownerId}
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
+                            ///api/reviews/{reviewId}
+                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();

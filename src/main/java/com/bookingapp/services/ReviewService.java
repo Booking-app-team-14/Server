@@ -59,5 +59,13 @@ public class ReviewService {
         return reviewRepository.findByRecipientId(ownerId);
 
     }
+
+    public Optional<Review> getReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId);
+    }
+
+    public void deleteReviewById(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
 }
 
