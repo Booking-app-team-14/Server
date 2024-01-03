@@ -106,15 +106,13 @@ public class WebSecurityConfig {
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
-                            ///api/amenities
-                    ///api/reviews/owner/{ownerId}
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
-                            ///api/reviews/{reviewId}
                     auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}/average-rating")).permitAll();
                             auth.requestMatchers(antMatcher("/api/verify/users/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/get")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/{id}")).permitAll();
@@ -161,7 +159,8 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"),
                         antMatcher(HttpMethod.POST, "/api/requests"),
                         antMatcher(HttpMethod.GET, "/api/users/token/{token}"),
-                        antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"));
+                        antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
+                        antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {

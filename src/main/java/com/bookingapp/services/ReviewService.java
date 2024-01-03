@@ -72,5 +72,20 @@ public class ReviewService {
             throw new UnauthorizedAccessException("You are not authorized to delete this review");
         }
     }
+
+    public Double getAverageRatingByOwnerId(Long ownerId) {
+        List<Review> reviews = reviewRepository.findByRecipientId(ownerId);
+
+        if (!reviews.isEmpty()) {
+            double totalRating = 0;
+            for (Review review : reviews) {
+                totalRating += review.getRating();
+            }
+
+            return totalRating / reviews.size();
+        } else {
+            return null;
+        }
+    }
 }
 

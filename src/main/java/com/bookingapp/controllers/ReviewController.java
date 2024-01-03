@@ -48,4 +48,16 @@ public class ReviewController {
         }
     }
 
+    ///api/reviews/owner/{ownerId}/average-rating
+    @GetMapping("/owner/{ownerId}/average-rating")
+    public ResponseEntity<Double> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
+        Double averageRating = reviewService.getAverageRatingByOwnerId(ownerId);
+
+        if (averageRating != null) {
+            return new ResponseEntity<>(averageRating, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
