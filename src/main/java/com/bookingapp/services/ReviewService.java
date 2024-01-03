@@ -1,10 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.ReviewDTO;
-import com.bookingapp.entities.Guest;
-import com.bookingapp.entities.Owner;
-import com.bookingapp.entities.Review;
-import com.bookingapp.entities.UserAccount;
+import com.bookingapp.entities.*;
 import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.OwnerRepository;
 import com.bookingapp.repositories.ReviewRepository;
@@ -65,7 +62,15 @@ public class ReviewService {
     }
 
     public void deleteReviewById(Long reviewId) {
+        Optional<Review> review= getReviewById(reviewId);
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+        if (user.getId()==review.get().getSender().getId()){
         reviewRepository.deleteById(reviewId);
+        }
+        else {
+            throw new UnauthorizedAccessException("You are not authorized to delete this review");
+        }
     }
 }
 
