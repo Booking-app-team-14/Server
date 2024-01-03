@@ -50,6 +50,6 @@ public class Review {
         this.recipient = recipient;
         this.timestamp = LocalDateTime.now();
         this.reported = false;
-        this.approved = false;
+        this.approved = true;
     }
 }
