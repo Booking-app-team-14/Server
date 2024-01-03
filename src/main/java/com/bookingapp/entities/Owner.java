@@ -1,6 +1,8 @@
 package com.bookingapp.entities;
 
 import com.bookingapp.dtos.OwnerDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -20,6 +22,10 @@ public class Owner extends UserAccount {
 
     @OneToMany(cascade = {CascadeType.ALL})
     private Set<Accommodation> accommodations;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    private Set<Review> reviewsReceived;
 
     public Owner() {
 

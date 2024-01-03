@@ -21,10 +21,15 @@ public class OwnerDTO extends UserDTO {
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
+    private Set<Long> reviewsReceivedIds;
+
+
     public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
+        this.reviewsReceivedIds = new HashSet<>();
+
     }
 
     public OwnerDTO(Owner owner){
@@ -46,6 +51,7 @@ public class OwnerDTO extends UserDTO {
         }
         this.reservationsIds = new HashSet<>();
         this.accommodationsIds = new HashSet<>();
+        this.reviewsReceivedIds = new HashSet<>();
     }
 
     public OwnerDTO() { }

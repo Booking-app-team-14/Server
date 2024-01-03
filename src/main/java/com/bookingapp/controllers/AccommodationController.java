@@ -3,17 +3,16 @@ package com.bookingapp.controllers;
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationRequest;
+import com.bookingapp.entities.Owner;
 import com.bookingapp.enums.AccommodationType;
-import com.bookingapp.services.AccommodationRequestService;
-import com.bookingapp.services.AccommodationService;
-import com.bookingapp.services.AmenityService;
-import com.bookingapp.services.AvailabilityService;
+import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -32,6 +31,9 @@ public class AccommodationController {
 
     @Autowired
     private AccommodationService accommodationService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
@@ -200,4 +202,34 @@ public class AccommodationController {
         }
         return new ResponseEntity<>(imageBytes, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/{accommodationId}/owner", name = "gets the owner of the accommodation")
+    public ResponseEntity<OwnerDTO> getOwnerByAccommodationId(@PathVariable Long accommodationId) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // dohvatamo vlasnika iz smestaja
+        Owner owner = (Owner) accommodation.get().getOwner();
+        if (owner == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        OwnerDTO ownerDTO = new OwnerDTO(owner);
+        return new ResponseEntity<>(ownerDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/owners/{ownerId}", name = "gets the owner by owner Id")
+    public ResponseEntity<OwnerDTO> getOwnerByOwnerId(@PathVariable Long ownerId) throws AccessDeniedException {
+        Optional<Owner> owner = Optional.ofNullable((Owner) userAccountService.findById(ownerId));
+        if (owner.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        OwnerDTO ownerDTO = new OwnerDTO(owner.get());
+        return new ResponseEntity<>(ownerDTO, HttpStatus.OK);
+    }
+
+
 }
