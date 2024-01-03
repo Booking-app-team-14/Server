@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,11 +51,14 @@ public class ReviewController {
 
     ///api/reviews/owner/{ownerId}/average-rating
     @GetMapping("/owner/{ownerId}/average-rating")
-    public ResponseEntity<Double> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
+    public ResponseEntity<String> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
         Double averageRating = reviewService.getAverageRatingByOwnerId(ownerId);
 
         if (averageRating != null) {
-            return new ResponseEntity<>(averageRating, HttpStatus.OK);
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            String formattedRating = decimalFormat.format(averageRating);
+
+            return new ResponseEntity<>(formattedRating, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
