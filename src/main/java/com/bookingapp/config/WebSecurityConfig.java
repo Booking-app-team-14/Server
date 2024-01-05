@@ -124,7 +124,10 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/accommodations/sort/price/asc")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
-                            auth.requestMatchers(antMatcher("/api/users/token/{token}")).permitAll();
+                            auth.requestMatchers(antMatcher("api/users/token/{token}")).permitAll();
+                            //auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("OWNER");
+                            auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
+                    ///api/userReports/report
                             auth.anyRequest().authenticated();
                         }
                 )

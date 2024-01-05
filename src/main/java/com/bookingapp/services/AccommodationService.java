@@ -182,7 +182,13 @@ public class AccommodationService {
 
         deleteAccommodationImage(id);
 
-        String relativePath = String.format("userAvatars\\user-%d", id);
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        String directoryPath = String.format("src/main/resources/images/accommodations/accommodation-%d", id);
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        relativePath += File.separator;
         relativePath += "." + imageType;
         try {
             imagesRepository.addImage(imageBytes, imageType, relativePath);

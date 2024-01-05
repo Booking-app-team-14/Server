@@ -31,11 +31,7 @@ public class ReviewService {
     public Review saveReview(ReviewDTO reviewDTO) {
 
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-        //UserAccount user = (UserAccount) authentication.getPrincipal();
-        //Optional<Guest> optionalGuest= (Optional<Guest>) authentication.getPrincipal();
         UserAccount user = (UserAccount) authentication.getPrincipal();
-
-        //Optional<Guest> optionalGuest = guestRepository.findById(reviewDTO.getSenderId());
         Optional<Guest> optionalGuest = guestRepository.findById(user.getId());
         Optional<Owner> optionalOwner = ownerRepository.findById(reviewDTO.getRecipientId());
 
