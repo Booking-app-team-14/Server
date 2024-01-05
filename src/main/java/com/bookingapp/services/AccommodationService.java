@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalTime;
+import java.time.Year;
+import java.time.chrono.ChronoLocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,14 +112,17 @@ public class AccommodationService {
 
         accommodation.setAmenities(new HashSet<>(amenityService.findAllById(amenityIds)));
 
-        Set<Availability> availabilities = new HashSet<>();
+        Set<Availability> availabilities  = new HashSet<>();
         for(AvailabilityDTO availabilityDTO : accommodationDTO.getAvailability()){
             Availability availability = new Availability(availabilityDTO);
             availability.setAccommodation(accommodation);
             availabilities.add(availability);
         }
 
+
         accommodation.setAvailability(availabilities);
+
+        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
         accommodation.setImages(accommodationDTO.getImages());
         accommodation.setRating(accommodationDTO.getRating());
@@ -134,6 +137,50 @@ public class AccommodationService {
         accommodationRepository.save(accommodation);
         return accommodation;
     }
+
+    //posmatrati sve dostupnosti u toku tekuce godine
+    public void fillAvailabilityForCurrentYear(Accommodation accommodation, Set<AvailabilityDTO> availabilitiesDTO) {
+        int currentYear = Year.now().getValue();
+
+        // sortirati postojece dostupnosti po datumu
+        List<AvailabilityDTO> sortedAvailabilities = availabilitiesDTO.stream()
+                .sorted(Comparator.comparing(AvailabilityDTO::getStartDate))
+                .collect(Collectors.toList());
+
+        // dodaj availabilityije za datume izmedju postojecih definisanih dostupnosti
+        for (int i = 0; i < sortedAvailabilities.size() - 1; i++) {
+            LocalDate endOfCurrent = sortedAvailabilities.get(i).getEndDate() ;
+            LocalDate startOfNext = sortedAvailabilities.get(i + 1).getStartDate() ;
+
+            // proveri razliku izmedju dva uzastopna datuma
+            if (!endOfCurrent.plusDays(1).equals(startOfNext)) {
+
+                Availability defaultAvailability = new Availability();
+                defaultAvailability.setStartDate(LocalDate.from(endOfCurrent.plusDays(1).atStartOfDay()));
+                defaultAvailability.setEndDate(LocalDate.from(startOfNext.minusDays(1).atStartOfDay()));
+                defaultAvailability.setAccommodation(accommodation);
+                // postaviti da bude null cena za nedostupne datume
+                defaultAvailability.setSpecialPrice(0.0);
+
+                accommodation.getAvailability().add(defaultAvailability);
+            }
+        }
+
+        // dodaj availability za datume nakon poslednje definisane dostupnosti do kraja godine
+        LocalDate lastEndDate = sortedAvailabilities.get(sortedAvailabilities.size() - 1).getEndDate() ;
+        if (!lastEndDate.isEqual(LocalDate.of(currentYear, 12, 31))) {
+            Availability defaultAvailability = new Availability();
+            defaultAvailability.setStartDate(LocalDate.from(lastEndDate.plusDays(1).atStartOfDay()));
+            defaultAvailability.setEndDate(LocalDate.from(LocalDate.of(currentYear, 12, 31).atTime(LocalTime.MAX)));
+            defaultAvailability.setAccommodation(accommodation);
+            // isto staviti da je null
+            defaultAvailability.setSpecialPrice(0.0);
+
+            accommodation.getAvailability().add(defaultAvailability);
+        }
+    }
+
+
     public void save(Accommodation accommodation) {
         accommodationRepository.save(accommodation);
     }
