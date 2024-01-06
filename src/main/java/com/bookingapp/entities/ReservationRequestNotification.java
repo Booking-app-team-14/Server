@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class RequestNotification extends Notification {
+public class ReservationRequestNotification extends Notification {
 
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH})
-    private Request request;
+    private ReservationRequest request;
 
-    public RequestNotification(){
+    public ReservationRequestNotification(){
 
     }
 }

@@ -2,8 +2,8 @@ package com.bookingapp.services;
 
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.Availability;
-import com.bookingapp.entities.Request;
-import com.bookingapp.repositories.RequestIRepository;
+import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.repositories.ReservationRequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +12,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
-public  class RequestService {
+public  class ReservationRequestService {
 
     @Autowired
-    private RequestIRepository requestRepository;
+    private ReservationRequestIRepository requestRepository;
 
     @Autowired
     AccommodationService accommodationService;
 
-    public void createRequest(Request reservation) {
+    public void createRequest(ReservationRequest reservation) {
         LocalDate startDate = reservation.getStartDate();
         LocalDate endDate = reservation.getEndDate();
         LocalDate today = LocalDate.now();
@@ -49,7 +49,7 @@ public  class RequestService {
             // Check availability of accommodations between chosen dates
             Accommodation accommodation = ac1.get();
             Set<Availability> availabilities = accommodation.getAvailability();
-            List<Request> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId());
+            List<ReservationRequest> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId());
 
             boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
                 boolean startDateOverlaps =
@@ -119,7 +119,7 @@ public  class RequestService {
 //    }
 
 
-    public Optional<Request> findById(Long id) {
-        return requestRepository.findById(id);
+    public List<ReservationRequest> findById(Long id) {
+        return requestRepository.findAllByUserId(id);
     }
 }

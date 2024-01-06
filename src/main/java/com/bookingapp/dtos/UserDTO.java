@@ -63,7 +63,7 @@ public class UserDTO {
         this.verified=user.isVerified();
         this.numberOfReports = user.getNumberOfReports();
         try{
-            this.profilePictureBytes = imagesRepository.getImageBytes(user.getProfilePicturePath());
+            this.profilePictureBytes = imagesRepository.getImageBytes(/*user.getProfilePicturePath()*/"userAvatars/user-"+user.getId()+".png");
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
         } catch (Exception e) {
             this.profilePictureBytes = "";
