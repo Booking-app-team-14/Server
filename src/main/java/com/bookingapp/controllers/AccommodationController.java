@@ -82,6 +82,19 @@ public class AccommodationController {
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
+    /*@PostMapping(value = "/{id}/image", consumes = "application/json", name = "owner uploads accommodation images for his accommodation")
+    public ResponseEntity<Long> uploadAccommodationImages(@PathVariable Long id, @RequestBody List<String> imageBytesList) {
+        for (String imageBytes : imageBytesList) {
+            boolean uploaded = accommodationService.uploadAccommodationImage(id, imageBytes);
+
+            if (!uploaded) {
+                return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
+    }*/
+
 
     @PutMapping(value = "/update", name = "owner updates an accommodation")
     public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {

@@ -116,6 +116,9 @@ public class AccommodationService {
         for(AvailabilityDTO availabilityDTO : accommodationDTO.getAvailability()){
             Availability availability = new Availability(availabilityDTO);
             availability.setAccommodation(accommodation);
+            if (availability.getSpecialPrice() == null) {
+                availability.setSpecialPrice(accommodationDTO.getPricePerNight());
+            }
             availabilities.add(availability);
         }
 
@@ -235,10 +238,13 @@ public class AccommodationService {
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        relativePath += File.separator;
-        relativePath += "." + imageType;
+
+        /*relativePath += File.separator;
+        relativePath += "." + imageType;*/
+        String filename = UUID.randomUUID().toString();
+        String imagePath = String.format("%s%s%s.%s", relativePath, File.separator, filename, imageType);
         try {
-            imagesRepository.addImage(imageBytes, imageType, relativePath);
+            imagesRepository.addImage(imageBytes, imageType, imagePath);
         } catch (Exception e) {
             return false;
         }
