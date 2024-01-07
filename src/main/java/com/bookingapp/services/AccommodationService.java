@@ -111,10 +111,8 @@ public class AccommodationService {
         );
 
         if (existingLocation != null) {
-            // Ako lokacija već postoji, pridruži je accommodationu
             accommodation.setLocation(existingLocation);
         } else {
-            // Ako lokacija ne postoji, kreiraj je i sačuvaj
             Location newLocation = new Location(accommodationDTO.getLocation());
             locationRepository.save(newLocation);
             accommodation.setLocation(newLocation);
@@ -179,7 +177,7 @@ public class AccommodationService {
                 defaultAvailability.setEndDate(LocalDate.from(startOfNext.minusDays(1).atStartOfDay()));
                 defaultAvailability.setAccommodation(accommodation);
                 // postaviti da bude null cena za nedostupne datume
-                defaultAvailability.setSpecialPrice(0.0);
+                defaultAvailability.setSpecialPrice(null);
 
                 accommodation.getAvailability().add(defaultAvailability);
             }
@@ -193,7 +191,7 @@ public class AccommodationService {
             defaultAvailability.setEndDate(LocalDate.from(LocalDate.of(currentYear, 12, 31).atTime(LocalTime.MAX)));
             defaultAvailability.setAccommodation(accommodation);
             // isto staviti da je null
-            defaultAvailability.setSpecialPrice(0.0);
+            defaultAvailability.setSpecialPrice(null);
 
             accommodation.getAvailability().add(defaultAvailability);
         }
