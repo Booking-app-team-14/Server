@@ -101,9 +101,25 @@ public class AccommodationService {
         accommodation.setName(accommodationDTO.getName());
         accommodation.setDescription(accommodationDTO.getDescription());
 
-        Location location = new Location(accommodationDTO.getLocation());
+        /*Location location = new Location(accommodationDTO.getLocation());
         locationRepository.save(location);
-        accommodation.setLocation(location);
+        accommodation.setLocation(location)*/;
+        Location existingLocation = locationRepository.findByCountryAndCityAndAddress(
+                accommodationDTO.getLocation().getCountry(),
+                accommodationDTO.getLocation().getCity(),
+                accommodationDTO.getLocation().getAddress()
+        );
+
+        if (existingLocation != null) {
+            // Ako lokacija već postoji, pridruži je accommodationu
+            accommodation.setLocation(existingLocation);
+        } else {
+            // Ako lokacija ne postoji, kreiraj je i sačuvaj
+            Location newLocation = new Location(accommodationDTO.getLocation());
+            locationRepository.save(newLocation);
+            accommodation.setLocation(newLocation);
+        }
+
         accommodation.setType(accommodationDTO.getType());
 
         Set<Long> amenityIds = accommodationDTO.getAmenities().stream()

@@ -222,8 +222,6 @@ public class AccommodationController {
         if (accommodation.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        // dohvatamo vlasnika iz smestaja
         Owner owner = (Owner) accommodation.get().getOwner();
         if (owner == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
