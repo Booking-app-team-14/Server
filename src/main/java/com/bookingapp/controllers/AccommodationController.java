@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-    @RequestMapping("/api/accommodations")
+    @RequestMapping("/api/")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AccommodationController {
 
@@ -35,7 +35,7 @@ public class AccommodationController {
     @Autowired
     private UserAccountService userAccountService;
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "accommodations/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
         if (accommodation.isEmpty()) {
@@ -46,24 +46,24 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/requests", name = "admin gets all the accommodation requests for creation and update")
+    @GetMapping(value = "accommodations/requests", name = "admin gets all the accommodation requests for creation and update")
     public ResponseEntity<List<AccommodationRequestDTO>> getAccommodationRequests() {
         return new ResponseEntity<List<AccommodationRequestDTO>>(accommodationRequestService.getAllAccommodationRequests(), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/requests/{id}", name = "admin approves the accommodation request")
+    @PutMapping(value = "accommodations/requests/{id}", name = "admin approves the accommodation request")
     public ResponseEntity<AccommodationRequestDTO> approveAccommodationRequest(@PathVariable Long id) {
         List<AccommodationRequestDTO> accommodationRequests = accommodationRequestService.getAllAccommodationRequests();
         return accommodationRequestService.adminApprove(accommodationRequests, id);
     }
 
-    @DeleteMapping(value = "/requests/{id}", name = "admin rejects the accommodation request")
+    @DeleteMapping(value = "accommodations/requests/{id}", name = "admin rejects the accommodation request")
     public ResponseEntity<Boolean> rejectAccommodationRequest(@PathVariable Long id) {
         List<AccommodationRequestDTO> accommodationRequests = accommodationRequestService.getAllAccommodationRequests();
         return accommodationRequestService.adminReject(accommodationRequests, id);
     }
 
-    @PostMapping(value = "/create", name = "owner adds an accommodation")
+    @PostMapping(value = "accommodations/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = accommodationService.save(accommodationDTO);
 
@@ -73,7 +73,7 @@ public class AccommodationController {
 
 
     //upload slike za accommodation
-    @PostMapping(value = "/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
+    @PostMapping(value = "accommodations/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
     public ResponseEntity<Long> uploadAccommodationImage(@PathVariable Long id, @RequestBody String imageBytes) {
         boolean ok = accommodationService.uploadAccommodationImage(id, imageBytes);
         if (!ok) {
@@ -96,7 +96,7 @@ public class AccommodationController {
     }*/
 
 
-    @PutMapping(value = "/update", name = "owner updates an accommodation")
+    @PutMapping(value = "accommodations/update", name = "owner updates an accommodation")
     public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = new Accommodation(accommodationDTO);
         accommodation.setApproved(false);
@@ -106,18 +106,19 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/owners/{ownerId}/accommodation", name = "gets all the accommodation of the owner")
-    public ResponseEntity<List<OwnersAccommodationDTO>> getAllOwnersAccommodation(Long ownerId){
-        List<OwnersAccommodationDTO> ownersAccommodationDTO = new ArrayList<>();
+    @GetMapping(value = "accommodations/owners/{ownerId}", name = "gets all the accommodation of the owner")
+    public ResponseEntity<List<OwnersAccommodationDTO>> getAllOwnersAccommodation(@PathVariable Long ownerId){
+        List<OwnersAccommodationDTO> ownersAccommodationDTO = accommodationService.getAllOwnersAccommodations(ownerId);
         return new ResponseEntity<>(ownersAccommodationDTO, HttpStatus.OK);
     }
-    @GetMapping(value ="/accommodations", name = "gets the best offers")
-    public ResponseEntity<List<BestOffersDTO>> getBestOffers(){
-        List<BestOffersDTO> bestOffersDTO = new ArrayList<>();
-        return new ResponseEntity<>(bestOffersDTO, HttpStatus.OK);
-    }
 
-    @GetMapping(value="/search")
+//    @GetMapping(value ="/best", name = "gets the best offers")
+//    public ResponseEntity<List<BestOffersDTO>> getBestOffers(){
+//        List<BestOffersDTO> bestOffersDTO = new ArrayList<>();
+//        return new ResponseEntity<>(bestOffersDTO, HttpStatus.OK);
+//    }
+
+    @GetMapping(value="accommodations/search")
     public ResponseEntity<List<AccommodationSearchDTO>> searchAccommodations(
             @RequestParam("searchTerm") String searchTerm) {
         List<Accommodation> accommodations = accommodationService.searchAccommodations(searchTerm);
@@ -131,7 +132,7 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value="/filter")
+    @GetMapping(value="accommodations/filter")
     public ResponseEntity<List<AccommodationSearchDTO>> filterAccommodations(
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice,
@@ -157,7 +158,7 @@ public class AccommodationController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @GetMapping("/sort/price/asc")
+    @GetMapping("accommodations/sort/price/asc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByPriceAsc() {
         List<Accommodation> accommodations = accommodationService.findAllByPricePerNightAsc();
         if (accommodations == null)
@@ -169,7 +170,7 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/sort/price/desc")
+    @GetMapping("accommodations/sort/price/desc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByPriceDesc() {
         List<Accommodation> accommodations = accommodationService.findAllByPricePerNightDesc();
         if (accommodations == null)
@@ -181,7 +182,7 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/sort/rating/desc")
+    @GetMapping("accommodations/sort/rating/desc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByRatingDesc() {
         List<Accommodation> accommodations = accommodationService.findAllByRatingDesc();
         if (accommodations == null)
@@ -193,7 +194,7 @@ public class AccommodationController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @GetMapping("/sort/rating/asc")
+    @GetMapping("accommodations/sort/rating/asc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByRatingAsc() {
         List<Accommodation> accommodations = accommodationService.findAllByRatingAsc();
         if (accommodations == null)
@@ -207,7 +208,7 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/accommodations/{Id}/image")
+    @GetMapping(value = "accommodations/accommodations/{Id}/image")
     public ResponseEntity<String> getAccommodationImage(@PathVariable Long Id) {
         String imageBytes = accommodationService.getAccommodationImage(Id);
         if (imageBytes == null) {
@@ -216,7 +217,7 @@ public class AccommodationController {
         return new ResponseEntity<>(imageBytes, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{accommodationId}/owner", name = "gets the owner of the accommodation")
+    @GetMapping(value = "accommodations/{accommodationId}/owner", name = "gets the owner of the accommodation")
     public ResponseEntity<OwnerDTO> getOwnerByAccommodationId(@PathVariable Long accommodationId) {
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
         if (accommodation.isEmpty()) {

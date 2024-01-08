@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
-import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,9 +80,30 @@ public class AccommodationService {
             return false;
         }
     }
-    public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
-        return null;
-//            return accommodationRepository.getOwnersAccommodations(ownerId);
+    public List<OwnersAccommodationDTO> getAllOwnersAccommodations(Long ownerId) {
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+        List<OwnersAccommodationDTO> ownersAccommodationDTOS = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (accommodation.getOwner().getId().equals(ownerId) && accommodation.isApproved()) {
+                OwnersAccommodationDTO ownersAccommodationDTO = new OwnersAccommodationDTO();
+                ownersAccommodationDTO.setId(accommodation.getId());
+                ownersAccommodationDTO.setName(accommodation.getName());
+                ownersAccommodationDTO.setType(accommodation.getType().toString());
+                ownersAccommodationDTO.setStars(accommodation.getRating().intValue());
+                ownersAccommodationDTO.setMaxGuests(accommodation.getMaxNumberOfGuests());
+                ownersAccommodationDTO.setAddress(accommodation.getLocation().getAddress());
+                ownersAccommodationDTO.setPrice(accommodation.getPricePerNight());
+                ImagesRepository imagesRepository = new ImagesRepository();
+                String accommodationImagePath = findAccommodationImageName(accommodation.getId());
+                try {
+                    String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
+                    ownersAccommodationDTO.setMainPictureBytes(imageBytes);
+                    ownersAccommodationDTO.setImageType(imagesRepository.getImageType(imageBytes));
+                } catch (IOException ignored) { }
+                ownersAccommodationDTOS.add(ownersAccommodationDTO);
+            }
+        }
+        return ownersAccommodationDTOS;
     }
 
     public Set<BestOffersDTO> getBestOffers() {

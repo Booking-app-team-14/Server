@@ -52,7 +52,7 @@ public class AccommodationSearchDTO {
         this.description = accommodation.getDescription();
         this.accommodationType= accommodation.getType();
         try{
-            this.imageBytes = imagesRepository.getImageBytes(/*(String) accommodation.getImages().toArray()[0]*/ "accommodations/accommodation-1/accommodation_1.jpg");
+            this.imageBytes = imagesRepository.getImageBytes(/*(String) accommodation.getImages().toArray()[0]*/ "accommodations/accommodation-1/accommodation-1-1.jpg");
             this.imageType = imagesRepository.getImageType(this.imageBytes);
         } catch (Exception e) {
             this.imageBytes = "";

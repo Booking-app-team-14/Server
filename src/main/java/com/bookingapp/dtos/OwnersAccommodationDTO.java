@@ -6,15 +6,26 @@ import lombok.Setter;
 @Setter
 @Getter
 public class OwnersAccommodationDTO {
-    private Long ownerId;
-    private Long accommodationId;
+    private Long id;
     private String name;
-    private String description;
+    private String type;
+    private int stars;
+    private int maxGuests;
+    private String address;
+    private double price;
+    private String imageType;
+    private String mainPictureBytes;
 
-    public OwnersAccommodationDTO(Long ownerId,Long accommodationId, String name, String description){
-        this.ownerId=ownerId;
-        this.accommodationId = accommodationId;
+    public OwnersAccommodationDTO(Long id, String name, String type, int stars, int maxGuests, String address, double price) {
+        this.id = id;
         this.name = name;
-        this.description = description;
+        this.type = type;
+        this.stars = stars;
+        this.maxGuests = maxGuests;
+        this.address = address;
+        this.price = price;
     }
+
+    public OwnersAccommodationDTO() { }
+
 }

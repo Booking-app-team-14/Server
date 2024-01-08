@@ -88,7 +88,7 @@ public class AccommodationDTO {
         this.owner_Id=accommodation.getOwner().getId();
         for (Object imagePath:accommodation.getImages().toArray()){
         try{
-            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation_1.jpg"*/);
+            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation-1-1.jpg"*/);
             String imageType = imagesRepository.getImageType(imageBytes);
             this.imageTypes.add(imageType);
             this.imageBytes.add(imageBytes);
