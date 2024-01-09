@@ -3,6 +3,7 @@ package com.bookingapp.services;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.entities.UserAccount;
 import com.bookingapp.repositories.ReservationRequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ import java.util.*;
 
 @Service
 public  class ReservationRequestService {
+    @Autowired
+    private  UserAccountService userAccountService;
 
     @Autowired
     private ReservationRequestIRepository requestRepository;
@@ -25,6 +28,7 @@ public  class ReservationRequestService {
         LocalDate endDate = reservation.getEndDate();
         LocalDate today = LocalDate.now();
         Optional<Accommodation> ac1= accommodationService.getAccommodationById(reservation.getAccommodationId());
+
 
         // Check-out date should be after the check-in date
         if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
@@ -51,24 +55,27 @@ public  class ReservationRequestService {
             Set<Availability> availabilities = accommodation.getAvailability();
             List<ReservationRequest> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId());
 
-            boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
-                boolean startDateOverlaps =
-                        (startDate.isBefore(existingRequest.getEndDate()) && startDate.isAfter(existingRequest.getStartDate())) ||
-                                startDate.isEqual(existingRequest.getStartDate()) || startDate.isEqual(existingRequest.getEndDate());
+            if (!existingReservations.isEmpty()) {
+                boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
+                    boolean startDateOverlaps =
+                            (startDate.isBefore(existingRequest.getEndDate()) && startDate.isAfter(existingRequest.getStartDate())) ||
+                                    startDate.isEqual(existingRequest.getStartDate()) || startDate.isEqual(existingRequest.getEndDate());
 
-                boolean endDateOverlaps =
-                        (endDate.isAfter(existingRequest.getStartDate()) && endDate.isBefore(existingRequest.getEndDate())) ||
-                                endDate.isEqual(existingRequest.getStartDate()) || endDate.isEqual(existingRequest.getEndDate());
+                    boolean endDateOverlaps =
+                            (endDate.isAfter(existingRequest.getStartDate()) && endDate.isBefore(existingRequest.getEndDate())) ||
+                                    endDate.isEqual(existingRequest.getStartDate()) || endDate.isEqual(existingRequest.getEndDate());
 
-                boolean newRequestCoversExisting =
-                        startDate.isBefore(existingRequest.getStartDate()) && endDate.isAfter(existingRequest.getEndDate());
+                    boolean newRequestCoversExisting =
+                            startDate.isBefore(existingRequest.getStartDate()) && endDate.isAfter(existingRequest.getEndDate());
 
-                return startDateOverlaps || endDateOverlaps || newRequestCoversExisting;
-            });
+                    return startDateOverlaps || endDateOverlaps || newRequestCoversExisting;
+                });
 
-            if (isReserved) {
-                throw new IllegalArgumentException("Accommodation is not available for the chosen dates");
+                if (isReserved) {
+                    throw new IllegalArgumentException("Accommodation is not available for the chosen dates");
+                }
             }
+
             requestRepository.save(reservation);
         }
         else {
@@ -121,5 +128,9 @@ public  class ReservationRequestService {
 
     public List<ReservationRequest> findById(Long id) {
         return requestRepository.findAllByUserId(id);
+    }
+
+    public List<ReservationRequest> findByUsername(String username) {
+        return  requestRepository.findByUsername(username);
     }
 }

@@ -1,6 +1,7 @@
 package com.bookingapp.dtos;
 
 import com.bookingapp.entities.Guest;
+import com.bookingapp.entities.Accommodation;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -48,7 +50,10 @@ public class GuestDTO extends UserDTO {
             this.profilePictureType = "png";
         }
         this.numberOfCancellations = guest.getNumberOfCancellations();
-        this.favouriteAccommodationsIds = new HashSet<>();
+        this.favouriteAccommodationsIds = guest.getFavouriteAccommodations().stream()
+                .map(Accommodation::getId)
+                .collect(Collectors.toSet());
+
         this.accommodationHistoryIds = new HashSet<>();
     }
 

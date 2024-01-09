@@ -16,5 +16,8 @@ public interface ReservationRequestIRepository extends JpaRepository<Reservation
 
     @Query("SELECT r FROM ReservationRequest r WHERE r.userId = :userId")
     List<ReservationRequest> findAllByUserId(Long userId);
+
+    @Query("SELECT r FROM ReservationRequest r WHERE r.userUsername = :username")
+    List<ReservationRequest> findByUsername(String username);
 //    Set<Request> findAllByRequestId(Long Id);
 }

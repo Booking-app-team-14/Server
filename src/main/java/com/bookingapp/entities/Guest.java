@@ -1,14 +1,13 @@
 package com.bookingapp.entities;
 
 import com.bookingapp.dtos.GuestDTO;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.bookingapp.services.AccommodationService;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -17,7 +16,13 @@ import java.util.Set;
 public class Guest extends UserAccount {
 
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "guest_favourite_accommodations",
+            joinColumns = @JoinColumn(name = "guest_id"),
+            inverseJoinColumns = @JoinColumn(name = "favourite_accommodations_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"guest_id", "favourite_accommodations_id"})
+    )
     private Set<Accommodation> favouriteAccommodations;
 
     private int numberOfCancellations;
@@ -40,7 +45,7 @@ public class Guest extends UserAccount {
         this.isBlocked = guestDTO.isBlocked();
         this.numberOfReports = guestDTO.getNumberOfReports();
         this.numberOfCancellations = guestDTO.getNumberOfCancellations();
-        this.favouriteAccommodations = new HashSet<Accommodation>();
+        this.favouriteAccommodations=new HashSet<Accommodation>();
         this.history = new HashSet<Accommodation>();
     }
 

@@ -28,7 +28,7 @@ public class ReservationRequestController {
         }
 
 
-    @GetMapping(value = "/requests/{id}", name = "gets a requests by Id")
+    @GetMapping(value = "/requests/guest/{id}", name = "gets a requests by guest Id")
     public ResponseEntity<List<ReservationRequestDTO>> getReservationRequestsByGuestId(@PathVariable Long id) {
         List<ReservationRequest> requests = requestService.findById(id);
         if (requests.isEmpty()) {
@@ -42,6 +42,19 @@ public class ReservationRequestController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/requests/owner/{username}", name = "gets a requests by owner username")
+    public ResponseEntity<List<ReservationRequestDTO>> getReservationRequestsByOwnerUsername(@PathVariable String username) {
+        List<ReservationRequest> requests = requestService.findByUsername(username);
+        if (requests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<ReservationRequestDTO> result = requests.stream()
+                .map(ReservationRequestDTO::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 
     @PutMapping(value="/requests/{Id}",name="updates the status of the request")

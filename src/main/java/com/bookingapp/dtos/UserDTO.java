@@ -1,5 +1,6 @@
 package com.bookingapp.dtos;
 
+
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
@@ -63,7 +64,8 @@ public class UserDTO {
         this.verified=user.isVerified();
         this.numberOfReports = user.getNumberOfReports();
         try{
-            this.profilePictureBytes = imagesRepository.getImageBytes(/*user.getProfilePicturePath()*/"userAvatars/user-"+user.getId()+".png");
+            //this.profilePictureBytes = userService.getUserImage(user.getId());
+            this.profilePictureBytes = imagesRepository.getImageBytes(/*user.getProfilePicturePath()*/"userAvatars/user-5.png"/*+ user.getId() +".png"*/);
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
         } catch (Exception e) {
             this.profilePictureBytes = "";
