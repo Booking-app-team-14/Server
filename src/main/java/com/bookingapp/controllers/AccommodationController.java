@@ -125,11 +125,7 @@ public class AccommodationController {
         accommodation.setLocation(location);
 
         accommodation.setAmenities(accommodationDTO.getAmenities().stream()
-                .map(amenityDTO -> {
-                    Amenity amenity = new Amenity(amenityDTO);
-                    amenityService.save(amenity);
-                    return amenity;
-                })
+                .map(amenityDTO -> amenityService.findById(amenityDTO.getId()))
                 .collect(Collectors.toSet()));
 
         accommodation.setAvailability(accommodationDTO.getAvailability().stream()
