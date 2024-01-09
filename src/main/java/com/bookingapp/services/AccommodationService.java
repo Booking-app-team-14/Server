@@ -327,5 +327,8 @@ public class AccommodationService {
         return null;
     }
 
+    public Optional<Accommodation> findById(Long id) {
+        return accommodationRepository.findById(id);
+    }
 }
 

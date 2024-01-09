@@ -4,7 +4,6 @@ import com.bookingapp.dtos.AccommodationRequestDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.entities.Owner;
-import com.bookingapp.mappers.AccommodationRequestMapper;
 import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.AccommodationRequestRepository;
 import com.bookingapp.repositories.ImagesRepository;
@@ -99,12 +98,12 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void saveUpdateRequestFromAccommodation(Accommodation accommodation) {
+    public void saveUpdateRequestFromAccommodation(Accommodation accommodation, String message) {
         AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
         ZoneId zoneId = ZoneId.systemDefault();
         long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
         accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
-        accommodationRequestDTO.setMessage("I'm updating the details my accommodation, please approve! Thanks.");
+        accommodationRequestDTO.setMessage("\"" + message + "\"");
         accommodationRequestDTO.setRequestType("updated");
         AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO);
         accommodationRequestRepository.save(accommodationRequest);

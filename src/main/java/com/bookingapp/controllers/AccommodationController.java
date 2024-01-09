@@ -1,9 +1,7 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.*;
-import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.AccommodationRequest;
-import com.bookingapp.entities.Owner;
+import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,8 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
     @RequestMapping("/api/")
@@ -34,6 +30,15 @@ public class AccommodationController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private AvailabilityService availabilityService;
+
+    @Autowired
+    private AmenityService amenityService;
+
+    @Autowired
+    private LocationService locationService;
 
     @GetMapping(value = "accommodations/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
@@ -97,12 +102,48 @@ public class AccommodationController {
 
 
     @PutMapping(value = "accommodations/update", name = "owner updates an accommodation")
-    public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
-        Accommodation accommodation = new Accommodation(accommodationDTO);
+    public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationUpdateDTO accommodationUpdateDTO) {
+        Optional<Accommodation> accommodationOpt = accommodationService.findById(accommodationUpdateDTO.getAccommodationDTO().getId());
+        if (accommodationOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        AccommodationDTO accommodationDTO = accommodationUpdateDTO.getAccommodationDTO();
+        Accommodation accommodation = accommodationOpt.get();
+        accommodation.setName(accommodationDTO.getName());
+        accommodation.setDescription(accommodationDTO.getDescription());
+        accommodation.setType(accommodationDTO.getType());
+        accommodation.setImages(accommodationDTO.getImages());
+        accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
+        accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
+        accommodation.setPricePerNight(accommodationDTO.getPricePerNight());
+        accommodation.setPricePerGuest(accommodationDTO.isPricePerGuest());
+        accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
+
+        // TODO: update location, amenities, availability to be persistent, also move the logic to the service
+        Location location = new Location(accommodationDTO.getLocation());
+        locationService.save(location);
+        accommodation.setLocation(location);
+
+        accommodation.setAmenities(accommodationDTO.getAmenities().stream()
+                .map(amenityDTO -> {
+                    Amenity amenity = new Amenity(amenityDTO);
+                    amenityService.save(amenity);
+                    return amenity;
+                })
+                .collect(Collectors.toSet()));
+
+        accommodation.setAvailability(accommodationDTO.getAvailability().stream()
+                .map(availabilityDTO -> {
+                    Availability availability = new Availability(availabilityDTO);
+                    availabilityService.save(availability);
+                    return availability;
+                })
+                .collect(Collectors.toSet()));
+
         accommodation.setApproved(false);
         accommodationService.save(accommodation);
 
-        accommodationRequestService.saveUpdateRequestFromAccommodation(accommodation);
+        accommodationRequestService.saveUpdateRequestFromAccommodation(accommodation, accommodationUpdateDTO.getMessage());
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.OK);
     }
 
