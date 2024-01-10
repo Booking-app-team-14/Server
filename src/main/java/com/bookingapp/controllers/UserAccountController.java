@@ -263,7 +263,7 @@ public class UserAccountController {
         Guest guest = (Guest) user;
         if (!guest.getFavouriteAccommodations().isEmpty()) {
             for (Accommodation acc : guest.getFavouriteAccommodations())
-                favouriteAccommodations.add(new FavouriteAccommodationDTO(acc));
+                favouriteAccommodations.add(new FavouriteAccommodationDTO(acc, accommodationService));
         }else {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         }

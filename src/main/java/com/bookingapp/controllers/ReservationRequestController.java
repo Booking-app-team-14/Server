@@ -2,7 +2,9 @@ package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReservationRequestDTO;
 import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.ReservationRequestService;
+import com.bookingapp.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,12 @@ public class ReservationRequestController {
     @Autowired
     private ReservationRequestService requestService;
 
+    @Autowired
+    private AccommodationService accommodationService;
+
+    @Autowired
+    private UserAccountService userAccountService;
+
     @PostMapping(value = "/requests", name = "guest makes a reservation request")
     public ResponseEntity<Long> createReservationRequest(@RequestBody ReservationRequestDTO requestDTO) {
         ReservationRequest request = new ReservationRequest(requestDTO);
@@ -35,10 +43,11 @@ public class ReservationRequestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<ReservationRequestDTO> result = requests.stream()
-                .map(ReservationRequestDTO::new)
-                .collect(Collectors.toList());
+        List<ReservationRequestDTO> result = new ArrayList<>();
 
+        for (ReservationRequest request: requests ){
+            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -49,9 +58,11 @@ public class ReservationRequestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<ReservationRequestDTO> result = requests.stream()
-                .map(ReservationRequestDTO::new)
-                .collect(Collectors.toList());
+        List<ReservationRequestDTO> result = new ArrayList<>();
+
+        for (ReservationRequest request: requests ){
+            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

@@ -22,7 +22,7 @@ public class Availability {
     @Column(nullable=false)
     private LocalDate endDate;
 
-    @Column(nullable=false)
+    @Column(nullable=true)
     private Double specialPrice;
 
     @ManyToOne

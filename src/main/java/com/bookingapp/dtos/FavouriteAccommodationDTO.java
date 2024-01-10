@@ -1,16 +1,12 @@
 package com.bookingapp.dtos;
 import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.Amenity;
-import com.bookingapp.entities.Availability;
-import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AccommodationService;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Getter
 @Setter
@@ -27,20 +23,19 @@ public class FavouriteAccommodationDTO {
     private Double rating;
     private Double pricePerNight;
 
-    public FavouriteAccommodationDTO(Accommodation accommodation) {
+    public FavouriteAccommodationDTO(Accommodation accommodation, AccommodationService accommodationService) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.location = new LocationDTO(accommodation.getLocation());
         this.type = accommodation.getType();
         this.rating = accommodation.getRating();
         this.pricePerNight = accommodation.getPricePerNight();
-        try{
-            this.imageBytes = imagesRepository.getImageBytes(/*(String) accommodation.getImages().toArray()[0]*/ "accommodations/accommodation-1/accommodation_1.jpg");
-            this.imageType = imagesRepository.getImageType(this.imageBytes);
-        } catch (Exception e) {
-            this.imageBytes = "";
-            this.imageType = "png";
-        }
+        String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
+        try {
+            String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
+            this.imageBytes = imageBytes;
+            this.imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException ignored) { }
     }
 
 }

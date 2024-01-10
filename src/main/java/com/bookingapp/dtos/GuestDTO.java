@@ -23,12 +23,16 @@ public class GuestDTO extends UserDTO {
     private Set<Long> accommodationHistoryIds;
 
     private ImagesRepository imagesRepository = new ImagesRepository();
+    private Set<Long> reviewsSentIds;
+
 
     public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
         this.numberOfCancellations = numberOfCancellations;
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();
+        this.reviewsSentIds = new HashSet<>();
+
 
     }
 
@@ -55,6 +59,8 @@ public class GuestDTO extends UserDTO {
                 .collect(Collectors.toSet());
 
         this.accommodationHistoryIds = new HashSet<>();
+        this.reviewsSentIds = new HashSet<>();
+
     }
 
     public GuestDTO() { }

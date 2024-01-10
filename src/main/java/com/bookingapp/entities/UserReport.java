@@ -15,10 +15,10 @@ public class UserReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserAccount reportingUser;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserAccount reportedUser;
 
     @Column(nullable = false)
@@ -31,11 +31,11 @@ public class UserReport {
 
     }
 
-    public UserReport(UserAccount reportingUser, UserAccount reportedUser, String description, LocalDateTime sentAt) {
+    public UserReport(UserAccount reportingUser, UserAccount reportedUser, String description) {
     	this.reportingUser = reportingUser;
     	this.reportedUser = reportedUser;
     	this.description = description;
-    	this.sentAt = sentAt;
+    	this.sentAt = LocalDateTime.now();
     }
 
 }

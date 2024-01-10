@@ -2,15 +2,21 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.ReservationRequest;
 import com.bookingapp.enums.RequestStatus;
+import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.UserAccountService;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.catalina.User;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @Getter
 @Setter
 public class ReservationRequestDTO {
 
+    private ImagesRepository imagesRepository = new ImagesRepository();
 
         private Long guestId;
         private Long accommodationId;
@@ -43,7 +49,7 @@ public class ReservationRequestDTO {
 
     }
 
-    public ReservationRequestDTO(ReservationRequest r) {
+    public ReservationRequestDTO(ReservationRequest r, UserAccountService userAccountService, AccommodationService accommodationService) {
             this.guestId = r.getUserId();
             this.accommodationId = r.getAccommodationId();
             this.requestStatus = r.getRequestStatus();
@@ -56,6 +62,17 @@ public class ReservationRequestDTO {
             this.type = r.getType();
             this.userUsername =r.getUserUsername();
             this.stars = r.getStars();
+
+        String accommodationImagePath = accommodationService.findAccommodationImageName(this.accommodationId);
+        //User user = (User) userAccountService.findByUsername(userUsername);
+
+        try {
+            this.mainPictureBytes = imagesRepository.getImageBytes(accommodationImagePath);
+            this.imageType = imagesRepository.getImageType(this.mainPictureBytes);
+
+            this.userProfilePictureBytes = userAccountService.getUserImage(this.guestId);
+            this.userImageType = imagesRepository.getImageType(this.userProfilePictureBytes);
+        } catch (IOException ignored) { }
     }
 }
 

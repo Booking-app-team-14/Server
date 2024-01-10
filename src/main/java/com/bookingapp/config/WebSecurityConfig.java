@@ -106,10 +106,13 @@ public class WebSecurityConfig {
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
-                            ///api/amenities
+                    auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}/average-rating")).permitAll();
                             auth.requestMatchers(antMatcher("/api/verify/users/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/get")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodations/{id}")).permitAll();
@@ -125,6 +128,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/requests/guest/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests/owner/{username}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/favorite-accommodations/{accommodationId}")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
                             auth.anyRequest().authenticated();
                         }
@@ -162,7 +166,9 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET,"/api/requests/guest/{id}"), antMatcher(HttpMethod.GET,"/api/requests/owner/{username}"),
                         antMatcher(HttpMethod.PUT,"/api/users/{id}/favorite-accommodations/{accommodationId}"),
                         antMatcher(HttpMethod.DELETE,"/api/users/{id}/favorite-accommodations/{accommodationId}"),
-                        antMatcher(HttpMethod.GET,"/api/users/favorite/{userId}"));
+                        antMatcher(HttpMethod.GET,"/api/users/favorite/{userId}"),
+                        antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
+                        antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {
