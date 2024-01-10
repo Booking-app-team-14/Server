@@ -84,7 +84,7 @@ public class AccommodationDTO {
                 .map(availability -> new AvailabilityDTO(availability.getId(), availability.getStartDate(), availability.getEndDate(), availability.getSpecialPrice(), availability.getAccommodation().getId()))
                 .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
-        this.pricePerGuest = accommodation.isPricePerGuest();
+        this.pricePerGuest = accommodation.getPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
         for (Object imagePath:accommodation.getImages().toArray()){

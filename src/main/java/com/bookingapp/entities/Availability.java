@@ -1,6 +1,7 @@
 package com.bookingapp.entities;
 
 import com.bookingapp.dtos.AvailabilityDTO;
+import com.bookingapp.dtos.UpdateAvailabilityDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +35,13 @@ public class Availability {
         this.startDate=availabilityDTO.getStartDate();
         this.endDate=availabilityDTO.getEndDate();
         this.specialPrice=availabilityDTO.getSpecialPrice();
+    }
+
+    public Availability(UpdateAvailabilityDTO availabilityDTO) {
+        this.startDate=availabilityDTO.getStartDate();
+        this.endDate=availabilityDTO.getEndDate();
+        this.specialPrice=availabilityDTO.getSpecialPrice();
+        this.accommodation=null;
     }
 
     public Availability() {

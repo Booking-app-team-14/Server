@@ -4,6 +4,7 @@ import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
+import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class AccommodationService {
     private AmenityService amenityService;
     @Autowired
     private LocationRepository locationRepository;
+    @Autowired
+    private UserAccountService userAccountService;
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
@@ -74,6 +77,7 @@ public class AccommodationService {
     // DELETE
     public boolean deleteAccommodation(Long id) {
         if (accommodationRepository.existsById(id)) {
+            userAccountService.deleteAllGuestFavoriteAccommodation(id);
             accommodationRepository.deleteById(id);
             return true;
         } else {
@@ -330,5 +334,31 @@ public class AccommodationService {
     public Optional<Accommodation> findById(Long id) {
         return accommodationRepository.findById(id);
     }
+
+    public void deleteAllImages(Long id) {
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        imagesRepository.deleteAllImages(relativePath);
+    }
+
+    private int getImagesCount(Long id) {
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        File mainDirectory = new File("src\\main\\resources\\images\\" + relativePath);
+        File[] files = mainDirectory.listFiles();
+        if (files != null) {
+            return files.length;
+        }
+        return 0;
+    }
+
+    public String addImage(Long id, Image image) {
+        String relativePath = "accommodations/accommodation-" + id + "/" + "accommodation-" + id + "-" + (getImagesCount(id) + 1) + "." + image.getImageType();;
+        try {
+            imagesRepository.addImage(image.getImageBytes(), image.getImageType(), relativePath);
+            return relativePath;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 

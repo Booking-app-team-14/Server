@@ -48,7 +48,7 @@ public class Accommodation {
     /*@ManyToMany (cascade = CascadeType.ALL)
     private Set<Amenity> amenities;*/
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "accmmodation_amenities",
             joinColumns = @JoinColumn(name = "accommodation_id"),
@@ -90,5 +90,8 @@ public class Accommodation {
 
     }
 
+    public boolean getPricePerGuest() {
+        return this.pricePerGuest;
+    }
 
 }

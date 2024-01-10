@@ -3,6 +3,7 @@ package com.bookingapp.controllers;
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -100,37 +101,96 @@ public class AccommodationController {
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }*/
 
-
-    @PutMapping(value = "accommodations/update", name = "owner updates an accommodation")
-    public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationUpdateDTO accommodationUpdateDTO) {
-        Optional<Accommodation> accommodationOpt = accommodationService.findById(accommodationUpdateDTO.getAccommodationDTO().getId());
+    @GetMapping(value = "accommodations/update/{accommodationId}", name = "owner gets accommodation data for update")
+    public ResponseEntity<AccommodationUpdateDTO> getAccommodationUpdateData(@PathVariable Long accommodationId) {
+        Optional<Accommodation> accommodationOpt = accommodationService.findById(accommodationId);
         if (accommodationOpt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        AccommodationDTO accommodationDTO = accommodationUpdateDTO.getAccommodationDTO();
         Accommodation accommodation = accommodationOpt.get();
-        accommodation.setName(accommodationDTO.getName());
-        accommodation.setDescription(accommodationDTO.getDescription());
-        accommodation.setType(accommodationDTO.getType());
-        accommodation.setImages(accommodationDTO.getImages());
-        accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
-        accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
-        accommodation.setPricePerNight(accommodationDTO.getPricePerNight());
-        accommodation.setPricePerGuest(accommodationDTO.isPricePerGuest());
-        accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
+        AccommodationUpdateDTO accommodationUpdateDTO = new AccommodationUpdateDTO();
+        accommodationUpdateDTO.setId(accommodation.getId());
+        accommodationUpdateDTO.setName(accommodation.getName());
+        accommodationUpdateDTO.setDescription(accommodation.getDescription());
+        accommodationUpdateDTO.setType(accommodation.getType().toString());
+        accommodationUpdateDTO.setMinNumberOfGuests(accommodation.getMinNumberOfGuests());
+        accommodationUpdateDTO.setMaxNumberOfGuests(accommodation.getMaxNumberOfGuests());
+        accommodationUpdateDTO.setDefaultPrice(accommodation.getPricePerNight());
+        accommodationUpdateDTO.setPricePerGuest(accommodation.getPricePerGuest());
+        accommodationUpdateDTO.setCancellationDeadline(accommodation.getCancellationDeadline());
 
-        // TODO: update location, amenities, availability to be persistent, also move the logic to the service
-        Location location = new Location(accommodationDTO.getLocation());
+        Set<Image> images = new HashSet<>();
+        for (String imagePath : accommodation.getImages()) {
+            ImagesRepository imagesRepository = new ImagesRepository();
+            String bytes = null;
+            String type = null;
+            try {
+                bytes = imagesRepository.getImageBytes(imagePath);
+                type = imagesRepository.getImageType(bytes);
+            } catch (Exception ignored) { }
+            Image image = new Image(bytes, type);
+            images.add(image);
+        }
+        accommodationUpdateDTO.setImages(images);
+
+        LocationDTO locationDTO = new LocationDTO(accommodation.getLocation());
+        accommodationUpdateDTO.setLocation(locationDTO);
+
+        Set<Long> amenities = accommodation.getAmenities().stream()
+                .map(Amenity::getId)
+                .collect(Collectors.toSet());
+        accommodationUpdateDTO.setAmenities(amenities);
+
+        Set<UpdateAvailabilityDTO> availabilities = accommodation.getAvailability().stream()
+                .map(availability -> {
+                    UpdateAvailabilityDTO updateAvailabilityDTO = new UpdateAvailabilityDTO();
+                    updateAvailabilityDTO.setStartDate(availability.getStartDate());
+                    updateAvailabilityDTO.setEndDate(availability.getEndDate());
+                    updateAvailabilityDTO.setSpecialPrice(availability.getSpecialPrice());
+                    return updateAvailabilityDTO;
+                })
+                .collect(Collectors.toSet());
+        accommodationUpdateDTO.setAvailability(availabilities);
+
+        return new ResponseEntity<>(accommodationUpdateDTO, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "accommodations/update", name = "owner updates an accommodation")
+    public ResponseEntity<Long> updateAccommodation(@RequestBody AccommodationUpdateDTO accommodationUpdateDTO) {
+        Optional<Accommodation> accommodationOpt = accommodationService.findById(accommodationUpdateDTO.getId());
+        if (accommodationOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Accommodation accommodation = accommodationOpt.get();
+        accommodation.setName(accommodationUpdateDTO.getName());
+        accommodation.setDescription(accommodationUpdateDTO.getDescription());
+        accommodation.setType(AccommodationType.valueOf(accommodationUpdateDTO.getType()));
+        accommodation.setMinNumberOfGuests(accommodationUpdateDTO.getMinNumberOfGuests());
+        accommodation.setMaxNumberOfGuests(accommodationUpdateDTO.getMaxNumberOfGuests());
+        accommodation.setPricePerNight(accommodationUpdateDTO.getDefaultPrice());
+        accommodation.setPricePerGuest(accommodationUpdateDTO.getPricePerGuest());
+        accommodation.setCancellationDeadline(accommodationUpdateDTO.getCancellationDeadline());
+
+        accommodationService.deleteAllImages(accommodation.getId());
+        Set<String> images = new HashSet<>();
+        for (Image image : accommodationUpdateDTO.getImages()) {
+            String path = accommodationService.addImage(accommodation.getId(), image);
+            images.add(path);
+        }
+        accommodation.setImages(images);
+
+        Location location = new Location(accommodationUpdateDTO.getLocation());
         locationService.save(location);
         accommodation.setLocation(location);
 
-        accommodation.setAmenities(accommodationDTO.getAmenities().stream()
-                .map(amenityDTO -> amenityService.findById(amenityDTO.getId()))
+        accommodation.setAmenities(accommodationUpdateDTO.getAmenities().stream()
+                .map(amenityId -> amenityService.findById(amenityId))
                 .collect(Collectors.toSet()));
 
-        accommodation.setAvailability(accommodationDTO.getAvailability().stream()
+        accommodation.setAvailability(accommodationUpdateDTO.getAvailability().stream()
                 .map(availabilityDTO -> {
                     Availability availability = new Availability(availabilityDTO);
+                    availability.setAccommodation(accommodation);
                     availabilityService.save(availability);
                     return availability;
                 })

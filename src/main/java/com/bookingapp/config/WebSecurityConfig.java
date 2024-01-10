@@ -106,6 +106,8 @@ public class WebSecurityConfig {
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
+                            auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");
+                            auth.requestMatchers(antMatcher("/api/accommodations/update")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");

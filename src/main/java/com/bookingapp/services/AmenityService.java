@@ -1,5 +1,6 @@
 package com.bookingapp.services;
 
+import com.bookingapp.dtos.AmenityDTO;
 import com.bookingapp.entities.Amenity;
 import com.bookingapp.repositories.AmenityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +45,10 @@ public class AmenityService {
             }
         }
         return null;
+    }
+
+    public List<AmenityDTO> findAll() {
+        List<Amenity> amenities = amenityRepository.findAll();
+        return AmenityDTO.transformToDTO(amenities, this);
     }
 }

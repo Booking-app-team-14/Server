@@ -54,4 +54,14 @@ public class ImagesRepository {
         return false;
     }
 
+    public void deleteAllImages(String relativePath) {
+        File mainDirectory = new File("src\\main\\resources\\images\\" + relativePath);
+        File[] files = mainDirectory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                file.delete();
+            }
+        }
+    }
+
 }
