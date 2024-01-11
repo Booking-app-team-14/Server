@@ -1,12 +1,10 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.dtos.AdminDTO;
-import com.bookingapp.dtos.GuestDTO;
-import com.bookingapp.dtos.OwnerDTO;
-import com.bookingapp.dtos.UserDTO;
+import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.ActivationService;
 import com.bookingapp.services.UserAccountService;
 import jakarta.mail.MessagingException;
@@ -23,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -30,6 +32,9 @@ public class UserAccountController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private AccommodationService accommodationService;
 
     @Autowired
     private ActivationService activationService;
@@ -113,6 +118,7 @@ public class UserAccountController {
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
 
+
     @GetMapping(value = "/users/{Id}")
     public ResponseEntity<?> getUserAccountById(@PathVariable Long Id){
         UserAccount user = userAccountService.getUserById(Id);
@@ -140,7 +146,19 @@ public class UserAccountController {
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        if (user.getRole() == Role.GUEST) {
+            Guest guest = (Guest) user;
+            return new ResponseEntity<>(new GuestDTO(guest), HttpStatus.OK);
+        }
+        else if (user.getRole() == Role.OWNER) {
+            Owner owner = (Owner) user;
+            return new ResponseEntity<>(new OwnerDTO(owner), HttpStatus.OK);
+        }
+        else {
+            Admin admin = (Admin) user;
+            return new ResponseEntity<>(new AdminDTO(admin), HttpStatus.OK);
+        }
+
     }
 
     @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")
@@ -186,6 +204,72 @@ public class UserAccountController {
         userAccountService.deleteUserImage(Id);
 
         return new ResponseEntity<>("Account Deleted", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{id}/favorite-accommodations/{accommodationId}", name = "guest adds favorite accommodation")
+    public ResponseEntity<String> addGuestFavoriteAccommodation(@PathVariable Long id, @PathVariable Long accommodationId) {
+        Guest guest = (Guest) userAccountService.getUserById(id);
+        if (guest == null) {
+            return new ResponseEntity<>("Guest Not Found", HttpStatus.NOT_FOUND);
+        }
+        Set<Accommodation> existingFavorites = guest.getFavouriteAccommodations();
+
+        if (existingFavorites.stream().noneMatch(a -> a.getId().equals(accommodationId))) {
+            if (existingFavorites == null)
+                existingFavorites = new HashSet<>();
+
+            Accommodation accommodation = accommodationService.getAccommodationById(accommodationId).orElse(null);
+            if (accommodation != null && !existingFavorites.contains(accommodation)) {
+                existingFavorites.add(accommodation);
+                guest.setFavouriteAccommodations(existingFavorites);
+                userAccountService.save(guest);
+                return new ResponseEntity<>("Favorite Accommodation Updated", HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>("Accommodation not found or already in favorites", HttpStatus.BAD_REQUEST);
+            }
+        } else
+            return new ResponseEntity<>("Accommodation already in favourites!", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping(value = "/users/{id}/favorite-accommodations/{accommodationId}", name = "user removes favorite accommodation")
+    public ResponseEntity<String> removeUserFavoriteAccommodation(@PathVariable Long id, @PathVariable Long accommodationId) {
+        Guest guest = (Guest) userAccountService.getUserById(id);
+        if (guest == null) {
+            return new ResponseEntity<>("Guest Not Found", HttpStatus.NOT_FOUND);
+        }
+
+        Set<Accommodation> favoriteAccommodations = guest.getFavouriteAccommodations();
+        Accommodation ac = accommodationService.getAccommodationById(accommodationId).get();
+        if (!favoriteAccommodations.contains(ac)) {
+            return new ResponseEntity<>("Accommodation not found in favorites", HttpStatus.NOT_FOUND);
+        }
+
+        favoriteAccommodations.remove(ac);
+        guest.setFavouriteAccommodations(favoriteAccommodations);
+        userAccountService.save(guest);
+
+        return new ResponseEntity<>("Favorite Accommodation Removed", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/users/favorite/{userId}")
+    public ResponseEntity<List<FavouriteAccommodationDTO>> getUserAccountByUsername(@PathVariable Long userId) {
+        UserAccount user = userAccountService.getUserById(userId);
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        List<FavouriteAccommodationDTO> favouriteAccommodations = new ArrayList<>();
+        Guest guest = (Guest) user;
+        if (!guest.getFavouriteAccommodations().isEmpty()) {
+            for (Accommodation acc : guest.getFavouriteAccommodations())
+                favouriteAccommodations.add(new FavouriteAccommodationDTO(acc, accommodationService));
+        }else {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
+
+
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 public class Owner extends UserAccount {
 
     @OneToMany(cascade = {CascadeType.ALL})
-    private Set<Request> reservations;
+    private Set<ReservationRequest> reservations;
 
     @OneToMany(cascade = {CascadeType.ALL})
     private Set<Accommodation> accommodations;
@@ -41,7 +41,7 @@ public class Owner extends UserAccount {
         this.phoneNumber = ownerDTO.getPhoneNumber();
         this.isBlocked = ownerDTO.isBlocked();
         this.numberOfReports = ownerDTO.getNumberOfReports();
-        this.reservations = new HashSet<Request>();
+        this.reservations = new HashSet<ReservationRequest>();
         this.accommodations = new HashSet<Accommodation>();
     }
 

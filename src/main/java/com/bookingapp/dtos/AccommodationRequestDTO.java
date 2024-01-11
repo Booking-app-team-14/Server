@@ -46,19 +46,19 @@ public class AccommodationRequestDTO {
         this.name = accommodation.getName();
         this.type = accommodation.getType().toString();
 
-        UserAccountService userAccountService = new UserAccountService();
-        userAccountService.getOwners().forEach(o -> {
-            Owner owner = (Owner) o;
-            if (owner.getAccommodations().contains(accommodation)) {
-                this.ownerUsername = owner.getUsername();
-                String profilePicturePath = owner.getProfilePicturePath();
-                ImagesRepository imagesRepository = new ImagesRepository();
-                try {
-                    this.ownerProfilePictureBytes = imagesRepository.getImageBytes(profilePicturePath);
-                    this.ownerImageType = imagesRepository.getImageType(this.ownerProfilePictureBytes);
-                } catch (Exception e) { }
-            }
-        });
+//        UserAccountService userAccountService = new UserAccountService();
+//        userAccountService.getOwners().forEach(o -> {
+//            Owner owner = (Owner) o;
+//            if (owner.getAccommodations().contains(accommodation)) {
+//                this.ownerUsername = owner.getUsername();
+//                String profilePicturePath = owner.getProfilePicturePath();
+//                ImagesRepository imagesRepository = new ImagesRepository();
+//                try {
+//                    this.ownerProfilePictureBytes = imagesRepository.getImageBytes(profilePicturePath);
+//                    this.ownerImageType = imagesRepository.getImageType(this.ownerProfilePictureBytes);
+//                } catch (Exception e) { }
+//            }
+//        });
 
         this.stars = accommodation.getRating().intValue();
 

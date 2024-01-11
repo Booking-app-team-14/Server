@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/userReports")
+@RequestMapping(value = "/api/userReports")
 public class UserReportController {
 
     @Autowired
@@ -83,17 +83,12 @@ public class UserReportController {
 //        return new ResponseEntity<>("User Blocked", HttpStatus.OK);
     }
 
-    @PostMapping(/*consumes = "application/json"*/)
-    public ResponseEntity<UserReportDTO> saveUserReport(/*@RequestBody UserReportDTO userReportDTO*/) {
-        return new ResponseEntity<>(new UserReportDTO(), HttpStatus.CREATED);
-//        UserReport userReport = new UserReport();
-//        userReport.setReportingUser(userAccountService.getUserById(userReportDTO.getReportingUserId()));
-//        userReport.setReportedUser(userAccountService.getUserById(userReportDTO.getReportedUserId()));
-//        userReport.setDescription(userReportDTO.getDescription());
-//        userReport.setSentAt(userReportDTO.getSentAt());
-//
-//        userReport = userReportService.save(userReport);
-//        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.CREATED);
+
+    ///api/userReports/report
+    @PostMapping("/report")
+    public ResponseEntity<UserReport> saveUserReport(@RequestBody UserReportDTO userReportDTO) {
+        UserReport userReport = userReportService.submitUserReport(userReportDTO);
+        return new ResponseEntity<>(userReport, HttpStatus.CREATED);
     }
 
 }

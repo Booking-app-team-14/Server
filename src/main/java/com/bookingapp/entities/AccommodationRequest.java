@@ -20,6 +20,7 @@ public class AccommodationRequest {
     private String name; // accommodation name
     private String type; // accommodation type
     private String ownerImageType; // owner profile picture type (jpg, png, etc.)
+    @Lob
     private String ownerProfilePictureBytes;
     private String ownerUsername;
     private String dateRequested; // date requested, (epoch seconds)
@@ -27,6 +28,7 @@ public class AccommodationRequest {
     private String message;
     private int stars;
     private String imageType; // accommodation main picture type (jpg, png, etc.)
+    @Lob
     private String mainPictureBytes;
 
     public AccommodationRequest(AccommodationRequestDTO dto) {

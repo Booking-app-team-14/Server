@@ -1,6 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.UserRequest;
+import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.UserAccountRepository;
@@ -210,5 +211,16 @@ public class UserAccountService implements UserDetailsService {
 
     public Iterable<Object> getOwners() {
         return userAccountRepository.findAllOwners();
+    }
+
+    public void deleteAllGuestFavoriteAccommodation(Long accommodationId) {
+        List<UserAccount> users = userAccountRepository.findAll();
+        for (UserAccount user : users) {
+            if (user.getRole().toString().equals("GUEST")) {
+                Guest guest = (Guest) user;
+                guest.getFavouriteAccommodations().removeIf(a -> a.getId().equals(accommodationId));
+                userAccountRepository.save(user);
+            }
+        }
     }
 }

@@ -4,7 +4,6 @@ import com.bookingapp.dtos.AccommodationRequestDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.entities.Owner;
-import com.bookingapp.mappers.AccommodationRequestMapper;
 import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.AccommodationRequestRepository;
 import com.bookingapp.repositories.ImagesRepository;
@@ -13,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -99,15 +100,32 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void saveUpdateRequestFromAccommodation(Accommodation accommodation) {
+    public void saveUpdateRequestFromAccommodation(Accommodation accommodation, String message) {
         AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
-        ZoneId zoneId = ZoneId.systemDefault();
-        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
+        Instant instant = Instant.now();
+        long epochSeconds = instant.getEpochSecond();
         accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
-        accommodationRequestDTO.setMessage("I'm updating the details my accommodation, please approve! Thanks.");
+        accommodationRequestDTO.setMessage("\"" + message + "\"");
         accommodationRequestDTO.setRequestType("updated");
+        accommodationRequestDTO.setOwnerUsername(accommodation.getOwner().getUsername());
+        ImagesRepository imagesRepository = new ImagesRepository();
+        try {
+            accommodationRequestDTO.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(accommodation.getOwner().getProfilePicturePath()));
+            accommodationRequestDTO.setOwnerImageType(imagesRepository.getImageType(accommodationRequestDTO.getOwnerProfilePictureBytes()));
+            accommodationRequestDTO.setMainPictureBytes(imagesRepository.getImageBytes(accommodation.getImages().stream().findFirst().get()));
+            accommodationRequestDTO.setImageType(imagesRepository.getImageType(accommodationRequestDTO.getMainPictureBytes()));
+        } catch (Exception ignored) { }
         AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO);
         accommodationRequestRepository.save(accommodationRequest);
+    }
+
+    private void deleteByAccommodationId(Long id) {
+        List<AccommodationRequest> requests = accommodationRequestRepository.findAll();
+        for (AccommodationRequest r : requests) {
+            if (r.getAccommodationId().equals(id)) {
+                accommodationRequestRepository.deleteById(r.getId());
+            }
+        }
     }
 
     public ResponseEntity<AccommodationRequestDTO> adminApprove(List<AccommodationRequestDTO> accommodationRequests, Long id) {
@@ -118,7 +136,7 @@ public class AccommodationRequestService {
                     Accommodation a = accommodation.get();
                     a.setApproved(true);
                     accommodationService.save(a);
-                    accommodationRequestRepository.deleteById(r.getAccommodationId());
+                    deleteByAccommodationId(r.getAccommodationId());
                 }
                 return new ResponseEntity<>(r, HttpStatus.OK);
             }
@@ -130,7 +148,7 @@ public class AccommodationRequestService {
         for (AccommodationRequestDTO r : accommodationRequests) {
             if (r.getAccommodationId().equals(id)) {
                 boolean deleted = accommodationService.deleteAccommodation(id);
-                accommodationRequestRepository.deleteById(r.getAccommodationId());
+                deleteByAccommodationId(r.getAccommodationId());
                 return new ResponseEntity<>(deleted, HttpStatus.OK);
             }
         }

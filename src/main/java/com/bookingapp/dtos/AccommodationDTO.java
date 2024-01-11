@@ -6,6 +6,7 @@ import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AmenityService;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -74,7 +75,7 @@ public class AccommodationDTO {
         this.type = accommodation.getType();
         this.images = accommodation.getImages();
         this.amenities = accommodation.getAmenities().stream()
-                .map(amenity -> new AmenityDTO(amenity.getId(), amenity.getName(), amenity.getDescription(), amenity.getIcon()))
+                .map(amenity -> new AmenityDTO(amenity.getId(), amenity.getName(), amenity.getDescription()))
                 .collect(Collectors.toSet());
         this.rating = accommodation.getRating();
         this.minNumberOfGuests = accommodation.getMinNumberOfGuests();
@@ -83,12 +84,12 @@ public class AccommodationDTO {
                 .map(availability -> new AvailabilityDTO(availability.getId(), availability.getStartDate(), availability.getEndDate(), availability.getSpecialPrice(), availability.getAccommodation().getId()))
                 .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
-        this.pricePerGuest = accommodation.isPricePerGuest();
+        this.pricePerGuest = accommodation.getPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
         for (Object imagePath:accommodation.getImages().toArray()){
         try{
-            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation_1.jpg"*/);
+            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation-1-1.jpg"*/);
             String imageType = imagesRepository.getImageType(imageBytes);
             this.imageTypes.add(imageType);
             this.imageBytes.add(imageBytes);

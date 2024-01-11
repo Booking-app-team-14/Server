@@ -48,7 +48,7 @@ public class Accommodation {
     /*@ManyToMany (cascade = CascadeType.ALL)
     private Set<Amenity> amenities;*/
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "accmmodation_amenities",
             joinColumns = @JoinColumn(name = "accommodation_id"),
@@ -84,35 +84,14 @@ public class Accommodation {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserAccount owner;
 
-
-    public Accommodation(AccommodationDTO accommodationDTO) {
-        this.name = accommodationDTO.getName();
-        this.description = accommodationDTO.getDescription();
-        this.type = accommodationDTO.getType();
-        this.images = accommodationDTO.getImages();
-        this.rating = accommodationDTO.getRating();
-        this.minNumberOfGuests = accommodationDTO.getMinNumberOfGuests();
-        this.maxNumberOfGuests = accommodationDTO.getMaxNumberOfGuests();
-        this.pricePerGuest = accommodationDTO.isPricePerGuest();
-        this.pricePerNight = accommodationDTO.getPricePerNight();
-        this.cancellationDeadline = accommodationDTO.getCancellationDeadline();
-        this.approved = false;
-        this.location = new Location(accommodationDTO.getLocation());
-        AmenityService amenityService = new AmenityService();
-        this.amenities = accommodationDTO.getAmenities().stream()
-                .map(amenityDTO -> amenityService.findById(amenityDTO.getId()))
-                .collect(Collectors.toSet());
-        AvailabilityService availabilityService = new AvailabilityService();
-        this.availability = accommodationDTO.getAvailability().stream()
-                .map(availabilityDTO -> availabilityService.findById(availabilityDTO.getId()))
-                .collect(Collectors.toSet());
-    }
-
     public Accommodation() {
         this.amenities= new HashSet<>();
         this.availability = new HashSet<Availability>();
 
     }
 
+    public boolean getPricePerGuest() {
+        return this.pricePerGuest;
+    }
 
 }

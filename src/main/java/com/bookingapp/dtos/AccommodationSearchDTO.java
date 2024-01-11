@@ -4,9 +4,11 @@ import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AccommodationService;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -46,18 +48,17 @@ public class AccommodationSearchDTO {
 
 
 
-    public AccommodationSearchDTO(Accommodation accommodation) {
+    public AccommodationSearchDTO(Accommodation accommodation, AccommodationService accommodationService) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
         this.accommodationType= accommodation.getType();
-        try{
-            this.imageBytes = imagesRepository.getImageBytes(/*(String) accommodation.getImages().toArray()[0]*/ "accommodations/accommodation-1/accommodation_1.jpg");
-            this.imageType = imagesRepository.getImageType(this.imageBytes);
-        } catch (Exception e) {
-            this.imageBytes = "";
-            this.imageType = "png";
-        }
+        String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
+        try {
+            String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
+            this.imageBytes = imageBytes;
+            this.imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException ignored) { }
         this.rating = accommodation.getRating();
         this.maxNumberOfGuests = accommodation.getMaxNumberOfGuests();
         this.pricePerNight = accommodation.getPricePerNight();

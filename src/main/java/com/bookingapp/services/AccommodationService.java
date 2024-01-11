@@ -4,6 +4,7 @@ import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AccommodationRepository;
+import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,9 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalTime;
+import java.time.Year;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +30,8 @@ public class AccommodationService {
     private AmenityService amenityService;
     @Autowired
     private LocationRepository locationRepository;
+    @Autowired
+    private UserAccountService userAccountService;
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
@@ -75,15 +77,37 @@ public class AccommodationService {
     // DELETE
     public boolean deleteAccommodation(Long id) {
         if (accommodationRepository.existsById(id)) {
+            userAccountService.deleteAllGuestFavoriteAccommodation(id);
             accommodationRepository.deleteById(id);
             return true;
         } else {
             return false;
         }
     }
-    public Set<OwnersAccommodationDTO> getAllOwnersAccommodation(Long ownerId) {
-        return null;
-//            return accommodationRepository.getOwnersAccommodations(ownerId);
+    public List<OwnersAccommodationDTO> getAllOwnersAccommodations(Long ownerId) {
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+        List<OwnersAccommodationDTO> ownersAccommodationDTOS = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (accommodation.getOwner().getId().equals(ownerId) && accommodation.isApproved()) {
+                OwnersAccommodationDTO ownersAccommodationDTO = new OwnersAccommodationDTO();
+                ownersAccommodationDTO.setId(accommodation.getId());
+                ownersAccommodationDTO.setName(accommodation.getName());
+                ownersAccommodationDTO.setType(accommodation.getType().toString());
+                ownersAccommodationDTO.setStars(accommodation.getRating().intValue());
+                ownersAccommodationDTO.setMaxGuests(accommodation.getMaxNumberOfGuests());
+                ownersAccommodationDTO.setAddress(accommodation.getLocation().getAddress());
+                ownersAccommodationDTO.setPrice(accommodation.getPricePerNight());
+                ImagesRepository imagesRepository = new ImagesRepository();
+                String accommodationImagePath = findAccommodationImageName(accommodation.getId());
+                try {
+                    String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
+                    ownersAccommodationDTO.setMainPictureBytes(imageBytes);
+                    ownersAccommodationDTO.setImageType(imagesRepository.getImageType(imageBytes));
+                } catch (IOException ignored) { }
+                ownersAccommodationDTOS.add(ownersAccommodationDTO);
+            }
+        }
+        return ownersAccommodationDTOS;
     }
 
     public Set<BestOffersDTO> getBestOffers() {
@@ -101,9 +125,23 @@ public class AccommodationService {
         accommodation.setName(accommodationDTO.getName());
         accommodation.setDescription(accommodationDTO.getDescription());
 
-        Location location = new Location(accommodationDTO.getLocation());
+        /*Location location = new Location(accommodationDTO.getLocation());
         locationRepository.save(location);
-        accommodation.setLocation(location);
+        accommodation.setLocation(location)*/;
+        Location existingLocation = locationRepository.findByCountryAndCityAndAddress(
+                accommodationDTO.getLocation().getCountry(),
+                accommodationDTO.getLocation().getCity(),
+                accommodationDTO.getLocation().getAddress()
+        );
+
+        if (existingLocation != null) {
+            accommodation.setLocation(existingLocation);
+        } else {
+            Location newLocation = new Location(accommodationDTO.getLocation());
+            locationRepository.save(newLocation);
+            accommodation.setLocation(newLocation);
+        }
+
         accommodation.setType(accommodationDTO.getType());
 
         Set<Long> amenityIds = accommodationDTO.getAmenities().stream()
@@ -112,16 +150,22 @@ public class AccommodationService {
 
         accommodation.setAmenities(new HashSet<>(amenityService.findAllById(amenityIds)));
 
-        Set<Availability> availabilities = new HashSet<>();
+        Set<Availability> availabilities  = new HashSet<>();
         for(AvailabilityDTO availabilityDTO : accommodationDTO.getAvailability()){
             Availability availability = new Availability(availabilityDTO);
             availability.setAccommodation(accommodation);
+            if (availability.getSpecialPrice() == null) {
+                availability.setSpecialPrice(accommodationDTO.getPricePerNight());
+            }
             availabilities.add(availability);
         }
 
+
         accommodation.setAvailability(availabilities);
 
-        accommodation.setImages(accommodationDTO.getImages());
+        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
+
+        accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
         accommodation.setRating(accommodationDTO.getRating());
         accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
         accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
@@ -134,6 +178,50 @@ public class AccommodationService {
         accommodationRepository.save(accommodation);
         return accommodation;
     }
+
+    //posmatrati sve dostupnosti u toku tekuce godine
+    public void fillAvailabilityForCurrentYear(Accommodation accommodation, Set<AvailabilityDTO> availabilitiesDTO) {
+        int currentYear = Year.now().getValue();
+
+        // sortirati postojece dostupnosti po datumu
+        List<AvailabilityDTO> sortedAvailabilities = availabilitiesDTO.stream()
+                .sorted(Comparator.comparing(AvailabilityDTO::getStartDate))
+                .collect(Collectors.toList());
+
+        // dodaj availabilityije za datume izmedju postojecih definisanih dostupnosti
+        for (int i = 0; i < sortedAvailabilities.size() - 1; i++) {
+            LocalDate endOfCurrent = sortedAvailabilities.get(i).getEndDate() ;
+            LocalDate startOfNext = sortedAvailabilities.get(i + 1).getStartDate() ;
+
+            // proveri razliku izmedju dva uzastopna datuma
+            if (!endOfCurrent.plusDays(1).equals(startOfNext)) {
+
+                Availability defaultAvailability = new Availability();
+                defaultAvailability.setStartDate(LocalDate.from(endOfCurrent.plusDays(1).atStartOfDay()));
+                defaultAvailability.setEndDate(LocalDate.from(startOfNext.minusDays(1).atStartOfDay()));
+                defaultAvailability.setAccommodation(accommodation);
+                // postaviti da bude null cena za nedostupne datume
+                defaultAvailability.setSpecialPrice(null);
+
+                accommodation.getAvailability().add(defaultAvailability);
+            }
+        }
+
+        // dodaj availability za datume nakon poslednje definisane dostupnosti do kraja godine
+        LocalDate lastEndDate = sortedAvailabilities.get(sortedAvailabilities.size() - 1).getEndDate() ;
+        if (!lastEndDate.isEqual(LocalDate.of(currentYear, 12, 31))) {
+            Availability defaultAvailability = new Availability();
+            defaultAvailability.setStartDate(LocalDate.from(lastEndDate.plusDays(1).atStartOfDay()));
+            defaultAvailability.setEndDate(LocalDate.from(LocalDate.of(currentYear, 12, 31).atTime(LocalTime.MAX)));
+            defaultAvailability.setAccommodation(accommodation);
+            // isto staviti da je null
+            defaultAvailability.setSpecialPrice(null);
+
+            accommodation.getAvailability().add(defaultAvailability);
+        }
+    }
+
+
     public void save(Accommodation accommodation) {
         accommodationRepository.save(accommodation);
     }
@@ -182,10 +270,19 @@ public class AccommodationService {
 
         deleteAccommodationImage(id);
 
-        String relativePath = String.format("userAvatars\\user-%d", id);
-        relativePath += "." + imageType;
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        String directoryPath = String.format("src/main/resources/images/accommodations/accommodation-%d", id);
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        /*relativePath += File.separator;
+        relativePath += "." + imageType;*/
+        String filename = UUID.randomUUID().toString();
+        String imagePath = String.format("%s%s%s.%s", relativePath, File.separator, filename, imageType);
         try {
-            imagesRepository.addImage(imageBytes, imageType, relativePath);
+            imagesRepository.addImage(imageBytes, imageType, imagePath);
         } catch (Exception e) {
             return false;
         }
@@ -212,7 +309,7 @@ public class AccommodationService {
         }
     }
 
-    private String findAccommodationImageName(Long id) {
+    public String findAccommodationImageName(Long id) {
         File mainDirectory = new File("src\\main\\resources\\images\\accommodations");
 
         File[] accommodationDirectories = mainDirectory.listFiles();
@@ -232,6 +329,35 @@ public class AccommodationService {
             }
         }
         return null;
+    }
+
+    public Optional<Accommodation> findById(Long id) {
+        return accommodationRepository.findById(id);
+    }
+
+    public void deleteAllImages(Long id) {
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        imagesRepository.deleteAllImages(relativePath);
+    }
+
+    private int getImagesCount(Long id) {
+        String relativePath = String.format("accommodations\\accommodation-%d", id);
+        File mainDirectory = new File("src\\main\\resources\\images\\" + relativePath);
+        File[] files = mainDirectory.listFiles();
+        if (files != null) {
+            return files.length;
+        }
+        return 0;
+    }
+
+    public String addImage(Long id, Image image) {
+        String relativePath = "accommodations/accommodation-" + id + "/" + "accommodation-" + id + "-" + (getImagesCount(id) + 1) + "." + image.getImageType();;
+        try {
+            imagesRepository.addImage(image.getImageBytes(), image.getImageType(), relativePath);
+            return relativePath;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
