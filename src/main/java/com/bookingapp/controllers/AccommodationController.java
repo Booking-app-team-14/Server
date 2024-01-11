@@ -4,6 +4,7 @@ import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.repositories.LocationRepository;
 import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,6 +41,8 @@ public class AccommodationController {
 
     @Autowired
     private LocationService locationService;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @GetMapping(value = "accommodations/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
@@ -48,7 +51,7 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        AccommodationDTO result = new AccommodationDTO(accommodation.get(),amenityService);
+        AccommodationDTO result = new AccommodationDTO(accommodation.get());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -179,9 +182,18 @@ public class AccommodationController {
         }
         accommodation.setImages(images);
 
-        Location location = new Location(accommodationUpdateDTO.getLocation());
-        locationService.save(location);
-        accommodation.setLocation(location);
+        Location existingLocation = locationRepository.findByCountryAndCityAndAddress(
+                accommodationUpdateDTO.getLocation().getCountry(),
+                accommodationUpdateDTO.getLocation().getCity(),
+                accommodationUpdateDTO.getLocation().getAddress()
+        );
+        if (existingLocation != null) {
+            accommodation.setLocation(existingLocation);
+        } else {
+            Location location = new Location(accommodationUpdateDTO.getLocation());
+            locationService.save(location);
+            accommodation.setLocation(location);
+        }
 
         accommodation.setAmenities(accommodationUpdateDTO.getAmenities().stream()
                 .map(amenityId -> amenityService.findById(amenityId))

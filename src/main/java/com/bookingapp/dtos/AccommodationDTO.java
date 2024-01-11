@@ -67,7 +67,7 @@ public class AccommodationDTO {
 
 
 
-    public AccommodationDTO(Accommodation accommodation, AmenityService amenityService) {
+    public AccommodationDTO(Accommodation accommodation) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
@@ -75,7 +75,7 @@ public class AccommodationDTO {
         this.type = accommodation.getType();
         this.images = accommodation.getImages();
         this.amenities = accommodation.getAmenities().stream()
-                .map(amenity -> new AmenityDTO(amenity.getId(), amenity.getName(), amenity.getDescription(), amenity.getIcon(), amenityService))
+                .map(amenity -> new AmenityDTO(amenity.getId(), amenity.getName(), amenity.getDescription()))
                 .collect(Collectors.toSet());
         this.rating = accommodation.getRating();
         this.minNumberOfGuests = accommodation.getMinNumberOfGuests();

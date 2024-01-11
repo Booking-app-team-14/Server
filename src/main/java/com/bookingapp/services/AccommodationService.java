@@ -165,7 +165,7 @@ public class AccommodationService {
 
         fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
-        accommodation.setImages(accommodationDTO.getImages());
+        accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
         accommodation.setRating(accommodationDTO.getRating());
         accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
         accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());

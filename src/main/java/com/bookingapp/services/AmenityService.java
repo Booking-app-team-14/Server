@@ -49,6 +49,6 @@ public class AmenityService {
 
     public List<AmenityDTO> findAll() {
         List<Amenity> amenities = amenityRepository.findAll();
-        return AmenityDTO.transformToDTO(amenities, this);
+        return AmenityDTO.transformToDTO(amenities);
     }
 }
