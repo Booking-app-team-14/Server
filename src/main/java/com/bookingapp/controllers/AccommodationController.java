@@ -48,7 +48,7 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        AccommodationDTO result = new AccommodationDTO(accommodation.get(),amenityService);
+        AccommodationDTO result = new AccommodationDTO(accommodation.get());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
