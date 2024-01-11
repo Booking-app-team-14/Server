@@ -24,7 +24,7 @@ public class AmenityDTO {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.icon = "amenities\\icon"+this.id+".jpg";
+        this.icon = "amenities\\icon" + id + ".jpg";
         ImagesRepository imagesRepository = new ImagesRepository();
         try {
             String imageBytes = imagesRepository.getImageBytes(this.icon);
