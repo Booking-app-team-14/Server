@@ -3,7 +3,6 @@ package com.bookingapp.services;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.ReservationRequest;
-import com.bookingapp.entities.UserAccount;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.ReservationRequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,11 +126,19 @@ public  class ReservationRequestService {
 //    }
 
 
-    public List<ReservationRequest> findById(Long id) {
-        return requestRepository.findAllByUserId(id);
+    public Optional<ReservationRequest> findById(Long id) {
+        return requestRepository.findById(id);
     }
 
     public List<ReservationRequest> findByUsername(String username) {
         return  requestRepository.findByUsername(username);
+    }
+
+    public void delete(ReservationRequest reservation) {
+        requestRepository.delete(reservation);
+    }
+
+    public List<ReservationRequest> findByUserId(Long id) {
+        return requestRepository.findAllByUserId(id);
     }
 }

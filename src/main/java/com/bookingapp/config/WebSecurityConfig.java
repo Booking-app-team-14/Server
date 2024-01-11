@@ -127,6 +127,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/requests")).permitAll();
                             auth.requestMatchers(antMatcher("/h2/**")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/token/{token}")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/requests/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests/guest/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests/owner/{username}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/favorite-accommodations/{accommodationId}")).permitAll();
@@ -166,6 +167,7 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"),
                         antMatcher(HttpMethod.POST, "/api/requests"), antMatcher(HttpMethod.GET, "/api/users/token/{token}"),
                         antMatcher(HttpMethod.GET,"/api/requests/guest/{id}"), antMatcher(HttpMethod.GET,"/api/requests/owner/{username}"),
+                        antMatcher(HttpMethod.DELETE,"/api/requests/{id}"),
                         antMatcher(HttpMethod.PUT,"/api/users/{id}/favorite-accommodations/{accommodationId}"),
                         antMatcher(HttpMethod.DELETE,"/api/users/{id}/favorite-accommodations/{accommodationId}"),
                         antMatcher(HttpMethod.GET,"/api/users/favorite/{userId}"),

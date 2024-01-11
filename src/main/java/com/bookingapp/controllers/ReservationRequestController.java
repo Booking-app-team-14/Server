@@ -2,6 +2,7 @@ package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReservationRequestDTO;
 import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.ReservationRequestService;
 import com.bookingapp.services.UserAccountService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,7 +40,7 @@ public class ReservationRequestController {
 
     @GetMapping(value = "/requests/guest/{id}", name = "gets a requests by guest Id")
     public ResponseEntity<List<ReservationRequestDTO>> getReservationRequestsByGuestId(@PathVariable Long id) {
-        List<ReservationRequest> requests = requestService.findById(id);
+        List<ReservationRequest> requests = requestService.findByUserId(id);
         if (requests.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -75,7 +77,23 @@ public class ReservationRequestController {
 
     @DeleteMapping(value = "/requests/{id}")
     public ResponseEntity<String> deleteReservationRequest(@PathVariable Long id) {
-      return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        Optional<ReservationRequest> reservationOptional = requestService.findById(id);
+
+        if (reservationOptional.isPresent()) {
+            ReservationRequest reservation = reservationOptional.get();
+
+            if (reservation.getRequestStatus().equals(RequestStatus.SENT)) {
+
+                requestService.delete(reservation);
+                return new ResponseEntity<>("Deleted", HttpStatus.OK);
+            } else {
+               //TODO Finsih the logic for ACCEPTED reservation
+                return new ResponseEntity<>("Deletion not allowed for reservations with status other than SENT", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+
+            return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
+        }
         }
 
     @GetMapping(value = "/users/{Id}/requests", name = "user gets reservation history")

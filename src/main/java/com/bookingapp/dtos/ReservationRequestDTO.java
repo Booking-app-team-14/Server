@@ -18,6 +18,7 @@ public class ReservationRequestDTO {
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
+        private Long id;
         private Long guestId;
         private Long accommodationId;
         private LocalDate startDate;
@@ -50,6 +51,7 @@ public class ReservationRequestDTO {
     }
 
     public ReservationRequestDTO(ReservationRequest r, UserAccountService userAccountService, AccommodationService accommodationService) {
+            this.id = r.getId();
             this.guestId = r.getUserId();
             this.accommodationId = r.getAccommodationId();
             this.requestStatus = r.getRequestStatus();
