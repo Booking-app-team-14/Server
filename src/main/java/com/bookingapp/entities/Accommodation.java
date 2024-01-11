@@ -8,6 +8,8 @@ import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.AmenityRepository;
 import com.bookingapp.services.AmenityService;
 import com.bookingapp.services.AvailabilityService;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Setter
 @Entity
 //@Table(name = "accommodations")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Accommodation {
 
     @Id

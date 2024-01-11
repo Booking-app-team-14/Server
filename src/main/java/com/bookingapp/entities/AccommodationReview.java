@@ -16,11 +16,11 @@ public class AccommodationReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Accommodation accommodation;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private UserAccount user;
+    @ManyToOne
+    private Guest user;
 
     private Integer rating;
 
@@ -36,8 +36,8 @@ public class AccommodationReview {
 
     }
 
-    public AccommodationReview(Long id, Accommodation accommodation, UserAccount user, Integer rating, String comment, ReviewStatus status, LocalDateTime sentAt) {
-    	this.id = id;
+    public AccommodationReview(Accommodation accommodation, Guest user, Integer rating, String comment, ReviewStatus status, LocalDateTime sentAt) {
+    	//this.id = id;
     	this.accommodation = accommodation;
     	this.user = user;
     	this.rating = rating;

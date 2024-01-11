@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "api")
+@RequestMapping(value = "/api")
 public class AccommodationReviewController {
 
     @Autowired
@@ -88,10 +88,10 @@ public class AccommodationReviewController {
 //        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
-    public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
+    //@PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
+    //public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
 
-        return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
+        //return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
 
 //        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
 //
@@ -110,7 +110,12 @@ public class AccommodationReviewController {
 //        accommodationReviewService.save(accommodationReview);
 //
 //        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.CREATED);
-    }
+    //}
 
+    @PostMapping(value = "/accommodations/accommodationReviews", name = "user adds a review for accommodation")
+    public ResponseEntity<AccommodationReview> addAccommodationReview(@RequestBody AccommodationReviewDTO reviewDTO) {
+        AccommodationReview savedReview = accommodationReviewService.saveAccommodationReview(reviewDTO);
+        return new ResponseEntity<>(savedReview, HttpStatus.CREATED);
+    }
 
 }
