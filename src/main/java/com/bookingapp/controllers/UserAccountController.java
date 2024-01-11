@@ -142,6 +142,7 @@ public class UserAccountController {
     @GetMapping(value = "/users/byUsername/{username}")
     public ResponseEntity<?> getUserAccountByUsername(@PathVariable String username) {
         UserAccount user = userAccountService.findByUsername(username);
+        System.out.println(user);
 
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -154,11 +155,12 @@ public class UserAccountController {
             Owner owner = (Owner) user;
             return new ResponseEntity<>(new OwnerDTO(owner), HttpStatus.OK);
         }
-        else {
+        else if (user.getRole() == Role.ADMIN) {
             Admin admin = (Admin) user;
             return new ResponseEntity<>(new AdminDTO(admin), HttpStatus.OK);
         }
 
+        return new ResponseEntity<>(new AdminDTO((Admin) user), HttpStatus.OK);
     }
 
     @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")

@@ -4,6 +4,7 @@ import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.ReservationRequest;
 import com.bookingapp.entities.UserAccount;
+import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.ReservationRequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public  class ReservationRequestService {
             // Check availability of accommodations between chosen dates
             Accommodation accommodation = ac1.get();
             Set<Availability> availabilities = accommodation.getAvailability();
-            List<ReservationRequest> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId());
+            List<ReservationRequest> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId(), RequestStatus.ACCEPTED);
 
             if (!existingReservations.isEmpty()) {
                 boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
