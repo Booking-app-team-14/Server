@@ -50,4 +50,12 @@ public class Availability {
         this.specialPrice=0.0;
         this.accommodation=null;
     }
+
+    public Availability(LocalDate startDate, LocalDate endDate, Double specialPrice, Accommodation accommodation) {
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.specialPrice=specialPrice;
+        this.accommodation=accommodation;
+    }
+
 }

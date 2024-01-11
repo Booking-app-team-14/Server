@@ -16,6 +16,9 @@ public class ReservationRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    @Column(nullable = true)
+    private Long reservationId;
+
 //    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
  //   private Guest from;
 
@@ -49,6 +52,7 @@ public class ReservationRequest {
     @Column(nullable = false)
     private String userImageType;
     @Column(nullable = false)
+    @Lob
     private String userProfilePictureBytes;
     @Column(nullable = false)
     private String userUsername;
@@ -59,6 +63,7 @@ public class ReservationRequest {
     @Column(nullable = false)
     private String imageType; // accommodation main picture type (jpg, png, etc.)
     @Column(nullable = false)
+    @Lob
     private String mainPictureBytes;
     public ReservationRequest() {
 

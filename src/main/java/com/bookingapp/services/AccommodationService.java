@@ -32,6 +32,8 @@ public class AccommodationService {
     private LocationRepository locationRepository;
     @Autowired
     private UserAccountService userAccountService;
+    @Autowired
+    private AvailabilityService availabilityService;
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
@@ -389,7 +391,7 @@ public class AccommodationService {
         if (relativePaths.isEmpty()) {
             return null;
         }
-        for (String relativePath:relativePaths) {
+           for (String relativePath:relativePaths) {
             try {
                 imageBytes.add(imagesRepository.getImageBytes(relativePath));
             } catch (IOException e) {
@@ -398,5 +400,93 @@ public class AccommodationService {
         }
         return imageBytes;
     }
+
+    public Reservation reserveAvailability(Long accommodationId, LocalDate startDate, LocalDate endDate) {
+        Optional<Accommodation> accommodationOptional = accommodationRepository.findById(accommodationId);
+        Reservation reservation = new Reservation();
+        if (accommodationOptional.isPresent()) {
+            Accommodation accommodation = accommodationOptional.get();
+            reservation.setAccommodation(accommodation);
+            for (Availability availability : accommodation.getAvailability()) {
+                if (availability.getStartDate().isEqual(startDate) && availability.getEndDate().isEqual(endDate)) {
+                    accommodation.getAvailability().remove(availability);
+                    reservation.getAvailability().add(availability);
+                }
+                else if(availability.getStartDate().isBefore(startDate) && (availability.getEndDate().isAfter(startDate) && availability.getEndDate().isBefore(endDate))){
+                    Availability savedAvailability = new Availability(startDate, availability.getEndDate(), availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    availability.setEndDate(startDate.minusDays(1));
+                }
+                else if(availability.getStartDate().isBefore(startDate) && availability.getEndDate().isAfter(endDate)){
+                    Availability savedAvailability = new Availability(startDate, endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    Availability newAvailability = new Availability();
+                    newAvailability.setStartDate(endDate.plusDays(1));
+                    newAvailability.setEndDate(availability.getEndDate());
+                    newAvailability.setAccommodation(accommodation);
+                    newAvailability.setSpecialPrice(availability.getSpecialPrice());
+                    accommodation.getAvailability().add(newAvailability);
+                    availability.setEndDate(startDate.minusDays(1));
+                }
+                else if(availability.getStartDate().isAfter(startDate) && availability.getEndDate().isBefore(endDate)){
+                    accommodation.getAvailability().remove(availability);
+                    reservation.getAvailability().add(availability);
+                }
+                else if(availability.getStartDate().isAfter(startDate) && (availability.getEndDate().isAfter(endDate) && availability.getStartDate().isBefore(endDate))){
+                    Availability savedAvailability = new Availability(availability.getStartDate(), endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    availability.setStartDate(endDate.plusDays(1));
+                }
+                else if(availability.getStartDate().isEqual(startDate) && availability.getEndDate().isBefore(endDate)){
+                    accommodation.getAvailability().remove(availability);
+                    reservation.getAvailability().add(availability);
+                }
+                else if(availability.getStartDate().isEqual(startDate) && availability.getEndDate().isAfter(endDate)){
+                    Availability savedAvailability = new Availability(startDate, endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    availability.setStartDate(endDate.plusDays(1));
+                }
+                else if(availability.getStartDate().isBefore(startDate) && availability.getEndDate().isEqual(endDate)){
+                    Availability savedAvailability = new Availability(startDate, endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    availability.setEndDate(startDate.minusDays(1));
+                }
+                else if(availability.getStartDate().isAfter(startDate) && availability.getEndDate().isEqual(endDate)){
+                    accommodation.getAvailability().remove(availability);
+                    reservation.getAvailability().add(availability);
+                }
+                else if(availability.getStartDate().isEqual(endDate)){
+                    Availability savedAvailability = new Availability(endDate, endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    if(availability.getStartDate().isEqual(availability.getEndDate())) {
+                        accommodation.getAvailability().remove(availability);
+                    }
+                    else {
+                        availability.setStartDate(availability.getStartDate().plusDays(1));
+                    }
+                }
+                else if(availability.getEndDate().isEqual(startDate)){
+                    Availability savedAvailability = new Availability(endDate, endDate, availability.getSpecialPrice(), accommodation);
+                    availabilityService.save(savedAvailability);
+                    reservation.getAvailability().add(savedAvailability);
+                    if(availability.getStartDate().isEqual(availability.getEndDate())) {
+                        accommodation.getAvailability().remove(availability);
+                    }
+                    else {
+                        availability.setEndDate(availability.getEndDate().minusDays(1));
+                    }
+                }
+            }
+            accommodationRepository.save(accommodation);
+        }
+        return reservation;
+    }
+
 }
 

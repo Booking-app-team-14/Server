@@ -141,4 +141,12 @@ public  class ReservationRequestService {
     public List<ReservationRequest> findByUserId(Long id) {
         return requestRepository.findAllByUserId(id);
     }
+
+    public void save(ReservationRequest reservation) {
+        requestRepository.save(reservation);
+    }
+
+    public List<ReservationRequest> findByAccommodationId(Long accommodationId) {
+        return requestRepository.findAllByAccommodationId(accommodationId);
+    }
 }
