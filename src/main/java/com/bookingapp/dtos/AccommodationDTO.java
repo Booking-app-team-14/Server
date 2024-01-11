@@ -6,11 +6,13 @@ import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
+import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,9 +27,9 @@ public class AccommodationDTO {
     private String description;
     private LocationDTO location;
     private AccommodationType type;
-    private Set<String> images;
-    private Set<String> imageTypes;
-    private Set<String> imageBytes;
+    private Set<String> images = new HashSet<>();
+    private Set<String> imageTypes = new HashSet<>();
+    private Set<String> imageBytes = new HashSet<>();
     private Set<AmenityDTO> amenities;
     private Double rating;
     private Integer minNumberOfGuests;
@@ -67,7 +69,7 @@ public class AccommodationDTO {
 
 
 
-    public AccommodationDTO(Accommodation accommodation) {
+    public AccommodationDTO(Accommodation accommodation, AccommodationService accommodationService) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
@@ -87,16 +89,16 @@ public class AccommodationDTO {
         this.pricePerGuest = accommodation.getPricePerGuest();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
-        for (Object imagePath:accommodation.getImages().toArray()){
         try{
-            String imageBytes = imagesRepository.getImageBytes((String) imagePath /*"accommodations/accommodation-1/accommodation-1-1.jpg"*/);
-            String imageType = imagesRepository.getImageType(imageBytes);
-            this.imageTypes.add(imageType);
-            this.imageBytes.add(imageBytes);
+            List<String> imageBytes = accommodationService.getAllAccommodationImages(this.id);
+            for (String imageByte:imageBytes) {
+                String imageType = imagesRepository.getImageType(imageByte);
+                this.imageTypes.add(imageType);
+                this.imageBytes.add(imageByte);
+            }
         } catch (Exception e) {
             this.imageTypes = new HashSet<>();
             this.imageBytes = new HashSet<>();
-        }
         }
     }
 }

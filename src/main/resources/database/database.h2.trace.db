@@ -3852,3 +3852,7 @@ org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT *
 SELECT * FROMACCOMMODATION_IMAGES [42000-214]
 2024-01-11 15:00:51 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-11 15:10:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-11 15:10:47 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]

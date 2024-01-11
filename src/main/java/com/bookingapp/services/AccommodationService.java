@@ -331,6 +331,28 @@ public class AccommodationService {
         return null;
     }
 
+    public  List<String> findAllAccommodationImageNames(Long id) {
+        File mainDirectory = new File("src\\main\\resources\\images\\accommodations");
+
+        List<String> names = new ArrayList<>();
+
+        File[] accommodationDirectories = mainDirectory.listFiles();
+        if (accommodationDirectories != null) {
+            for (File accommodationDirectory : accommodationDirectories) {
+                if (accommodationDirectory.isDirectory() && accommodationDirectory.getName().startsWith("accommodation-" + id)) {
+                    File[] filesInAccommodation = accommodationDirectory.listFiles();
+                    if (filesInAccommodation != null) {
+                        for (File file : filesInAccommodation) {
+                            String filename = file.getName();
+                            names.add("accommodations\\" + accommodationDirectory.getName() + "\\" + file.getName());
+                            }
+                        }
+                    }
+                }
+            }
+        return names;
+    }
+
     public Optional<Accommodation> findById(Long id) {
         return accommodationRepository.findById(id);
     }
@@ -360,5 +382,21 @@ public class AccommodationService {
         }
     }
 
+
+    public List<String> getAllAccommodationImages(Long id) {
+        List<String> relativePaths = findAllAccommodationImageNames(id);
+        List<String> imageBytes = new ArrayList<>();
+        if (relativePaths.isEmpty()) {
+            return null;
+        }
+        for (String relativePath:relativePaths) {
+            try {
+                imageBytes.add(imagesRepository.getImageBytes(relativePath));
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return imageBytes;
+    }
 }
 
