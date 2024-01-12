@@ -5,6 +5,7 @@ import com.bookingapp.entities.Amenity;
 import com.bookingapp.entities.Availability;
 import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.enums.Handling;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
@@ -37,6 +38,7 @@ public class AccommodationDTO {
     private Set<AvailabilityDTO> availability;
     private Double pricePerNight;
     private boolean pricePerGuest;
+    private Handling requestHandling;
     private Integer cancellationDeadline;
     private Long owner_Id;
 
@@ -45,7 +47,7 @@ public class AccommodationDTO {
             AccommodationType type, Set<String> images, Set<AmenityDTO> amenities,
             Double rating, Integer minNumberOfGuests, Integer maxNumberOfGuests,
             Set<AvailabilityDTO> availability, Double pricePerNight,
-            boolean pricePerGuest, Integer cancellationDeadline, Long owner_Id
+            boolean pricePerGuest,Handling requestHandling, Integer cancellationDeadline, Long owner_Id
     ) {
         this.id = id;
         this.name = name;
@@ -60,6 +62,7 @@ public class AccommodationDTO {
         this.availability = availability;
         this.pricePerNight = pricePerNight;
         this.pricePerGuest = pricePerGuest;
+        this.requestHandling = requestHandling;
         this.cancellationDeadline = cancellationDeadline;
         this.owner_Id=owner_Id;
     }
@@ -87,6 +90,7 @@ public class AccommodationDTO {
                 .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
         this.pricePerGuest = accommodation.getPricePerGuest();
+        this.requestHandling = accommodation.getRequestHandling();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
         try{

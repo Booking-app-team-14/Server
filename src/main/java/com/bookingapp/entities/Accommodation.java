@@ -5,6 +5,7 @@ import com.bookingapp.dtos.AmenityDTO;
 import com.bookingapp.dtos.AvailabilityDTO;
 import com.bookingapp.dtos.LocationDTO;
 import com.bookingapp.enums.AccommodationType;
+import com.bookingapp.enums.Handling;
 import com.bookingapp.repositories.AmenityRepository;
 import com.bookingapp.services.AmenityService;
 import com.bookingapp.services.AvailabilityService;
@@ -73,6 +74,8 @@ public class Accommodation {
 
     @Column(nullable=false)
     private boolean pricePerGuest;
+
+    private Handling requestHandling;
 
     @Column(nullable=false)
     private Integer cancellationDeadline;

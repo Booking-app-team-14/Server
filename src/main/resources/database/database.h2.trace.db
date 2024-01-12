@@ -3876,3 +3876,105 @@ org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-21
 org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
 2024-01-12 14:21:25 jdbc[6]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:49:59 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:51:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:52:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:53:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:54:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:57:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 16:58:27 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'MANUAL' (ACCOMMODATION: ""REQUEST_HANDLING"" TINYINT)"; SQL statement:
+UPDATE "PUBLIC"."ACCOMMODATION" SET "APPROVED"=? ,"CANCELLATION_DEADLINE"=? ,"MAX_NUMBER_OF_GUESTS"=? ,"MIN_NUMBER_OF_GUESTS"=? ,"PRICE_PER_GUEST"=? ,"PRICE_PER_NIGHT"=? ,"RATING"=? ,"REQUEST_HANDLING"=? ,"ID"=? ,"LOCATION_ID"=? ,"OWNER_ID"=? ,"DESCRIPTION"=? ,"NAME"=? ,"TYPE"=?  WHERE "ID"=? [22018-214]
+2024-01-12 16:58:27 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'MANUAL' (ACCOMMODATION: ""REQUEST_HANDLING"" TINYINT)"; SQL statement:
+UPDATE "PUBLIC"."ACCOMMODATION" SET "APPROVED"=? ,"CANCELLATION_DEADLINE"=? ,"MAX_NUMBER_OF_GUESTS"=? ,"MIN_NUMBER_OF_GUESTS"=? ,"PRICE_PER_GUEST"=? ,"PRICE_PER_NIGHT"=? ,"RATING"=? ,"REQUEST_HANDLING"=? ,"ID"=? ,"LOCATION_ID"=? ,"OWNER_ID"=? ,"DESCRIPTION"=? ,"NAME"=? ,"TYPE"=?  WHERE "ID"=? [22018-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:00:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:03:37 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:03:59 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:05:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:08:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:08:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:08:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:08:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:08:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:09:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:12:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:18:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:18:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:18:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:21:07 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:21:07 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:21:07 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:23:22 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'MANUAL' (ACCOMMODATION: ""REQUEST_HANDLING"" TINYINT)"; SQL statement:
+UPDATE "PUBLIC"."ACCOMMODATION" SET "ID"=? ,"APPROVED"=? ,"CANCELLATION_DEADLINE"=? ,"DESCRIPTION"=? ,"MAX_NUMBER_OF_GUESTS"=? ,"MIN_NUMBER_OF_GUESTS"=? ,"NAME"=? ,"PRICE_PER_GUEST"=? ,"PRICE_PER_NIGHT"=? ,"RATING"=? ,"REQUEST_HANDLING"=? ,"TYPE"=? ,"LOCATION_ID"=? ,"OWNER_ID"=?  WHERE "ID"=? [22018-214]
+2024-01-12 17:23:22 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'MANUAL' (ACCOMMODATION: ""REQUEST_HANDLING"" TINYINT)"; SQL statement:
+UPDATE "PUBLIC"."ACCOMMODATION" SET "ID"=? ,"APPROVED"=? ,"CANCELLATION_DEADLINE"=? ,"DESCRIPTION"=? ,"MAX_NUMBER_OF_GUESTS"=? ,"MIN_NUMBER_OF_GUESTS"=? ,"NAME"=? ,"PRICE_PER_GUEST"=? ,"PRICE_PER_NIGHT"=? ,"RATING"=? ,"REQUEST_HANDLING"=? ,"TYPE"=? ,"LOCATION_ID"=? ,"OWNER_ID"=?  WHERE "ID"=? [22018-214]
+2024-01-12 17:25:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:25:21 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:26:02 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 17:26:02 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
