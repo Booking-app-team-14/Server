@@ -34,6 +34,8 @@ public class AccommodationService {
     private UserAccountService userAccountService;
     @Autowired
     private AvailabilityService availabilityService;
+    @Autowired
+    private ReservationService reservationService;
 
     private ImagesRepository imagesRepository = new ImagesRepository();
 
@@ -486,6 +488,18 @@ public class AccommodationService {
             accommodationRepository.save(accommodation);
         }
         return reservation;
+    }
+
+    public void cancelReservation(ReservationRequest reservationRequest) {
+        Optional<Accommodation> accommodationOptional = accommodationRepository.findById(reservationRequest.getAccommodationId());
+        if (accommodationOptional.isPresent()) {
+            Accommodation accommodation = accommodationOptional.get();
+            Reservation reservation = reservationService.findById(reservationRequest.getReservationId());
+            for (Availability availability : reservation.getAvailability()) {
+                accommodation.getAvailability().add(availability);
+            }
+            accommodationRepository.save(accommodation);
+        }
     }
 
 }
