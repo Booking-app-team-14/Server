@@ -38,7 +38,7 @@ public class AccommodationDTO {
     private Set<AvailabilityDTO> availability;
     private Double pricePerNight;
     private boolean pricePerGuest;
-    private Handling requestHandling;
+    private boolean isAutomatic;
     private Integer cancellationDeadline;
     private Long owner_Id;
 
@@ -47,7 +47,7 @@ public class AccommodationDTO {
             AccommodationType type, Set<String> images, Set<AmenityDTO> amenities,
             Double rating, Integer minNumberOfGuests, Integer maxNumberOfGuests,
             Set<AvailabilityDTO> availability, Double pricePerNight,
-            boolean pricePerGuest,Handling requestHandling, Integer cancellationDeadline, Long owner_Id
+            boolean pricePerGuest,boolean isAutomatic, Integer cancellationDeadline, Long owner_Id
     ) {
         this.id = id;
         this.name = name;
@@ -62,7 +62,7 @@ public class AccommodationDTO {
         this.availability = availability;
         this.pricePerNight = pricePerNight;
         this.pricePerGuest = pricePerGuest;
-        this.requestHandling = requestHandling;
+        this.isAutomatic = isAutomatic;
         this.cancellationDeadline = cancellationDeadline;
         this.owner_Id=owner_Id;
     }
@@ -90,7 +90,7 @@ public class AccommodationDTO {
                 .collect(Collectors.toSet());
         this.pricePerNight = accommodation.getPricePerNight();
         this.pricePerGuest = accommodation.getPricePerGuest();
-        this.requestHandling = accommodation.getRequestHandling();
+        this.isAutomatic = accommodation.isAutomatic();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
         try{

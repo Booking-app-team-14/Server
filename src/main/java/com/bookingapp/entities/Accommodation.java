@@ -75,7 +75,8 @@ public class Accommodation {
     @Column(nullable=false)
     private boolean pricePerGuest;
 
-    private Handling requestHandling;
+    @Column(nullable = false)
+    private boolean isAutomatic;
 
     @Column(nullable=false)
     private Integer cancellationDeadline;
