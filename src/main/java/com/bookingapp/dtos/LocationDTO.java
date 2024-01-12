@@ -3,9 +3,11 @@ import com.bookingapp.entities.Location;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class LocationDTO {
+public class LocationDTO implements Serializable {
 //    private Long id;
     private String country;
     private String city;

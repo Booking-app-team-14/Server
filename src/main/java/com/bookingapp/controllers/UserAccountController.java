@@ -182,6 +182,16 @@ public class UserAccountController {
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
+        UserAccount user = userAccountService.getUserById(id);
+        ImagesRepository imagesRepository = new ImagesRepository();
+        String imageType = null;
+        try {
+            imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        user.setProfilePicturePath("userAvatars/user-" + id + "." + imageType);
+        userAccountService.save(user);
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 

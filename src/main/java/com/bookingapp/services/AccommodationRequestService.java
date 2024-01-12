@@ -1,6 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationRequestDTO;
+import com.bookingapp.dtos.AccommodationUpdateDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationRequest;
 import com.bookingapp.entities.Owner;
@@ -100,26 +101,27 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void saveUpdateRequestFromAccommodation(Accommodation accommodation, String message) {
+    public void saveUpdateRequestFromAccommodation(Accommodation accommodation, AccommodationUpdateDTO accommodationUpdateDTO) {
         AccommodationRequestDTO accommodationRequestDTO = new AccommodationRequestDTO(accommodation);
         Instant instant = Instant.now();
         long epochSeconds = instant.getEpochSecond();
         accommodationRequestDTO.setDateRequested(String.valueOf(epochSeconds));
-        accommodationRequestDTO.setMessage("\"" + message + "\"");
+        accommodationRequestDTO.setMessage("\"" + accommodationUpdateDTO.getMessage() + "\"");
         accommodationRequestDTO.setRequestType("updated");
         accommodationRequestDTO.setOwnerUsername(accommodation.getOwner().getUsername());
         ImagesRepository imagesRepository = new ImagesRepository();
-        try {
+        try { // TODO check if this works, because on the frontend it's returning nulls
             accommodationRequestDTO.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(accommodation.getOwner().getProfilePicturePath()));
             accommodationRequestDTO.setOwnerImageType(imagesRepository.getImageType(accommodationRequestDTO.getOwnerProfilePictureBytes()));
             accommodationRequestDTO.setMainPictureBytes(imagesRepository.getImageBytes(accommodation.getImages().stream().findFirst().get()));
             accommodationRequestDTO.setImageType(imagesRepository.getImageType(accommodationRequestDTO.getMainPictureBytes()));
         } catch (Exception ignored) { }
-        AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO);
+        String serializedAccommodationUpdateDTO = accommodationUpdateDTO.serializeToString();
+        AccommodationRequest accommodationRequest = new AccommodationRequest(accommodationRequestDTO, serializedAccommodationUpdateDTO);
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    private void deleteByAccommodationId(Long id) {
+    private void deleteRequestByAccommodationId(Long id) {
         List<AccommodationRequest> requests = accommodationRequestRepository.findAll();
         for (AccommodationRequest r : requests) {
             if (r.getAccommodationId().equals(id)) {
@@ -128,15 +130,30 @@ public class AccommodationRequestService {
         }
     }
 
+    private AccommodationRequest findByAccommodationId(Long id) {
+        List<AccommodationRequest> requests = accommodationRequestRepository.findAll();
+        for (AccommodationRequest r : requests) {
+            if (r.getAccommodationId().equals(id)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public ResponseEntity<AccommodationRequestDTO> adminApprove(List<AccommodationRequestDTO> accommodationRequests, Long id) {
         for (AccommodationRequestDTO r : accommodationRequests) {
             if (r.getAccommodationId().equals(id)) {
-                Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-                if (accommodation.isPresent()) {
-                    Accommodation a = accommodation.get();
-                    a.setApproved(true);
-                    accommodationService.save(a);
-                    deleteByAccommodationId(r.getAccommodationId());
+                Optional<Accommodation> accommodationOpt = accommodationService.getAccommodationById(id);
+                if (accommodationOpt.isPresent()) {
+                    Accommodation accommodation = accommodationOpt.get();
+
+                    AccommodationRequest request = this.findByAccommodationId(r.getAccommodationId());
+                    if (request == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
+                    AccommodationUpdateDTO deserialized = AccommodationUpdateDTO.deserializeFromString(request.getSerializedAccommodationUpdateDTO());
+
+                    accommodationService.update(accommodation, deserialized);
+                    deleteRequestByAccommodationId(r.getAccommodationId());
                 }
                 return new ResponseEntity<>(r, HttpStatus.OK);
             }
@@ -147,9 +164,14 @@ public class AccommodationRequestService {
     public ResponseEntity<Boolean> adminReject(List<AccommodationRequestDTO> accommodationRequests, Long id) {
         for (AccommodationRequestDTO r : accommodationRequests) {
             if (r.getAccommodationId().equals(id)) {
-                boolean deleted = accommodationService.deleteAccommodation(id);
-                deleteByAccommodationId(r.getAccommodationId());
-                return new ResponseEntity<>(deleted, HttpStatus.OK);
+                Optional<Accommodation> accommodationOpt = accommodationService.getAccommodationById(id);
+                if (accommodationOpt.isPresent()) {
+                    Accommodation accommodation = accommodationOpt.get();
+                    accommodation.setApproved(true);
+                    accommodationService.save(accommodation);
+                    deleteRequestByAccommodationId(r.getAccommodationId());
+                }
+                return new ResponseEntity<>(true, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(false, HttpStatus.OK);
