@@ -31,13 +31,8 @@ public  class ReservationRequestService {
 
 
         // Check-out date should be after the check-in date
-        if (endDate.isBefore(startDate) || endDate.isEqual(startDate)) {
+        if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("Check-out date should be after the check-in date");
-        }
-
-        // Minimum reservation duration is one night
-        if (ChronoUnit.DAYS.between(startDate, endDate) < 1) {
-            throw new IllegalArgumentException("Minimum reservation duration is one night");
         }
 
         // Check-in date should be at least one day after today

@@ -3868,3 +3868,11 @@ INSERT INTO "PUBLIC"."RESERVATION_REQUEST"("ID","ACCOMMODATION_ID","DATE_REQUEST
 2024-01-11 22:48:08 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'' (RESERVATION_REQUEST: ""RESERVATION_ID"" BIGINT)"; SQL statement:
 INSERT INTO "PUBLIC"."RESERVATION_REQUEST"("ID","ACCOMMODATION_ID","DATE_REQUESTED","END_DATE","IMAGE_TYPE","MAIN_PICTURE_BYTES","NAME","NUMBER_OF_GUESTS","REQUEST_STATUS","STARS","START_DATE","TOTAL_PRICE","TYPE","USER_ID","USER_IMAGE_TYPE","USER_PROFILE_PICTURE_BYTES","USER_USERNAME","RESERVATION_ID")VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) [22018-214]
+2024-01-12 13:54:15 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 14:04:22 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 14:17:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-12 14:21:25 jdbc[6]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
