@@ -62,7 +62,7 @@ public class AccommodationReportController {
     private int getNumberOfReservations(Accommodation accommodation, List<ReservationRequest> reservationRequests, LocalDate startDate, LocalDate endDate) {
         return (int) reservationRequests.stream()
                 .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
-                .filter(request -> request.getEndDate().isBefore(endDate) && request.getEndDate().isAfter(startDate))
+                .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
                 .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
                 .count();
     }
@@ -70,31 +70,24 @@ public class AccommodationReportController {
     private double getTotalProfit(Accommodation accommodation, List<ReservationRequest> reservationRequests, LocalDate startDate, LocalDate endDate) {
         return reservationRequests.stream()
                 .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
-                .filter(request -> request.getEndDate().isBefore(endDate) && request.getEndDate().isAfter(startDate))
+                .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
                 .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
                 .mapToDouble(ReservationRequest::getTotalPrice)
                 .sum();
     }
 
+    private boolean isReservationWithinDateRange(ReservationRequest request, LocalDate startDate, LocalDate endDate) {
+        return (request.getStartDate().isBefore(endDate) || request.getStartDate().isEqual(endDate))
+                && (request.getEndDate().isAfter(startDate) || request.getEndDate().isEqual(startDate));
+    }
 
-    @GetMapping(value = "/{ownerId}/{accommodationId}/monthly-report")
+
+    @GetMapping(value = "/{accommodationId}/monthly-report")
     public ResponseEntity<Map<String, MonthlyAccommodationReportDTO>> getMonthlyAccommodationReport(
-            @PathVariable Long ownerId,
             @PathVariable Long accommodationId,
             @RequestParam int year) {
 
-        UserAccount userAccount = userAccountService.getUserById(ownerId);
-
-        if (userAccount.getRole() != Role.OWNER) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        Owner owner = (Owner) userAccount;
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
-
-        if (accommodation == null || !accommodation.get().getOwner().equals(owner)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
         List<ReservationRequest> reservationRequests = reservationRequestService.findAllByAccommodationAndYear(accommodation.get(), year);
 

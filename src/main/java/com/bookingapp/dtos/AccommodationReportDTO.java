@@ -24,11 +24,11 @@ public class AccommodationReportDTO {
     private String accommodationName;
 
     private AccommodationType type;
-/*
+
     protected String imageType;
 
     protected String imageBytes;
-*/
+
     private Double rating;
 
     private Integer minNumberOfGuests;
@@ -53,13 +53,13 @@ public class AccommodationReportDTO {
         this.numberOfReservations = numberOfReservations;
         this.totalProfit = totalProfit;
 
-      /*  String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
+        String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
         try {
             String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
             this.imageBytes = imageBytes;
             this.imageType = imagesRepository.getImageType(imageBytes);
         } catch (IOException ignored) { }
-*/
+
     }
 
 

@@ -135,7 +135,7 @@ public class WebSecurityConfig {
                     auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}")).permitAll();
-                            auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}/{accommodationId}/monthly-report")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
