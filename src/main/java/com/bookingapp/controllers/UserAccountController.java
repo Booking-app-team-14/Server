@@ -152,6 +152,17 @@ public class UserAccountController {
         }
     }
 
+    @GetMapping(value = "/users/owner/{userId}")
+    public ResponseEntity<?> getUserAccountInfoById(@PathVariable Long userId){
+        UserAccount user = userAccountService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(new UserInfoDTO(user), HttpStatus.OK);
+
+    }
+
     @GetMapping(value = "/users/byUsername/{username}")
     public ResponseEntity<?> getUserAccountByUsername(@PathVariable String username) {
         UserAccount user = userAccountService.findByUsername(username);

@@ -64,4 +64,29 @@ public class ImagesRepository {
         }
     }
 
+    public String getUserImage(Long id) {
+        String relativePath = findUserImageName(id);
+        if (relativePath == null) {
+            return null;
+        }
+        try {
+            return getImageBytes(relativePath);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    private String findUserImageName(Long id) {
+        File directory1 = new File("src\\main\\resources\\images\\userAvatars");
+        File[] files = directory1.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String filename = file.getName();
+                if (filename.startsWith("user-" + id)) {
+                    return "userAvatars\\" + file.getName();
+                }
+            }
+        }
+        return null;
+    }
+
 }
