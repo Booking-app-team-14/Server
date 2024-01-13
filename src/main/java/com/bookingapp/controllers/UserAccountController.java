@@ -193,16 +193,53 @@ public class UserAccountController {
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
+        UserAccount user = userAccountService.getUserById(id);
+        ImagesRepository imagesRepository = new ImagesRepository();
+        String imageType = null;
+        try {
+            imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        user.setProfilePicturePath("userAvatars/user-" + id + "." + imageType);
+        userAccountService.save(user);
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/users/{Id}/image")
-    public ResponseEntity<String> getUserImage(@PathVariable Long Id) {
+    public ResponseEntity<String> getUserImageBytes(@PathVariable Long Id) {
         String imageBytes = userAccountService.getUserImage(Id);
         if (imageBytes == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(imageBytes, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/users/{id}/image-type-username")
+    public ResponseEntity<String> getUsernameAndImage(@PathVariable Long id) {
+        String imageBytes = userAccountService.getUserImage(id);
+        if (imageBytes == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        ImagesRepository imagesRepository = new ImagesRepository();
+        String imageType = null;
+        try {
+            imageType = imagesRepository.getImageType(imageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        UserAccount user = userAccountService.getUserById(id);
+        String username = user.getUsername();
+        return new ResponseEntity<>(username + " | " + imageType + " | " + imageBytes, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/owners/{id}/rating")
+    public ResponseEntity<Double> getOwnerRating(@PathVariable Long id) {
+        Double rating = userAccountService.getOwnerRating(id);
+        if (rating == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(rating, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{Id}")

@@ -43,6 +43,9 @@ public class UserAccountService implements UserDetailsService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private ReviewService reviewService;
+
     public UserAccount getUserById(Long userId) {
         Optional<UserAccount> userOptional = userAccountRepository.findById(userId);
         return userOptional.orElse(null);
@@ -223,4 +226,9 @@ public class UserAccountService implements UserDetailsService {
             }
         }
     }
+
+    public Double getOwnerRating(Long id) {
+        return reviewService.getAverageRatingByOwnerId(id);
+    }
+
 }

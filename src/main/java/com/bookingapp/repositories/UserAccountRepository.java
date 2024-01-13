@@ -14,4 +14,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     @Query("SELECT u FROM UserAccount u WHERE u.role = 'OWNER'")
     Iterable<Object> findAllOwners();
+
 }

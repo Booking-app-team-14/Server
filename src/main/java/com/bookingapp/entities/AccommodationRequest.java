@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Setter
@@ -30,6 +28,9 @@ public class AccommodationRequest {
     private String imageType; // accommodation main picture type (jpg, png, etc.)
     @Lob
     private String mainPictureBytes;
+    @Lob
+    @Column(nullable = true)
+    private String serializedAccommodationUpdateDTO;
 
     public AccommodationRequest(AccommodationRequestDTO dto) {
         this.accommodationId = dto.getAccommodationId();
@@ -44,6 +45,22 @@ public class AccommodationRequest {
         this.stars = dto.getStars();
         this.imageType = dto.getImageType();
         this.mainPictureBytes = dto.getMainPictureBytes();
+    }
+
+    public AccommodationRequest(AccommodationRequestDTO dto, String serializedAccommodationUpdateDTO) {
+        this.accommodationId = dto.getAccommodationId();
+        this.name = dto.getName();
+        this.type = dto.getType();
+        this.ownerImageType = dto.getOwnerImageType();
+        this.ownerProfilePictureBytes = dto.getOwnerProfilePictureBytes();
+        this.ownerUsername = dto.getOwnerUsername();
+        this.dateRequested = dto.getDateRequested();
+        this.requestType = dto.getRequestType();
+        this.message = dto.getMessage();
+        this.stars = dto.getStars();
+        this.imageType = dto.getImageType();
+        this.mainPictureBytes = dto.getMainPictureBytes();
+        this.serializedAccommodationUpdateDTO = serializedAccommodationUpdateDTO;
     }
 
     public AccommodationRequest(Long accommodationId, String name, String type, String ownerImageType, String ownerProfilePictureBytes, String ownerUsername, String dateRequested, String requestType, String message, int stars, String imageType, String mainPictureBytes) {

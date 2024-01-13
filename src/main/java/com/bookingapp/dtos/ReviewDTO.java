@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -41,5 +43,14 @@ public class ReviewDTO {
         this.senderId = review.getSender().getId();
         this.recipientId = review.getRecipient().getId();
     }
+
+    public static List<ReviewDTO> convertToDTO(List<Review> reviews) {
+        List<ReviewDTO> reviewDTOs = new ArrayList<>();
+        for (Review review : reviews) {
+            reviewDTOs.add(new ReviewDTO(review));
+        }
+        return reviewDTOs;
+    }
+
 }
 

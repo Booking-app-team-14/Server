@@ -10,5 +10,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByRecipientId(Long recipientId);
 
+    List<Review> findByApprovedFalse();
+
 }
 

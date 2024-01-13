@@ -112,48 +112,8 @@ public class AccommodationController {
         }
         Accommodation accommodation = accommodationOpt.get();
         AccommodationUpdateDTO accommodationUpdateDTO = new AccommodationUpdateDTO();
-        accommodationUpdateDTO.setId(accommodation.getId());
-        accommodationUpdateDTO.setName(accommodation.getName());
-        accommodationUpdateDTO.setDescription(accommodation.getDescription());
-        accommodationUpdateDTO.setType(accommodation.getType().toString());
-        accommodationUpdateDTO.setMinNumberOfGuests(accommodation.getMinNumberOfGuests());
-        accommodationUpdateDTO.setMaxNumberOfGuests(accommodation.getMaxNumberOfGuests());
-        accommodationUpdateDTO.setDefaultPrice(accommodation.getPricePerNight());
-        accommodationUpdateDTO.setPricePerGuest(accommodation.getPricePerGuest());
-        accommodationUpdateDTO.setCancellationDeadline(accommodation.getCancellationDeadline());
 
-        Set<Image> images = new HashSet<>();
-        for (String imagePath : accommodation.getImages()) {
-            ImagesRepository imagesRepository = new ImagesRepository();
-            String bytes = null;
-            String type = null;
-            try {
-                bytes = imagesRepository.getImageBytes(imagePath);
-                type = imagesRepository.getImageType(bytes);
-            } catch (Exception ignored) { }
-            Image image = new Image(bytes, type);
-            images.add(image);
-        }
-        accommodationUpdateDTO.setImages(images);
-
-        LocationDTO locationDTO = new LocationDTO(accommodation.getLocation());
-        accommodationUpdateDTO.setLocation(locationDTO);
-
-        Set<Long> amenities = accommodation.getAmenities().stream()
-                .map(Amenity::getId)
-                .collect(Collectors.toSet());
-        accommodationUpdateDTO.setAmenities(amenities);
-
-        Set<UpdateAvailabilityDTO> availabilities = accommodation.getAvailability().stream()
-                .map(availability -> {
-                    UpdateAvailabilityDTO updateAvailabilityDTO = new UpdateAvailabilityDTO();
-                    updateAvailabilityDTO.setStartDate(availability.getStartDate());
-                    updateAvailabilityDTO.setEndDate(availability.getEndDate());
-                    updateAvailabilityDTO.setSpecialPrice(availability.getSpecialPrice());
-                    return updateAvailabilityDTO;
-                })
-                .collect(Collectors.toSet());
-        accommodationUpdateDTO.setAvailability(availabilities);
+        accommodationUpdateDTO = accommodationService.fillAccommodationUpdateDTO(accommodation, accommodationUpdateDTO);
 
         return new ResponseEntity<>(accommodationUpdateDTO, HttpStatus.OK);
     }
@@ -165,53 +125,11 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Accommodation accommodation = accommodationOpt.get();
-        accommodation.setName(accommodationUpdateDTO.getName());
-        accommodation.setDescription(accommodationUpdateDTO.getDescription());
-        accommodation.setType(AccommodationType.valueOf(accommodationUpdateDTO.getType()));
-        accommodation.setMinNumberOfGuests(accommodationUpdateDTO.getMinNumberOfGuests());
-        accommodation.setMaxNumberOfGuests(accommodationUpdateDTO.getMaxNumberOfGuests());
-        accommodation.setPricePerNight(accommodationUpdateDTO.getDefaultPrice());
-        accommodation.setPricePerGuest(accommodationUpdateDTO.getPricePerGuest());
-        accommodation.setCancellationDeadline(accommodationUpdateDTO.getCancellationDeadline());
-
-        accommodationService.deleteAllImages(accommodation.getId());
-        Set<String> images = new HashSet<>();
-        for (Image image : accommodationUpdateDTO.getImages()) {
-            String path = accommodationService.addImage(accommodation.getId(), image);
-            images.add(path);
-        }
-        accommodation.setImages(images);
-
-        Location existingLocation = locationRepository.findByCountryAndCityAndAddress(
-                accommodationUpdateDTO.getLocation().getCountry(),
-                accommodationUpdateDTO.getLocation().getCity(),
-                accommodationUpdateDTO.getLocation().getAddress()
-        );
-        if (existingLocation != null) {
-            accommodation.setLocation(existingLocation);
-        } else {
-            Location location = new Location(accommodationUpdateDTO.getLocation());
-            locationService.save(location);
-            accommodation.setLocation(location);
-        }
-
-        accommodation.setAmenities(accommodationUpdateDTO.getAmenities().stream()
-                .map(amenityId -> amenityService.findById(amenityId))
-                .collect(Collectors.toSet()));
-
-        accommodation.setAvailability(accommodationUpdateDTO.getAvailability().stream()
-                .map(availabilityDTO -> {
-                    Availability availability = new Availability(availabilityDTO);
-                    availability.setAccommodation(accommodation);
-                    availabilityService.save(availability);
-                    return availability;
-                })
-                .collect(Collectors.toSet()));
-
         accommodation.setApproved(false);
         accommodationService.save(accommodation);
+//        accommodation = accommodationService.update(accommodation, accommodationUpdateDTO);
 
-        accommodationRequestService.saveUpdateRequestFromAccommodation(accommodation, accommodationUpdateDTO.getMessage());
+        accommodationRequestService.saveUpdateRequestFromAccommodation(accommodation, accommodationUpdateDTO);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.OK);
     }
 
