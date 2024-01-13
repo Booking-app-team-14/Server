@@ -108,9 +108,13 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update")).hasAuthority("OWNER");
+                            auth.requestMatchers(antMatcher("/api/reviews/owner/requests")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/users/{id}/image-type-username")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/owners/{id}/rating")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/reviews/admin/{reviewId}")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
                             auth.requestMatchers(antMatcher("/api/login")).permitAll();
@@ -163,6 +167,8 @@ public class WebSecurityConfig {
                 (antMatcher(HttpMethod.POST, "/api/login"),antMatcher(HttpMethod.POST, "/api/register/users"),antMatcher(HttpMethod.PUT, "/api/verify/users/{userId}"), antMatcher("/h2/**"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/get"), antMatcher(HttpMethod.GET, "/api/accommodations/{id}"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/search"), antMatcher(HttpMethod.GET, "/api/accommodations/filter"),
+                        antMatcher(HttpMethod.GET, "/api/users/{id}/image-type-username"),
+                        antMatcher(HttpMethod.GET, "/api/owners/{id}/rating"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/desc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/asc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/desc"),

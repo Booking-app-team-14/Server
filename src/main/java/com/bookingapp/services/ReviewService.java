@@ -41,7 +41,11 @@ public class ReviewService {
             Owner recipient = optionalOwner.get();
 
             Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
-            return reviewRepository.save(review);
+            review.setApproved(false);
+            reviewRepository.save(review);
+            // TODO: admin has to approve the review
+
+            return review;
         } else {
 
             throw new EntityNotFoundException("Guest or Owner not found");
@@ -83,5 +87,18 @@ public class ReviewService {
             return null;
         }
     }
+
+    public List<Review> getAllPendingOwnerReviews() {
+        return reviewRepository.findByApprovedFalse();
+    }
+
+    public void save(Review updatedReview) {
+        reviewRepository.save(updatedReview);
+    }
+
+    public void delete(Review review) {
+        reviewRepository.delete(review);
+    }
+
 }
 

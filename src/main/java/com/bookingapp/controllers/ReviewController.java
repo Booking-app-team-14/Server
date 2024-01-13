@@ -49,6 +49,30 @@ public class ReviewController {
         }
     }
 
+    @PutMapping(value = "/admin/{reviewId}", name = "admin accepts the review")
+    public ResponseEntity<Review> updateReviewById(@PathVariable Long reviewId) {
+        Optional<Review> reviewToUpdate = reviewService.getReviewById(reviewId);
+        if (reviewToUpdate.isPresent()) {
+            Review updatedReview = reviewToUpdate.get();
+            updatedReview.setApproved(true);
+            reviewService.save(updatedReview);
+            return new ResponseEntity<>(updatedReview, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(value = "/admin/{reviewId}", name = "admin rejects the review")
+    public ResponseEntity<Review> deleteReviewByIdAdmin(@PathVariable Long reviewId) {
+        Optional<Review> reviewToDelete = reviewService.getReviewById(reviewId);
+        if (reviewToDelete.isPresent()) {
+            reviewService.delete(reviewToDelete.get());
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     ///api/reviews/owner/{ownerId}/average-rating
     @GetMapping("/owner/{ownerId}/average-rating")
     public ResponseEntity<String> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
@@ -62,6 +86,13 @@ public class ReviewController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/owner/requests")
+    public ResponseEntity<List<ReviewDTO>> getAllPendingOwnerReviews() {
+        List<Review> reviews = reviewService.getAllPendingOwnerReviews();
+        List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
+        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
 
 }

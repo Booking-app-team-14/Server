@@ -6905,3 +6905,17 @@ org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-21
 org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
 2024-01-12 22:43:52 jdbc[8]: exception
 org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-13 19:39:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-13 19:39:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-13 19:39:38 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-13 19:39:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-214]
+2024-01-13 22:01:50 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'FASLE' (REVIEW: ""APPROVED"" BOOLEAN NOT NULL)"; SQL statement:
+UPDATE "PUBLIC"."REVIEW" SET "ID"=? ,"APPROVED"=? ,"COMMENT"=? ,"RATING"=? ,"REPORTED"=? ,"TIMESTAMP"=? ,"OWNER_ID"=? ,"GUEST_ID"=?  WHERE "ID"=? [22018-214]
+2024-01-13 22:01:50 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'FASLE' (REVIEW: ""APPROVED"" BOOLEAN NOT NULL)"; SQL statement:
+UPDATE "PUBLIC"."REVIEW" SET "ID"=? ,"APPROVED"=? ,"COMMENT"=? ,"RATING"=? ,"REPORTED"=? ,"TIMESTAMP"=? ,"OWNER_ID"=? ,"GUEST_ID"=?  WHERE "ID"=? [22018-214]
