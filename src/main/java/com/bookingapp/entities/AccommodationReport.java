@@ -19,20 +19,14 @@ public class AccommodationReport {
     @Column(nullable=false)
     private String name;
 
-    @Column(nullable=false)
-    private String description;
-
     @OneToOne(fetch = FetchType.EAGER)
     private Location location;
-
 
     @Enumerated(EnumType.STRING)
     private AccommodationType type;
 
-
-    @ElementCollection
     @Column(nullable=false)
-    private Set<String> images;
+    private String image;
 
     @Column(nullable=false)
     private Double rating;
@@ -43,19 +37,17 @@ public class AccommodationReport {
     @Column(nullable=false)
     private Integer maxNumberOfGuests;
 
-    @OneToMany (cascade = CascadeType.ALL)
-    private Set<Availability> availability;
 
     @Column(nullable=false)
     private Double pricePerNight;
 
-    @Column(nullable=false)
-    private boolean pricePerGuest;
-
-    @Column(nullable=false)
-    private Integer cancellationDeadline;
-
     @ManyToOne
     private Owner owner;
+
+    @Column(nullable = false)
+    private int numberOfReservations;
+
+    @Column(nullable = false)
+    private double totalProfit;
 
 }

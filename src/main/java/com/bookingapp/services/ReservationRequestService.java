@@ -42,7 +42,7 @@ public  class ReservationRequestService {
 
         // Additional validations based on reservation requirements
         if (reservation.getNumberOfGuests() < ac1.get().getMinNumberOfGuests() || reservation.getNumberOfGuests() > ac1.get().getMaxNumberOfGuests()) {
-            throw new IllegalArgumentException("Guest count should be at least 1");
+            throw new IllegalArgumentException("Accommodation guest range is not respected");
         }
         if(ac1.isPresent()) {
             // Check availability of accommodations between chosen dates
@@ -128,6 +128,9 @@ public  class ReservationRequestService {
     public List<ReservationRequest> findByUsername(String username) {
         return  requestRepository.findByUsername(username);
     }
+    public List<ReservationRequest> findAll(){
+        return  requestRepository.findAll();
+    }
 
     public void delete(ReservationRequest reservation) {
         requestRepository.delete(reservation);
@@ -143,5 +146,13 @@ public  class ReservationRequestService {
 
     public List<ReservationRequest> findByAccommodationId(Long accommodationId) {
         return requestRepository.findAllByAccommodationId(accommodationId);
+    }
+
+
+    public List<ReservationRequest> findAllByAccommodationAndYear(Accommodation accommodation, int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+
+        return requestRepository.findAllByAccommodationAndEndDateBetween(accommodation.getId(), startDate, endDate);
     }
 }

@@ -1,9 +1,11 @@
 package com.bookingapp.repositories;
 
+import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.ReservationRequest;
 import com.bookingapp.enums.RequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -24,6 +26,13 @@ public interface ReservationRequestIRepository extends JpaRepository<Reservation
 
     List<ReservationRequest> findAllByAccommodationId(Long accommodationId);
 
-
-//    Set<Request> findAllByRequestId(Long Id);
+    @Query("SELECT r FROM ReservationRequest r " +
+            "WHERE r.accommodationId = :accommodationId " +
+            "AND r.endDate BETWEEN :startDate AND :endDate")
+    List<ReservationRequest> findAllByAccommodationAndEndDateBetween(
+            @Param("accommodationId") Long accommodationId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }
+
+

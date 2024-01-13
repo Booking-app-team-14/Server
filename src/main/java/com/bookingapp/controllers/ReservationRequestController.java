@@ -1,6 +1,7 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReservationRequestDTO;
+import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.Reservation;
 import com.bookingapp.entities.ReservationRequest;
 import com.bookingapp.enums.RequestStatus;
@@ -39,6 +40,10 @@ public class ReservationRequestController {
     public ResponseEntity<Long> createReservationRequest(@RequestBody ReservationRequestDTO requestDTO) {
         ReservationRequest request = new ReservationRequest(requestDTO);
         requestService.createRequest(request);
+        Optional<Accommodation> acc = accommodationService.getAccommodationById(request.getAccommodationId());
+        if (acc.isPresent() && acc.get().isAutomatic()){
+            this.approveReservationRequest(request.getId());
+        }
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
         }
 
