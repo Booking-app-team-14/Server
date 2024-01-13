@@ -137,7 +137,13 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/guest/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/favorite-accommodations/{accommodationId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
+                            ///api/accommodations/{accommodationId}/accommodationReviews/pending
+                    auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/accommodationReviews/pending")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews/pending")).permitAll();
+                    ///accommodationReviews/{reviewId}
+                    auth.requestMatchers(antMatcher("/api/accommodationReviews/{reviewId}")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/users/owner/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
@@ -184,7 +190,10 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET,"/api/users/owner/{userId}"),
                         antMatcher(HttpMethod.PUT,"/api/guest/{id}"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/accommodationReviews/pending"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/{accommodationId}/accommodationReviews/pending"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
+
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {

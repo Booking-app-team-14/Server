@@ -3,6 +3,7 @@ package com.bookingapp.controllers;
 import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationReview;
+import com.bookingapp.entities.Review;
 import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.AccommodationService;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "api")
+@RequestMapping(value = "/api")
 public class AccommodationReviewController {
 
     @Autowired
@@ -52,7 +53,7 @@ public class AccommodationReviewController {
 //        return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/accommodationReviews", name = "admin gets all pending reviews")
+   /* @GetMapping(value = "/accommodationReviews", name = "admin gets all pending reviews")
     public ResponseEntity<List<AccommodationReviewDTO>> getAccommodationReviews() {
         List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllPending();
 
@@ -62,7 +63,7 @@ public class AccommodationReviewController {
         }
 
         return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
-    }
+    }*/
 
     @PutMapping(value = "/accommodationReviews/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review")
     public ResponseEntity<AccommodationReviewDTO> updateAccommodationReview(@PathVariable Long id){//, @RequestBody String status) {
@@ -88,10 +89,10 @@ public class AccommodationReviewController {
 //        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
-    public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
+    //@PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
+    //public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
 
-        return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
+        //return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
 
 //        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
 //
@@ -110,6 +111,37 @@ public class AccommodationReviewController {
 //        accommodationReviewService.save(accommodationReview);
 //
 //        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.CREATED);
+    //}
+
+    @PostMapping(value = "/accommodations/accommodationReviews", name = "user adds a review for accommodation")
+    public ResponseEntity<AccommodationReview> addAccommodationReview(@RequestBody AccommodationReviewDTO reviewDTO) {
+        AccommodationReview savedReview = accommodationReviewService.saveAccommodationReview(reviewDTO);
+        return new ResponseEntity<>(savedReview, HttpStatus.CREATED);
+    }
+
+    //admin
+    @GetMapping(value = "/accommodations/accommodationReviews/pending", name = "get all pending reviews for accommodations-admin")
+    public ResponseEntity<List<AccommodationReview>> getPendingAccommodationReviews() {
+        List<AccommodationReview> pendingReviews = accommodationReviewService.findAllPending() ;
+        return new ResponseEntity<>(pendingReviews, HttpStatus.OK);
+    }
+
+    //ostali--> promentii na status approved
+    @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "get all approved  reviews for a specific accommodation")
+    public ResponseEntity<List<AccommodationReview>>  getApprovedAccommodationReviews(@PathVariable Long accommodationId) {
+        List<AccommodationReview> pendingReviews = accommodationReviewService.getApprovedAccommodationReviewsByAccommodation( accommodationId);
+        return new ResponseEntity<>(pendingReviews, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/accommodationReviews/{reviewId}")
+    public ResponseEntity<Void> deleteAccommodationReviewById(@PathVariable Long reviewId) {
+        Optional<AccommodationReview> reviewToDelete = Optional.ofNullable(accommodationReviewService.findById(reviewId));
+         if (reviewToDelete.isPresent()) {
+            accommodationReviewService.deleteReviewById(reviewId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+         } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         }
     }
 
 
