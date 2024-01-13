@@ -1,10 +1,7 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationReviewDTO;
-import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.AccommodationReview;
-import com.bookingapp.entities.Guest;
-import com.bookingapp.entities.UserAccount;
+import com.bookingapp.entities.*;
 import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.AccommodationReviewRepository;
@@ -80,4 +77,23 @@ public class AccommodationReviewService {
         //}
     }
 
+    public List<AccommodationReview> getPendingAccommodationReviewsByAccommodation(Long accommodationId) {
+        return accommodationReviewRepository.findByStatusAndAccommodationId( accommodationId);
+    }
+
+    public Optional<AccommodationReview> getReviewById(Long reviewId) {
+        return accommodationReviewRepository.findById(reviewId);
+    }
+
+    public void deleteReviewById(Long reviewId) {
+        Optional<AccommodationReview> review= getReviewById(reviewId);
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+        if (user.getId()==review.get().getUser().getId()){
+            accommodationReviewRepository.deleteById(reviewId);
+        }
+        else {
+            throw new UnauthorizedAccessException("You are not authorized to delete this review");
+        }
+    }
 }

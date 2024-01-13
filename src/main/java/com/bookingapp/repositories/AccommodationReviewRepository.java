@@ -1,6 +1,7 @@
 package com.bookingapp.repositories;
 
 import com.bookingapp.entities.AccommodationReview;
+import com.bookingapp.enums.ReviewStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,8 @@ public interface AccommodationReviewRepository extends JpaRepository<Accommodati
 
     @Query("SELECT ar FROM AccommodationReview ar WHERE ar.status = 2")
     List<AccommodationReview> findAllPending();
+
+    @Query("SELECT ar FROM AccommodationReview ar WHERE ar.status = 2 AND ar.accommodation.id = :accommodationId")
+    List<AccommodationReview> findByStatusAndAccommodationId(Long accommodationId);
+
 }

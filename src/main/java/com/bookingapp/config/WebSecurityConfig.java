@@ -133,6 +133,11 @@ public class WebSecurityConfig {
                     auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
+                            ///api/accommodations/{accommodationId}/accommodationReviews/pending
+                    auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/accommodationReviews/pending")).permitAll();
+                    auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews/pending")).permitAll();
+                    ///accommodationReviews/{reviewId}
+                    auth.requestMatchers(antMatcher("/api/accommodationReviews/{reviewId}")).hasAuthority("GUEST");
                             auth.anyRequest().authenticated();
                         }
                 )
@@ -171,7 +176,10 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.DELETE,"/api/users/{id}/favorite-accommodations/{accommodationId}"),
                         antMatcher(HttpMethod.GET,"/api/users/favorite/{userId}"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/accommodationReviews/pending"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/{accommodationId}/accommodationReviews/pending"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
+
     }
     @Bean
     public WebMvcConfigurer corsConfigurer() {
