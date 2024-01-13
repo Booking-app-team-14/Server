@@ -77,7 +77,7 @@ public class AccommodationReviewService {
         //}
     }
 
-    public List<AccommodationReview> getPendingAccommodationReviewsByAccommodation(Long accommodationId) {
+    public List<AccommodationReview> getApprovedAccommodationReviewsByAccommodation(Long accommodationId) {
         return accommodationReviewRepository.findByStatusAndAccommodationId( accommodationId);
     }
 

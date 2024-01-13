@@ -127,9 +127,9 @@ public class AccommodationReviewController {
     }
 
     //ostali--> promentii na status approved
-    @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "get all pending reviews for a specific accommodation")
+    @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "get all approved  reviews for a specific accommodation")
     public ResponseEntity<List<AccommodationReview>>  getApprovedAccommodationReviews(@PathVariable Long accommodationId) {
-        List<AccommodationReview> pendingReviews = accommodationReviewService.getPendingAccommodationReviewsByAccommodation(accommodationId);
+        List<AccommodationReview> pendingReviews = accommodationReviewService.getApprovedAccommodationReviewsByAccommodation( accommodationId);
         return new ResponseEntity<>(pendingReviews, HttpStatus.OK);
     }
 
