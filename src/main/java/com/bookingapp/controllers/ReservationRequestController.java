@@ -1,6 +1,8 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReservationRequestDTO;
+import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.Owner;
 import com.bookingapp.entities.Reservation;
 import com.bookingapp.entities.ReservationRequest;
 import com.bookingapp.enums.RequestStatus;
@@ -127,6 +129,11 @@ public class ReservationRequestController {
             reservationService.save(reservation);
             reservationRequest.setReservationId(reservation.getId());
             requestService.save(reservationRequest);
+
+            Accommodation accommodation = accommodationService.findById(reservationRequest.getAccommodationId()).get();
+            Owner owner = (Owner) userAccountService.findByUsername(accommodation.getOwner().getUsername());
+            owner.getReservations().add(reservationRequest);
+            userAccountService.save(owner);
 
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
