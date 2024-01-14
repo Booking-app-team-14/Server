@@ -96,4 +96,20 @@ public class AccommodationReviewService {
             throw new UnauthorizedAccessException("You are not authorized to delete this review");
         }
     }
+
+
+    public Double getAverageRatingByAccommodationId(Long accId) {
+        List<AccommodationReview> reviews = accommodationReviewRepository.findByStatusAndAccommodationId(accId) ;
+
+        if (!reviews.isEmpty()) {
+            double totalRating = 0;
+            for (AccommodationReview review : reviews) {
+                totalRating += review.getRating();
+            }
+
+            return totalRating / reviews.size();
+        } else {
+            return null;
+        }
+    }
 }

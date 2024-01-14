@@ -147,6 +147,8 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/users/owner/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
+                            //api/accommodations/{accommodationId}/average-rating
+                    auth.requestMatchers(antMatcher("/api/accommodation/{accommodationId}/average-rating")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
@@ -192,6 +194,8 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/accommodationReviews/pending"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/{accommodationId}/accommodationReviews/pending"),
+                        ///api/accommodations/{accommodationId}/average-rating
+                        antMatcher(HttpMethod.GET, "/api/accommodation/{accommodationId}/average-rating"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
 
     }
