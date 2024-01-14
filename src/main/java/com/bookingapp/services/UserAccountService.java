@@ -3,6 +3,7 @@ package com.bookingapp.services;
 import com.bookingapp.dtos.UserRequest;
 import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.UserAccount;
+import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.UserAccountRepository;
 import com.bookingapp.util.TokenUtils;
@@ -10,6 +11,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -231,4 +234,16 @@ public class UserAccountService implements UserDetailsService {
         return reviewService.getAverageRatingByOwnerId(id);
     }
 
+    public boolean increaseNumberOfCancellations(Long id) {
+        UserAccount user = this.getUserById(id);
+        if (user == null) {
+            return false;
+        }
+        if (user.getRole() == Role.GUEST) {
+            Guest guest = (Guest) user;
+            guest.setNumberOfCancellations(guest.getNumberOfCancellations()+1);
+            this.save(guest);
+        }
+        return true;
+    }
 }

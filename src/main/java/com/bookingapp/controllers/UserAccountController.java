@@ -120,14 +120,9 @@ public class UserAccountController {
 
     @PutMapping(value = "/guest/{id}", name = "guest cancels his reservations")
     public ResponseEntity<String> updateGuestAccount(@PathVariable Long id) {
-        UserAccount user = userAccountService.getUserById(id);
-        if (user == null) {
+        boolean ok = userAccountService.increaseNumberOfCancellations(id);
+        if(!ok){
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
-        }
-        if (user.getRole() == Role.GUEST) {
-            Guest guest = (Guest) user;
-            guest.setNumberOfCancellations(guest.getNumberOfCancellations()+1);
-            userAccountService.save(guest);
         }
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
