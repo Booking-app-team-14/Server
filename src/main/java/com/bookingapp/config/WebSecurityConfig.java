@@ -147,6 +147,8 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/users/owner/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-publisher/**")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-subscriber/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
