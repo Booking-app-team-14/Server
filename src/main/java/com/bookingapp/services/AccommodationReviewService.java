@@ -96,4 +96,9 @@ public class AccommodationReviewService {
             throw new UnauthorizedAccessException("You are not authorized to delete this review");
         }
     }
+
+    public void deleteById(Long accommodationId) {
+        accommodationReviewRepository.deleteById(accommodationId);
+    }
+
 }

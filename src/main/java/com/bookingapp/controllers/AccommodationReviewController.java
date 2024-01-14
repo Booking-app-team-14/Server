@@ -144,5 +144,37 @@ public class AccommodationReviewController {
          }
     }
 
+    @GetMapping(value = "/reviews/accommodation/requests", name = "admin gets all pending reviews for accommodations")
+    public ResponseEntity<List<AccommodationReviewDTO>> getAllPendingAccommodationReviews() {
+        List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllPending();
+        List<AccommodationReviewDTO> accommodationReviewDTOs = AccommodationReviewDTO.convertToDTO(accommodationReviews);
+        return new ResponseEntity<>(accommodationReviewDTOs, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/reviews/admin/accommodation/{accommodationId}", name = "admin approves the review")
+    public ResponseEntity<AccommodationReviewDTO> updateAccommodationReviewById(@PathVariable Long accommodationId) {
+        Optional<AccommodationReview> accommodationReviewToUpdate = accommodationReviewService.getReviewById(accommodationId);
+        if (accommodationReviewToUpdate.isPresent()) {
+            AccommodationReview updatedAccommodationReview = accommodationReviewToUpdate.get();
+            updatedAccommodationReview.setStatus(ReviewStatus.APPROVED);
+            accommodationReviewService.save(updatedAccommodationReview);
+            return new ResponseEntity<>(new AccommodationReviewDTO(updatedAccommodationReview), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(value = "/reviews/admin/accommodation/{accommodationId}", name = "admin rejects the review")
+    public ResponseEntity<AccommodationReviewDTO> deleteAccommodationReviewByIdAdmin(@PathVariable Long accommodationId) {
+        Optional<AccommodationReview> accommodationReviewToDelete = accommodationReviewService.getReviewById(accommodationId);
+        if (accommodationReviewToDelete.isPresent()) {
+            accommodationReviewService.deleteById(accommodationId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }

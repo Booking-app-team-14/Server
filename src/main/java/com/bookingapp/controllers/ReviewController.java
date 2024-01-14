@@ -1,7 +1,10 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.dtos.ReviewDTO;
+import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.Review;
+import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import java.util.Optional;
 public class ReviewController {
     @Autowired
     private final ReviewService reviewService;
+    @Autowired
+    private AccommodationReviewService accommodationReviewService;
 
     @Autowired
     public ReviewController(ReviewService reviewService) {
@@ -88,7 +93,7 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/owner/requests")
+    @GetMapping(value = "/owner/requests", name = "admin gets all pending reviews for owners")
     public ResponseEntity<List<ReviewDTO>> getAllPendingOwnerReviews() {
         List<Review> reviews = reviewService.getAllPendingOwnerReviews();
         List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);

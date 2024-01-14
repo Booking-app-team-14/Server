@@ -270,5 +270,20 @@ public class AccommodationController {
         return new ResponseEntity<>(ownerDTO, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/accommodations/{accommodationId}/rating", name = "gets the rating of the accommodation")
+    public ResponseEntity<Double> getAccommodationRating(@PathVariable Long accommodationId) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Double rating = accommodation.get().getRating();
+        if (rating == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
 
 }
