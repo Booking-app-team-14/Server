@@ -155,6 +155,7 @@ public class ReservationRequestController {
             if (reservationRequest.getRequestStatus().equals(RequestStatus.SENT)) {
 
                 requestService.delete(reservationRequest);
+                userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             } else if (reservationRequest.getRequestStatus().equals(RequestStatus.ACCEPTED)){
                 accommodationService.cancelReservation(reservationRequest);
