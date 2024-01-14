@@ -25,10 +25,6 @@ public class AmenityService {
     }
 
     public Amenity findById(Long id) {
-        if (this.amenityRepository == null) {
-            System.out.println("AmenityRepository is null???????????????");
-        }
-
         return this.amenityRepository.findById(id).get();
     }
 

@@ -53,8 +53,8 @@ public class AccommodationRequestService {
 
         AccommodationRequest accommodationRequest = new AccommodationRequest();
         accommodationRequest.setAccommodationId(accommodation.getId());
-        ZoneId zoneId = ZoneId.systemDefault();
-        long epochSeconds = LocalDate.now().atStartOfDay(zoneId).toEpochSecond();
+        Instant instant = Instant.now();
+        long epochSeconds = instant.getEpochSecond();
         accommodationRequest.setDateRequested(String.valueOf(epochSeconds));
         accommodationRequest.setMessage("I'm posting my new accommodation, please approve! Thanks.");
         accommodationRequest.setRequestType("new");
@@ -150,10 +150,16 @@ public class AccommodationRequestService {
                     AccommodationRequest request = this.findByAccommodationId(r.getAccommodationId());
                     if (request == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-                    AccommodationUpdateDTO deserialized = AccommodationUpdateDTO.deserializeFromString(request.getSerializedAccommodationUpdateDTO());
+                    if (request.getSerializedAccommodationUpdateDTO() == null) { // create accommodation
+                        accommodation.setApproved(true);
+                        accommodationService.save(accommodation);
+                        deleteRequestByAccommodationId(r.getAccommodationId());
 
-                    accommodationService.update(accommodation, deserialized);
-                    deleteRequestByAccommodationId(r.getAccommodationId());
+                    } else { // update accommodation
+                        AccommodationUpdateDTO deserialized = AccommodationUpdateDTO.deserializeFromString(request.getSerializedAccommodationUpdateDTO());
+                        accommodationService.update(accommodation, deserialized);
+                        deleteRequestByAccommodationId(r.getAccommodationId());
+                    }
                 }
                 return new ResponseEntity<>(r, HttpStatus.OK);
             }

@@ -22,10 +22,6 @@ public class AvailabilityService {
     }
 
     public Availability findById(Long id) {
-        if (this.availabilityRepository == null) {
-            System.out.println("AmenityRepository is null???????????????");
-        }
-
         return availabilityRepository.findById(id).get();
     }
 }
