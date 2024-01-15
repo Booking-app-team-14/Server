@@ -159,6 +159,8 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
                             //api/accommodations/{accommodationId}/average-rating
                     auth.requestMatchers(antMatcher("/api/accommodation/{accommodationId}/average-rating")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-publisher/**")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-subscriber/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )

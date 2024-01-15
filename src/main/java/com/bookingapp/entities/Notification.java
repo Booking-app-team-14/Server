@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
@@ -16,7 +18,7 @@ public class Notification {
     private UserAccount user;
 
     @Column(nullable = false)
-    private int sentBefore;
+    private LocalDate sentBefore;
 
     @Column(nullable = false)
     private String description;
