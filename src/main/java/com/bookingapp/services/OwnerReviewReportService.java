@@ -1,9 +1,13 @@
 package com.bookingapp.services;
 
+import com.bookingapp.dtos.OwnerReviewReportDTO;
 import com.bookingapp.dtos.ReviewReportDTO;
 import com.bookingapp.entities.AccommodationReview;
+import com.bookingapp.entities.OwnerReviewReport;
+import com.bookingapp.entities.Review;
 import com.bookingapp.entities.ReviewReport;
 import com.bookingapp.enums.ReportStatus;
+import com.bookingapp.repositories.OwnerReviewReportRepository;
 import com.bookingapp.repositories.ReviewReportRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,39 +17,40 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
-public class ReviewReportService {
+public class OwnerReviewReportService {
 
     @Autowired
-    private ReviewReportRepository reviewReportRepository;
+    private OwnerReviewReportRepository reviewReportRepository;
 
     @Autowired
-    private AccommodationReviewService accommodationReviewService;
+    private  ReviewService reviewService;
 
-    public List<ReviewReport> findAllPending() {
+    public List<OwnerReviewReport> findAllPending() {
         return reviewReportRepository.findAllPending();
     }
 
-    public ReviewReport findById(Long id) {
+    public OwnerReviewReport findById(Long id) {
         return reviewReportRepository.findById(id).orElse(null);
     }
 
-    public void save(ReviewReport reviewReport) {
+    public void save(OwnerReviewReport reviewReport) {
         reviewReportRepository.save(reviewReport);
     }
 
 
-    public ReviewReport saveReviewReport(ReviewReportDTO reportDTO) {
-        Optional<AccommodationReview> accommodationReviewOptional =
-                Optional.ofNullable(accommodationReviewService.findById(reportDTO.getAccommodationReviewId()));
+    public OwnerReviewReport saveReviewReport(OwnerReviewReportDTO reportDTO) {
+        Optional<Review> reviewOptional =
+                Optional.ofNullable(reviewService.findById(reportDTO.getReviewId()));
 
-        if (accommodationReviewOptional.isPresent()) {
-            AccommodationReview accommodationReview = accommodationReviewOptional.get();
+        if (reviewOptional.isPresent()) {
+             Review review = reviewOptional.get();
 
 
-            ReviewReport reviewReport = new ReviewReport();
-            reviewReport.setAccommodationReview(accommodationReview);
-            if (accommodationReview.getComment() != null) {
+            OwnerReviewReport reviewReport = new OwnerReviewReport();
+            reviewReport.setReview(review);
+            if (review.getComment() != null) {
                 reviewReport.setReason(reportDTO.getReason());
             } else {
 
@@ -58,7 +63,7 @@ public class ReviewReportService {
             return reviewReportRepository.save(reviewReport);
         } else {
 
-            throw new EntityNotFoundException("AccommodationReview with ID " + reportDTO.getAccommodationReviewId() + " not found.");
+            throw new EntityNotFoundException("OwnerReview with ID " + reportDTO.getReviewId() + " not found.");
         }
     }
 }

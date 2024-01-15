@@ -107,6 +107,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->{
                     ///api/reviewReports/accommodationReviews/report
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
+                            //    api/ownerReviewReports/reviews/report
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/report")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviews/report/{reviewId}")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviewReports/accommodationReviews/report")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");

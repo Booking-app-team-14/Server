@@ -16,12 +16,12 @@ public class Review {
     private Long id;
 
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String comment;
 
 
-    @Column(nullable = false)
-    private int rating;
+     //@Column(nullable = false)
+    private Integer rating;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
@@ -43,7 +43,7 @@ public class Review {
     public Review() {
         this.timestamp = LocalDateTime.now();
     }
-    public Review(String comment, int rating, Guest sender, Owner recipient) {
+    public Review(String comment, Integer rating, Guest sender, Owner recipient) {
         this.comment = comment;
         this.rating = rating;
         this.sender = sender;

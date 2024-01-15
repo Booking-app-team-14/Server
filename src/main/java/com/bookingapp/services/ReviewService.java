@@ -100,5 +100,9 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    public  Review findById(Long id) {
+        return reviewRepository.findById(id).orElse(null);
+    }
+
 }
 
