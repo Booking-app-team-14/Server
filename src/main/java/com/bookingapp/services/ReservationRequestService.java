@@ -61,6 +61,30 @@ public  class ReservationRequestService {
             if (!isAvailable) {
                 throw new IllegalArgumentException("Accommodation is not available for the chosen dates");
             }
+
+//            List<ReservationRequest> existingReservations = requestRepository.findRequestsBetweenDatesForAccommodationId(startDate, endDate, accommodation.getId(), RequestStatus.ACCEPTED);
+//
+//            if (!existingReservations.isEmpty()) {
+//                boolean isReserved = existingReservations.stream().anyMatch(existingRequest -> {
+//                    boolean startDateOverlaps =
+//                            (startDate.isBefore(existingRequest.getEndDate()) && startDate.isAfter(existingRequest.getStartDate())) ||
+//                                    startDate.isEqual(existingRequest.getStartDate()) || startDate.isEqual(existingRequest.getEndDate());
+//
+//                    boolean endDateOverlaps =
+//                            (endDate.isAfter(existingRequest.getStartDate()) && endDate.isBefore(existingRequest.getEndDate())) ||
+//                                    endDate.isEqual(existingRequest.getStartDate()) || endDate.isEqual(existingRequest.getEndDate());
+//
+//                    boolean newRequestCoversExisting =
+//                            startDate.isBefore(existingRequest.getStartDate()) && endDate.isAfter(existingRequest.getEndDate());
+//
+//                    return startDateOverlaps || endDateOverlaps || newRequestCoversExisting;
+//                });
+//
+//                if (isReserved) {
+//                    throw new IllegalArgumentException("Accommodation is not available for the chosen dates");
+//                }
+//            }
+
             requestRepository.save(reservation);
         }
         else {

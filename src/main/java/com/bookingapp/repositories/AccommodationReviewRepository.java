@@ -21,4 +21,6 @@ public interface AccommodationReviewRepository extends JpaRepository<Accommodati
     @Query("SELECT ar FROM AccommodationReview ar WHERE ar.status = 0 AND ar.accommodation.id = :accommodationId")
     List<AccommodationReview> findByStatusAndAccommodationId(Long accommodationId);
 
+     List<AccommodationReview> findAccommodationReviewsByAccommodationId(Long accommodationId);
+
 }

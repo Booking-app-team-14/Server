@@ -63,6 +63,7 @@ public class AccommodationReportController {
         return (int) reservationRequests.stream()
                 .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
                 .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
+                .filter(this::isReservationFinal)
                 .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
                 .count();
     }
@@ -71,6 +72,7 @@ public class AccommodationReportController {
         return reservationRequests.stream()
                 .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
                 .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
+                .filter(this::isReservationFinal)
                 .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
                 .mapToDouble(ReservationRequest::getTotalPrice)
                 .sum();
@@ -82,6 +84,13 @@ public class AccommodationReportController {
     }
 
 
+    private boolean isReservationFinal(ReservationRequest reservation) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = reservation.getStartDate();
+
+
+        return today.isAfter(startDate);
+    }
     @GetMapping(value = "/{accommodationId}/monthly-report")
     public ResponseEntity<Map<String, MonthlyAccommodationReportDTO>> getMonthlyAccommodationReport(
             @PathVariable Long accommodationId,

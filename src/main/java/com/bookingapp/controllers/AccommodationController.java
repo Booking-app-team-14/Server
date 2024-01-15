@@ -51,6 +51,10 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        // TODO: check if accommodation availabilities are in the past, if yes, remove them
+        accommodationService.removePastAvailabilities(accommodation.get());
+        //
+
         AccommodationDTO result = new AccommodationDTO(accommodation.get(),accommodationService);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -268,6 +272,21 @@ public class AccommodationController {
 
         OwnerDTO ownerDTO = new OwnerDTO(owner.get());
         return new ResponseEntity<>(ownerDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/accommodations/{accommodationId}/rating", name = "gets the rating of the accommodation")
+    public ResponseEntity<Double> getAccommodationRating(@PathVariable Long accommodationId) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Double rating = accommodation.get().getRating();
+        if (rating == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(rating, HttpStatus.OK);
     }
 
 

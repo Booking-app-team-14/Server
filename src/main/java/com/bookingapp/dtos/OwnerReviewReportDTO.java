@@ -1,6 +1,6 @@
 package com.bookingapp.dtos;
 
-import com.bookingapp.entities.ReviewReport;
+import com.bookingapp.entities.OwnerReviewReport;
 import com.bookingapp.enums.ReportStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ReviewReportDTO {
+public class OwnerReviewReportDTO {
 
     private Long id;
 
-    private Long accommodationReviewId;
+    private Long reviewId;
 
     private String reason;
 
@@ -21,23 +21,23 @@ public class ReviewReportDTO {
 
     private LocalDateTime sentAt;
 
-    public ReviewReportDTO(ReviewReport reviewReport) {
+    public OwnerReviewReportDTO(OwnerReviewReport reviewReport) {
         this.id = reviewReport.getId();
-        this.accommodationReviewId = reviewReport.getAccommodationReview().getId();
+        this.reviewId = reviewReport.getReview().getId();
         this.reason = reviewReport.getReason();
         this.status = reviewReport.getStatus();
         this.sentAt = reviewReport.getSentAt();
     }
 
-    public ReviewReportDTO( Long accommodationReviewId, String reason , ReportStatus status, LocalDateTime sentAt) {
+    public OwnerReviewReportDTO( Long reviewId, String reason , ReportStatus status, LocalDateTime sentAt) {
 
-        this.accommodationReviewId = accommodationReviewId;
+        this.reviewId = reviewId;
         this.reason = reason;
         this.status = status;
         this.sentAt = LocalDateTime.now();
     }
 
-    public ReviewReportDTO() {
+    public OwnerReviewReportDTO() {
 
     }
 

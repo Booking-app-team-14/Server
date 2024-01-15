@@ -1,7 +1,10 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.dtos.ReviewDTO;
+import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.Review;
+import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import java.util.Optional;
 public class ReviewController {
     @Autowired
     private final ReviewService reviewService;
+    @Autowired
+    private AccommodationReviewService accommodationReviewService;
 
     @Autowired
     public ReviewController(ReviewService reviewService) {
@@ -88,11 +93,29 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/owner/requests")
+    @GetMapping(value = "/owner/requests", name = "admin gets all pending reviews for owners")
     public ResponseEntity<List<ReviewDTO>> getAllPendingOwnerReviews() {
         List<Review> reviews = reviewService.getAllPendingOwnerReviews();
         List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
         return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
+    ///api/reviews/report/{reviewId}
+
+    @PutMapping("/report/{reviewId}")
+    public ResponseEntity<Review> reportReview(@PathVariable Long reviewId) {
+        Optional<Review> reviewToReport = reviewService.getReviewById(reviewId);
+
+        if (reviewToReport.isPresent()) {
+            Review reportedReview = reviewToReport.get();
+            reportedReview.setReported(true);
+
+            reviewService.save(reportedReview);
+
+            return new ResponseEntity<>(reportedReview, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

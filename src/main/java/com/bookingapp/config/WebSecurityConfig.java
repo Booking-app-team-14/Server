@@ -105,10 +105,18 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(restAuthenticationEntryPoint))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->{
+                    ///api/reviewReports/accommodationReviews/report
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
+                            //    api/ownerReviewReports/reviews/report
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/report")).hasAuthority("OWNER");
+                    auth.requestMatchers(antMatcher("/api/reviews/report/{reviewId}")).hasAuthority("OWNER");
+                    auth.requestMatchers(antMatcher("/api/reviewReports/accommodationReviews/report")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/reviews/owner/requests")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/reviews/accommodation/requests")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/reviews/admin/accommodation/{accommodationId}")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/rating")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/image-type-username")).permitAll();
                             auth.requestMatchers(antMatcher("/api/owners/{id}/rating")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
@@ -136,8 +144,10 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/requests/owner/{username}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/guest/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/favorite-accommodations/{accommodationId}")).permitAll();
-                    auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/userReports/report")).hasAnyAuthority("GUEST","OWNER"  );
+                    //auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("OWNER" );
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
                             ///api/accommodations/{accommodationId}/accommodationReviews/pending
                     auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/accommodationReviews/pending")).permitAll();
@@ -147,6 +157,10 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/users/owner/{userId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{ownerId}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/accommodation-reports/{accommodationId}/monthly-report")).permitAll();
+                            //api/accommodations/{accommodationId}/average-rating
+                    auth.requestMatchers(antMatcher("/api/accommodation/{accommodationId}/average-rating")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-publisher/**")).permitAll();
+                            auth.requestMatchers(antMatcher("/socket/socket-subscriber/**")).permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
@@ -177,6 +191,7 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/accommodations/search"), antMatcher(HttpMethod.GET, "/api/accommodations/filter"),
                         antMatcher(HttpMethod.GET, "/api/users/{id}/image-type-username"),
                         antMatcher(HttpMethod.GET, "/api/owners/{id}/rating"),
+                        antMatcher(HttpMethod.GET, "/api/accommodations/{accommodationId}/rating"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/desc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/asc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/desc"),
@@ -192,6 +207,8 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/accommodationReviews/pending"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/{accommodationId}/accommodationReviews/pending"),
+                        ///api/accommodations/{accommodationId}/average-rating
+                        antMatcher(HttpMethod.GET, "/api/accommodation/{accommodationId}/average-rating"),
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
 
     }

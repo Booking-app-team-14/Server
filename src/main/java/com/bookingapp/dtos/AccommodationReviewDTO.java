@@ -1,11 +1,14 @@
 package com.bookingapp.dtos;
 
 import com.bookingapp.entities.AccommodationReview;
+import com.bookingapp.entities.Review;
 import com.bookingapp.enums.ReviewStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,6 +50,14 @@ public class AccommodationReviewDTO {
 
     public AccommodationReviewDTO() {
 
+    }
+
+    public static List<AccommodationReviewDTO> convertToDTO(List<AccommodationReview> accommodationReviews) {
+        List<AccommodationReviewDTO> accommodationReviewDTOs = new ArrayList<>();
+        for (AccommodationReview accommodationReview : accommodationReviews) {
+            accommodationReviewDTOs.add(new AccommodationReviewDTO(accommodationReview));
+        }
+        return accommodationReviewDTOs;
     }
 
 }

@@ -601,5 +601,26 @@ public class AccommodationService {
         return accommodationUpdateDTO;
     }
 
+    public void removePastAvailabilities(Accommodation accommodation) {
+        Set<Availability> availabilitiesToRemove = new HashSet<>();
+        Set<Availability> availabilitiesToChange = new HashSet<>();
+        for (Availability availability : accommodation.getAvailability()) {
+            if (availability.getEndDate().isBefore(LocalDate.now())) {
+                availabilitiesToRemove.add(availability);
+            }
+            else if (availability.getStartDate().isBefore(LocalDate.now()) && availability.getEndDate().isAfter(LocalDate.now())) {
+                availabilitiesToChange.add(availability);
+            }
+        }
+        for (Availability availability : availabilitiesToRemove) {
+            accommodation.getAvailability().remove(availability);
+        }
+        for (Availability availability : availabilitiesToChange) {
+            availability.setStartDate(LocalDate.now());
+            availabilityService.save(availability);
+        }
+        this.save(accommodation);
+    }
+
 }
 
