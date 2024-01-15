@@ -37,8 +37,8 @@ public class UserReportDTO {
         this.sentAt = report.getSentAt();
     }
 
-    public UserReportDTO(Long id, Long reportingUserId, Long reportedUserId, String reportingUserUsername, String reportedUserUsername, Integer reportedUserNumberOfReports, String description, LocalDateTime sentAt) {
-        this.id = id;
+    public UserReportDTO( Long reportingUserId, Long reportedUserId, String reportingUserUsername, String reportedUserUsername, Integer reportedUserNumberOfReports, String description, LocalDateTime sentAt) {
+
         this.reportingUserId = reportingUserId;
         this.reportedUserId = reportedUserId;
         this.reportingUserUsername = reportingUserUsername;

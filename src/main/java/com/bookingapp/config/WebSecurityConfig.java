@@ -141,8 +141,9 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/requests/owner/{username}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/guest/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/{id}/favorite-accommodations/{accommodationId}")).permitAll();
-                    auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("GUEST" );
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
                             ///api/accommodations/{accommodationId}/accommodationReviews/pending
                     auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/accommodationReviews/pending")).permitAll();
