@@ -101,4 +101,20 @@ public class AccommodationReviewService {
         accommodationReviewRepository.deleteById(accommodationId);
     }
 
+
+
+    public Double getAverageRatingByAccommodationId(Long accId) {
+        List<AccommodationReview> reviews = accommodationReviewRepository.findByStatusAndAccommodationId(accId) ;
+
+        if (!reviews.isEmpty()) {
+            double totalRating = 0;
+            for (AccommodationReview review : reviews) {
+                totalRating += review.getRating();
+            }
+
+            return totalRating / reviews.size();
+        } else {
+            return null;
+        }
+    }
 }

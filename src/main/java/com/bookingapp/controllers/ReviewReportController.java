@@ -73,5 +73,17 @@ public class ReviewReportController {
 //
 //        return new ResponseEntity<>(new ReviewReportDTO(reviewReport), HttpStatus.CREATED);
     }
+//api/reviewReports/accommodationReviews/report
+    @PostMapping("/accommodationReviews/report")
+    public ResponseEntity<ReviewReport> reportAccommodationReview(@RequestBody ReviewReportDTO reportDTO) {
+
+        ReviewReport savedReport = reviewReportService.saveReviewReport(reportDTO);
+
+        if (savedReport != null) {
+            return new ResponseEntity<>(savedReport, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

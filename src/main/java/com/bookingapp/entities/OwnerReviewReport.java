@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class ReviewReport {
+public class OwnerReviewReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private AccommodationReview accommodationReview;
+    private Review review;
 
     //@Column(nullable = false)
     private String reason;
@@ -28,14 +28,15 @@ public class ReviewReport {
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
-    public ReviewReport() {
+    public OwnerReviewReport() {
 
     }
 
-    public ReviewReport(AccommodationReview accommodationReview, ReportStatus status, LocalDateTime sentAt) {
-        this.accommodationReview = accommodationReview;
+    public OwnerReviewReport( Review review, ReportStatus status, LocalDateTime sentAt) {
+        this.review = review;
         this.status = status;
         this.sentAt = sentAt;
     }
 
 }
+
