@@ -94,5 +94,23 @@ public class ReviewController {
         List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
         return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
+    ///api/reviews/report/{reviewId}
+
+    @PutMapping("/report/{reviewId}")
+    public ResponseEntity<Review> reportReview(@PathVariable Long reviewId) {
+        Optional<Review> reviewToReport = reviewService.getReviewById(reviewId);
+
+        if (reviewToReport.isPresent()) {
+            Review reportedReview = reviewToReport.get();
+            reportedReview.setReported(true);
+
+            reviewService.save(reportedReview);
+
+            return new ResponseEntity<>(reportedReview, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }
