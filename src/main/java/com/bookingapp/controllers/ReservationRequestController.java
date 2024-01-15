@@ -46,6 +46,10 @@ public class ReservationRequestController {
         if (acc.isPresent() && acc.get().isAutomatic()){
             this.approveReservationRequest(request.getId());
         }
+        // TODO: send notification (of type reservationRequestNotification) to owner
+        // check if receiver has that notification type enabled
+        // save notification in database
+        // servis.sendNotification("reservation-request-notification"); // sluzi da bi gost znao da je notifikacija stigla
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
         }
 
