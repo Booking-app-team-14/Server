@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class ReviewReport {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @OneToOne(cascade = CascadeType.ALL)

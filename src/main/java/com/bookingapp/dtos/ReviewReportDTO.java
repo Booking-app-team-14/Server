@@ -29,12 +29,12 @@ public class ReviewReportDTO {
         this.sentAt = reviewReport.getSentAt();
     }
 
-    public ReviewReportDTO(Long id, Long accommodationReviewId, String reason , ReportStatus status, LocalDateTime sentAt) {
-        this.id = id;
+    public ReviewReportDTO( Long accommodationReviewId, String reason , ReportStatus status, LocalDateTime sentAt) {
+
         this.accommodationReviewId = accommodationReviewId;
         this.reason = reason;
         this.status = status;
-        this.sentAt = sentAt;
+        this.sentAt = LocalDateTime.now();
     }
 
     public ReviewReportDTO() {
