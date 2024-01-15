@@ -51,6 +51,10 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        // TODO: check if accommodation availabilities are in the past, if yes, remove them
+        accommodationService.removePastAvailabilities(accommodation.get());
+        //
+
         AccommodationDTO result = new AccommodationDTO(accommodation.get(),accommodationService);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

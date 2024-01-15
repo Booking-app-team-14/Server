@@ -14,7 +14,7 @@ public class WebSocketController {
 
     @MessageMapping("/send/notification")
     public void sendNotification(@Payload String message) {
-
-        simpMessagingTemplate.convertAndSend("/socket-publisher", "New reservation request!");
+        // TODO: sacuvaj u bazi notifikaciju sve normalno i samo preko web socketa posalji poruku da se taj i taj tip notifikacije poslao useru
+        simpMessagingTemplate.convertAndSend("/socket-publisher", "notification_type_sent");
     }
 }

@@ -43,7 +43,6 @@ public class ReviewService {
             Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
             review.setApproved(false);
             reviewRepository.save(review);
-            // TODO: admin has to approve the review
 
             return review;
         } else {
