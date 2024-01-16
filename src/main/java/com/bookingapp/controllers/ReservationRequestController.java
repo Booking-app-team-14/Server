@@ -163,12 +163,16 @@ public class ReservationRequestController {
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             } else if (reservationRequest.getRequestStatus().equals(RequestStatus.ACCEPTED)){
                 accommodationService.cancelReservation(reservationRequest);
-                Owner owner = (Owner) userAccountService.findByUsername(reservationRequest.getUserUsername());
+
+                Accommodation accommodation = accommodationService.findById(reservationRequest.getAccommodationId()).get();
+                Owner owner = (Owner) userAccountService.findByUsername(accommodation.getOwner().getUsername());
                 owner.getReservations().remove(reservationRequest);
                 userAccountService.save(owner);
+
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
                 requestService.delete(reservationRequest);
                 reservationService.delete(reservationRequest.getReservationId());
+
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Deletion not allowed for reservations with status other than SENT or ACCEPTED", HttpStatus.BAD_REQUEST);

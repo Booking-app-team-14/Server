@@ -192,4 +192,12 @@ public class AccommodationReviewController {
         }
     }
 
+    @GetMapping("/accommodationReviews/{id}")
+    public ResponseEntity<AccommodationReviewDTO> getAccommodationReviewById(@PathVariable Long id) {
+        Optional<AccommodationReview> accommodationReview = accommodationReviewService.getReviewById(id);
+        return accommodationReview.map(review -> new ResponseEntity<>(new AccommodationReviewDTO(review), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
 }

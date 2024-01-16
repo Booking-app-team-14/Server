@@ -9,11 +9,11 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ReservationRequestNotificationDTO extends NotificationDTO {
-    private LocalDate sentBefore;
+
     private Long accommodationId;
 
-    public ReservationRequestNotificationDTO(Long from, Long to, LocalDate sentBefore, String description, Long accommodationId) {
-        super(from, to, sentBefore, description);
+    public ReservationRequestNotificationDTO(Long senderId, Long receiverId, String sentAt, boolean seen, String type, Long accommodationId) {
+        super(senderId, receiverId, sentAt, seen, type);
         this.accommodationId = accommodationId;
     }
 

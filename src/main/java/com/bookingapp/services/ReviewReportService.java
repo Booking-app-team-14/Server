@@ -61,4 +61,8 @@ public class ReviewReportService {
             throw new EntityNotFoundException("AccommodationReview with ID " + reportDTO.getAccommodationReviewId() + " not found.");
         }
     }
+
+    public void delete(ReviewReport report) {
+        reviewReportRepository.delete(report);
+    }
 }

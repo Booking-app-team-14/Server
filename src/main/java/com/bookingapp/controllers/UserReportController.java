@@ -1,10 +1,11 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.UserReportDTO;
+import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.entities.UserReport;
-import com.bookingapp.services.UserReportService;
-import com.bookingapp.services.UserAccountService;
+import com.bookingapp.enums.Role;
+import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,12 @@ public class UserReportController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private ReservationRequestService reservationRequestService;
+
+    @Autowired
+    private AccommodationService accommodationService;
 
     @GetMapping
     public ResponseEntity<List<UserReportDTO>> getUserReports(){
@@ -49,21 +56,6 @@ public class UserReportController {
 //        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteUserReport(@PathVariable Long id) {
-
-        return new ResponseEntity<>("Deleted", HttpStatus.OK);
-
-//        UserReport userReport = userReportService.findOne(id);
-//
-//        if (userReport != null) {
-//            userReportService.remove(id);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-    }
-
     @PutMapping(value = "/{id}")
     public ResponseEntity<String> updateReportedUser(@PathVariable Long id) {
 
@@ -89,6 +81,30 @@ public class UserReportController {
     public ResponseEntity<UserReport> saveUserReport(@RequestBody UserReportDTO userReportDTO) {
         UserReport userReport = userReportService.submitUserReport(userReportDTO);
         return new ResponseEntity<>(userReport, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserReport(@PathVariable Long id) {
+        userReportService.deleteUserReport(id);
+        return new ResponseEntity<>("Deleted", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/block-user/{reportId}", name = "admin blocks a user")
+    public ResponseEntity<String> blockUser(@PathVariable Long reportId) {
+        UserReport userReport = userReportService.findOne(reportId);
+        UserAccount reportedUser = userReport.getReportedUser();
+        reportedUser.setBlocked(true);
+
+        if (reportedUser.getRole() == Role.GUEST) {
+            reservationRequestService.cancelAllReservationsForGuest(reportedUser.getId());
+        }
+        else if (reportedUser.getRole() == Role.OWNER) {
+            reservationRequestService.cancelAllReservationsForOwner(reportedUser.getUsername());
+            accommodationService.setApprovedToFalseForAllOwnersApartments(reportedUser.getId());
+        }
+
+        userAccountService.save(reportedUser);
+        return new ResponseEntity<>("User Blocked", HttpStatus.OK);
     }
 
 }

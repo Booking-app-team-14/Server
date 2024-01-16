@@ -3,6 +3,7 @@ package com.bookingapp.repositories;
 import com.bookingapp.dtos.BestOffersDTO;
 import com.bookingapp.dtos.OwnersAccommodationDTO;
 import com.bookingapp.entities.Accommodation;
+import com.bookingapp.entities.UserAccount;
 import com.bookingapp.enums.AccommodationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -56,5 +57,6 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("SELECT a FROM Accommodation a ORDER BY a.rating ASC")
     List<Accommodation> findAllByRatingAsc();
 
+    List<Accommodation> findAllByOwnerId(Long ownerId);
 }
 

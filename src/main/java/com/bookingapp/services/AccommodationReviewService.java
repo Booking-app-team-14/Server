@@ -117,4 +117,9 @@ public class AccommodationReviewService {
             return null;
         }
     }
+
+    public void delete(AccommodationReview review) {
+        accommodationReviewRepository.delete(review);
+    }
+
 }

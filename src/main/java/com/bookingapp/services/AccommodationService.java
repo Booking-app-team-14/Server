@@ -622,5 +622,13 @@ public class AccommodationService {
         this.save(accommodation);
     }
 
+    public void setApprovedToFalseForAllOwnersApartments(Long ownerId) {
+        List<Accommodation> accommodations = accommodationRepository.findAllByOwnerId(ownerId);
+        for (Accommodation accommodation : accommodations) {
+            accommodation.setApproved(false);
+            accommodationRepository.save(accommodation);
+        }
+    }
+
 }
 

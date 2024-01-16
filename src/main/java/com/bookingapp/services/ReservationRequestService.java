@@ -1,8 +1,6 @@
 package com.bookingapp.services;
 
-import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.Availability;
-import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.entities.*;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.ReservationRequestIRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ public  class ReservationRequestService {
 
     @Autowired
     AccommodationService accommodationService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     public void createRequest(ReservationRequest reservation) {
         LocalDate startDate = reservation.getStartDate();
@@ -169,4 +170,50 @@ public  class ReservationRequestService {
 
         return requestRepository.findAllByAccommodationAndEndDateBetween(accommodation.getId(), startDate, endDate);
     }
+
+    public void cancelAllReservationsForGuest(Long reportedUserId) {
+        List<ReservationRequest> reservationsRequests = requestRepository.findAllByUserId(reportedUserId);
+
+        for (ReservationRequest reservationRequest : reservationsRequests) {
+            if (reservationRequest.getEndDate().isBefore(LocalDate.now()) ||
+                    ((reservationRequest.getStartDate().isBefore(LocalDate.now()) || reservationRequest.getStartDate().isEqual(LocalDate.now()))
+                    && (reservationRequest.getEndDate().isAfter(LocalDate.now())) || reservationRequest.getEndDate().isEqual(LocalDate.now()))
+            ) {
+                continue;
+            }
+            accommodationService.cancelReservation(reservationRequest);
+
+            Accommodation accommodation = accommodationService.findById(reservationRequest.getAccommodationId()).get();
+            Owner owner = (Owner) userAccountService.findByUsername(accommodation.getOwner().getUsername());
+            owner.getReservations().remove(reservationRequest);
+            userAccountService.save(owner);
+
+            this.delete(reservationRequest);
+            reservationService.delete(reservationRequest.getReservationId());
+        }
+    }
+
+    public void cancelAllReservationsForOwner(String ownerUsername) {
+        Owner owner = (Owner) userAccountService.findByUsername(ownerUsername);
+        Set<ReservationRequest> reservationsRequests = ((Owner) userAccountService.findByUsername(ownerUsername)).getReservations();
+
+        for (ReservationRequest reservationRequest : reservationsRequests) {
+            if (reservationRequest.getEndDate().isBefore(LocalDate.now()) ||
+                    ((reservationRequest.getStartDate().isBefore(LocalDate.now()) || reservationRequest.getStartDate().isEqual(LocalDate.now()))
+                            && (reservationRequest.getEndDate().isAfter(LocalDate.now())) || reservationRequest.getEndDate().isEqual(LocalDate.now()))
+            ) {
+                continue;
+            }
+            accommodationService.cancelReservation(reservationRequest);
+
+            owner.getReservations().remove(reservationRequest);
+            userAccountService.save(owner);
+
+            this.delete(reservationRequest);
+            reservationService.delete(reservationRequest.getReservationId());
+        }
+
+
+    }
+
 }

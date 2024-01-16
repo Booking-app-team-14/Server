@@ -15,11 +15,11 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
 
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     @ManyToOne
     private UserAccount sender;
 
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     @ManyToOne
     private UserAccount receiver;
 

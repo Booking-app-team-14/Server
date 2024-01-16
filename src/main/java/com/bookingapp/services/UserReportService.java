@@ -73,4 +73,8 @@ public class UserReportService {
         return userReportRepository.save(userReport);
     }
 
+    public void deleteUserReport(Long id) {
+        userReportRepository.deleteById(id);
+    }
+
 }

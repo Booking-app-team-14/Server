@@ -117,5 +117,16 @@ public class ReviewController {
         }
     }
 
+    @GetMapping(value = "/{reviewId}", name = "get review for accommodation")
+    public ResponseEntity<ReviewDTO> getReviewForAccommodation(@PathVariable Long reviewId) {
+        Optional<Review> review = reviewService.getReviewById(reviewId);
+
+        if (review.isPresent()) {
+            ReviewDTO reviewDTO = new ReviewDTO(review.get());
+            return new ResponseEntity<>(reviewDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

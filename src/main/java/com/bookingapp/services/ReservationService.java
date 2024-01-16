@@ -1,5 +1,6 @@
 package com.bookingapp.services;
 
+import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.Reservation;
 import com.bookingapp.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

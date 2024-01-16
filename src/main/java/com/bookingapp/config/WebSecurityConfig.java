@@ -110,8 +110,14 @@ public class WebSecurityConfig {
                             //    api/ownerReviewReports/reviews/report
                     auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/report")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviews/report/{reviewId}")).hasAuthority("OWNER");
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports")).hasAuthority("ADMIN");
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports/{id}")).hasAuthority("ADMIN");
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports/ownerReviews/{reportId}")).hasAuthority("ADMIN");
                     auth.requestMatchers(antMatcher("/api/reviewReports/accommodationReviews/report")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");
+                            auth.requestMatchers(antMatcher("/api/accommodationReviews/{id}")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/accommodations/update")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/reviews/owner/requests")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/reviews/accommodation/requests")).hasAuthority("ADMIN");
@@ -121,7 +127,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/owners/{id}/rating")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
-                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST"); // TODO
                     auth.requestMatchers(antMatcher("/api/reviews/admin/{reviewId}")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login

@@ -1,6 +1,7 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReviewReportDTO;
+import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.ReviewReport;
 import com.bookingapp.enums.ReportStatus;
 import com.bookingapp.services.AccommodationReviewService;
@@ -84,6 +85,33 @@ public class ReviewReportController {
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping(value = "/{id}", name = "admin deletes a review report")
+    public ResponseEntity<ReviewReport> deleteReviewReport(@PathVariable Long id) {
+        ReviewReport report = reviewReportService.findById(id);
+
+        if (report != null) {
+            reviewReportService.delete(report);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(value = "/accommodationReviews/{reportId}", name = "owner deletes a review from the report")
+    public ResponseEntity<ReviewReport> deleteReviewFromReport(@PathVariable Long reportId) {
+        ReviewReport report = reviewReportService.findById(reportId);
+
+        if (report != null) {
+            AccommodationReview review = report.getAccommodationReview();
+            accommodationReviewService.delete(review);
+            reviewReportService.delete(report);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
 }
