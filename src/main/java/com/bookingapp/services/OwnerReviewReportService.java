@@ -66,4 +66,8 @@ public class OwnerReviewReportService {
             throw new EntityNotFoundException("OwnerReview with ID " + reportDTO.getReviewId() + " not found.");
         }
     }
+
+    public boolean isReviewReported(Long reviewId) {
+        return reviewReportRepository.existsByReviewId(reviewId);
+    }
 }

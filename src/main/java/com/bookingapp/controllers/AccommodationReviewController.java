@@ -1,12 +1,13 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.AccommodationReviewDTO;
-import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.AccommodationReview;
-import com.bookingapp.entities.Review;
 import com.bookingapp.enums.ReviewStatus;
+import com.bookingapp.repositories.OwnerReviewReportRepository;
+import com.bookingapp.repositories.ReviewReportRepository;
 import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.ReviewService;
 import com.bookingapp.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,17 @@ public class AccommodationReviewController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private final ReviewReportRepository reviewReportRepository;
+
+    @Autowired
+    public AccommodationReviewController(AccommodationService accommodationService, UserAccountService userAccountService,ReviewReportRepository reviewReportRepository ) {
+        this.accommodationService = accommodationService;
+        this.userAccountService = userAccountService;
+        this.reviewReportRepository = reviewReportRepository;
+    }
+
 
     @GetMapping(value = "/accommodations/{id}/accommodationReviews", name = "user gets all approved reviews for accommodation")
     public ResponseEntity<List<AccommodationReviewDTO>> getAccommodationReviews(@PathVariable Long id) {
@@ -138,6 +150,8 @@ public class AccommodationReviewController {
     public ResponseEntity<Void> deleteAccommodationReviewById(@PathVariable Long reviewId) {
         Optional<AccommodationReview> reviewToDelete = Optional.ofNullable(accommodationReviewService.findById(reviewId));
          if (reviewToDelete.isPresent()) {
+
+             reviewReportRepository.deleteByAccommodationReview_Id(reviewId);
             accommodationReviewService.deleteReviewById(reviewId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
          } else {
@@ -190,6 +204,12 @@ public class AccommodationReviewController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping(value = "/accommodations/{id}/hasAcceptedReservation", name = "check if user has an accepted reservation in past")
+    public ResponseEntity<Boolean> hasAcceptedReservationForAccommodation(@PathVariable Long id) {
+        boolean hasAcceptedReservation = accommodationReviewService.isWithinSevenDaysFromEnd(id);
+        return new ResponseEntity<>(hasAcceptedReservation, HttpStatus.OK);
     }
 
 }

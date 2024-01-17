@@ -10,31 +10,21 @@ import java.time.LocalDate;
 @Setter
 @Entity
 public class Notification {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
 
-    @Column(nullable = false)
-    @ManyToOne
-    private UserAccount sender;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
+    private UserAccount user;
 
     @Column(nullable = false)
-    @ManyToOne
-    private UserAccount receiver;
+    private LocalDate sentBefore;
 
     @Column(nullable = false)
-    private LocalDate sentAt;
-
-    @Column(nullable = false)
-    private boolean seen;
-
-    // TODO: enum not string
-    @Column(nullable = false)
-    private String type;
+    private String description;
 
     public Notification() {
 
     }
-
 }
+

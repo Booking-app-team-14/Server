@@ -50,6 +50,12 @@ public class OwnerReviewReportController {
 
 
 
+    @GetMapping("/reviews/isReported")
+    public ResponseEntity<Boolean> isReviewReported(@RequestParam Long reviewId) {
+        boolean isReported = reviewReportService.isReviewReported(reviewId);
+        return new ResponseEntity<>(isReported, HttpStatus.OK);
+    }
+
 
 }
 

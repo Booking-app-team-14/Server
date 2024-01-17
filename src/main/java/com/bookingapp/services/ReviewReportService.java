@@ -4,6 +4,7 @@ import com.bookingapp.dtos.ReviewReportDTO;
 import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.ReviewReport;
 import com.bookingapp.enums.ReportStatus;
+import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.repositories.ReviewReportRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +55,15 @@ public class ReviewReportService {
             reviewReport.setStatus(ReportStatus.PENDING);
             reviewReport.setSentAt(LocalDateTime.now());
 
-
             return reviewReportRepository.save(reviewReport);
+
         } else {
 
             throw new EntityNotFoundException("AccommodationReview with ID " + reportDTO.getAccommodationReviewId() + " not found.");
         }
+    }
+
+    public boolean isReviewReported(Long reviewId) {
+        return reviewReportRepository.existsByAccommodationReviewIdAndStatus(reviewId, ReportStatus.PENDING);
     }
 }

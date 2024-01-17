@@ -16,7 +16,7 @@ public class OwnerReviewReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne( )
     private Review review;
 
     //@Column(nullable = false)
