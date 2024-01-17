@@ -107,6 +107,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->{
                     ///api/reviewReports/accommodationReviews/report
                             auth.requestMatchers(antMatcher("/api/accommodations/create")).hasAuthority("OWNER");
+
+                    auth.requestMatchers(antMatcher("/api/userReports/isReported/{userId}")).hasAnyAuthority ("OWNER", "GUEST");
                             //    api/ownerReviewReports/reviews/report
                     auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/report")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviews/report/{reviewId}")).hasAuthority("OWNER");
@@ -153,9 +155,14 @@ public class WebSecurityConfig {
                     auth.requestMatchers(antMatcher("/api/userReports/report")).hasAnyAuthority("GUEST","OWNER"  );
                     //auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("OWNER" );
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
+
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/hasAcceptedReservation")).hasAuthority("GUEST");
+                    auth.requestMatchers(antMatcher("/api/reviews/hasAcceptedReservationForOwner")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();
-                            ///api/accommodations/{accommodationId}/accommodationReviews/pending
+                            //    api/reviewReports/reviews/isReported/{reviewId}
+                    auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/isReported")).hasAuthority("OWNER");
+                    auth.requestMatchers(antMatcher("/api/reviewReports/reviews/isReported/{reviewId}")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/accommodationReviews/pending")).permitAll();
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews/pending")).permitAll();
                     ///accommodationReviews/{reviewId}

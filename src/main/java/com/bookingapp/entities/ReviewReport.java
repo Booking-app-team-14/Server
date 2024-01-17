@@ -16,7 +16,7 @@ public class ReviewReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private AccommodationReview accommodationReview;
 
     //@Column(nullable = false)

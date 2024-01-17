@@ -75,4 +75,8 @@ public class OwnerReviewReportService {
         reviewReportRepository.deleteById(id);
     }
 
+
+    public boolean isReviewReported(Long reviewId) {
+        return reviewReportRepository.existsByReviewId(reviewId);
+    }
 }

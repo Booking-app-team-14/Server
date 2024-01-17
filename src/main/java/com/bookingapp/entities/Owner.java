@@ -24,7 +24,7 @@ public class Owner extends UserAccount {
     private Set<Accommodation> accommodations;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipient" )
     private Set<Review> reviewsReceived;
 
     public Owner() {

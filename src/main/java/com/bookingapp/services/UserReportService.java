@@ -1,16 +1,21 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.UserReportDTO;
+import com.bookingapp.entities.Accommodation;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.entities.UserReport;
+import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.UserReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserReportService {
@@ -21,37 +26,37 @@ public class UserReportService {
     @Autowired
     private UserAccountService userAccountService;
 
+    @Autowired
+    private ReviewService  reviewService;
+    @Autowired
+    private AccommodationRepository accommodationRepository;
+
     //@Autowired
     //private ReservationService reservationService;
 
     public UserReport submitUserReport(UserReportDTO userReportDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        //if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserAccount) {
+
             UserAccount reportingUser = (UserAccount) authentication.getPrincipal();
             UserAccount reportedUser = userAccountService.getUserById(userReportDTO.getReportedUserId());
 
-            // provera da li postoji prethodna rezervacija gosta za smestaj tog ownera
-            // if (reservationService.hasPreviousReservation(reportingUser, reportedUser)) {
-            /*UserReport userReport = new UserReport();
-            userReport.setReportingUser(reportingUser);
-            userReport.setReportedUser(reportedUser);
-            userReport.setDescription(userReportDTO.getDescription());
-            userReport.setSentAt(LocalDateTime.now());
-            userReportRepository.save(userReport);*/
+        boolean hasReservation = reviewService.hasAcceptedReservation(reportingUser.getId() );
 
-            //Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
-            //            return reviewRepository.save(review);
+        //boolean hasReservationOwner = reviewService.hasAcceptedReservationForGuest(reportingUser.getId() );
+
+        //if (!hasReservation  ) {
+            //throw new IllegalArgumentException("Must have at least one accepted reservation in the past in  this accommodation to submit a report.");
+        //}
+
+        if (userReportRepository.existsByReportingUserAndReportedUser(reportingUser, reportedUser)) {
+
+            throw new IllegalArgumentException("User already reported.");
+        }
 
             UserReport userReport=new UserReport(reportingUser, reportedUser, userReportDTO.getDescription() );
             return userReportRepository.save(userReport);
-            // } else {
-            //     throw new IllegalArgumentException("Invalid report. No previous reservation.");
-            // }
-        //} else {
-            //throw new IllegalStateException("User not authenticated or invalid principal.");
-        //}
-        //return null;
+
     }
 
 

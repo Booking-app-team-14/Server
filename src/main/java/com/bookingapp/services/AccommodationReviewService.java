@@ -2,16 +2,20 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.ReviewStatus;
+import com.bookingapp.exceptions.ReviewNotAllowedException;
 import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.AccommodationReviewRepository;
 import com.bookingapp.repositories.GuestRepository;
+import com.bookingapp.repositories.ReservationRequestIRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +31,9 @@ public class AccommodationReviewService {
 
     @Autowired
     private GuestRepository userRepository;
+
+    @Autowired
+    private ReservationRequestIRepository reservationRequestRepository;
 
     public List<AccommodationReview> findAll() {
         return accommodationReviewRepository.findAll();
@@ -48,7 +55,7 @@ public class AccommodationReviewService {
         return accommodationReviewRepository.findAllPending();
     }
 
-    public AccommodationReview saveAccommodationReview(AccommodationReviewDTO reviewDTO) {
+   /* public AccommodationReview saveAccommodationReview(AccommodationReviewDTO reviewDTO) {
 
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -75,7 +82,61 @@ public class AccommodationReviewService {
 
         //throw new EntityNotFoundException("Guest or Owner not found");
         //}
+    }*/
+   public AccommodationReview saveAccommodationReview(AccommodationReviewDTO reviewDTO) {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       UserAccount user = (UserAccount) authentication.getPrincipal();
+       Optional<Accommodation> optionalAccommodation = accommodationRepository.findById(reviewDTO.getAccommodationId());
+       Optional<Guest> optionalGuest = userRepository.findById(user.getId());
+
+       if (optionalGuest.isPresent() && optionalAccommodation.isPresent()) {
+           Guest sender = optionalGuest.get();
+           Accommodation accommodation = optionalAccommodation.get();
+
+
+           //if (hasAcceptedReservation(accommodation.getId())) {
+               if (isWithinSevenDaysFromEnd(reviewDTO.getAccommodationId() )) {
+                   AccommodationReview review = new AccommodationReview(accommodation, sender, reviewDTO.getRating(),
+                           reviewDTO.getComment(), ReviewStatus.PENDING, LocalDateTime.now());
+                   return accommodationReviewRepository.save(review);
+               } else {
+                   throw new ReviewNotAllowedException("Review cannot be submitted without an accepted reservation request in the past more than 7 days after the reservation ends.");
+               }
+           //} else {
+               //throw new ReviewNotAllowedException("Review cannot be submitted without an accepted reservation request in the past.");
+           //}
+       } else {
+           throw new EntityNotFoundException("Guest or Accommodation not found");
+       }
+   }
+
+    public boolean hasAcceptedReservation(Long accommodationId) {
+        LocalDate today = LocalDate.now();
+
+        return reservationRequestRepository.existsByAccommodationIdAndRequestStatusAndEndDateBefore(
+                accommodationId, RequestStatus.ACCEPTED, today);
     }
+
+
+
+    public boolean isWithinSevenDaysFromEnd(Long accommodationId ) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+
+        Optional<ReservationRequest> reservationRequest = reservationRequestRepository
+                .findFirstByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(
+                        accommodationId, user.getId(), RequestStatus.ACCEPTED);
+
+        return reservationRequest.map(request -> {
+            LocalDate endDate = request.getEndDate();
+            LocalDate now = LocalDate.now();
+
+
+            return (endDate.isBefore(now) && now.isBefore(endDate.plusDays(7)) );
+        }).orElse(false);
+    }
+
 
     public List<AccommodationReview> getApprovedAccommodationReviewsByAccommodation(Long accommodationId) {
         return accommodationReviewRepository.findByStatusAndAccommodationId( accommodationId);

@@ -86,9 +86,18 @@ public class AccommodationController {
 
 
     //upload slike za accommodation
-    @PostMapping(value = "accommodations/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
+    /*@PostMapping(value = "accommodations/{id}/image", consumes = "text/plain", name = "owner uploads accommodation image for his accommodation")
     public ResponseEntity<Long> uploadAccommodationImage(@PathVariable Long id, @RequestBody String imageBytes) {
         boolean ok = accommodationService.uploadAccommodationImage(id, imageBytes);
+        if (!ok) {
+            return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
+    }*/
+
+    @PostMapping(value = "accommodations/{id}/image", consumes = "application/json", name = "owner uploads accommodation images for his accommodation")
+    public ResponseEntity<Long> uploadAccommodationImages(@PathVariable Long id, @RequestBody List<String> imageBytesList) {
+        boolean ok = accommodationService.uploadAccommodationImages(id, imageBytesList);
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
