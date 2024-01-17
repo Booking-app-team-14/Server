@@ -119,7 +119,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/accommodations/update/{accommodationId}")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/accommodationReviews/{id}")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("ADMIN");
-                            auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("ADMIN");
+                            auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
                             auth.requestMatchers(antMatcher("/api/accommodations/update")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/reviews/owner/requests")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/reviews/accommodation/requests")).hasAuthority("ADMIN");
@@ -129,7 +129,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/owners/{id}/rating")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/reviews")).hasAuthority("GUEST");
-                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST"); // TODO
+                    auth.requestMatchers(antMatcher("/api/reviews/{reviewId}")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/reviews/admin/{reviewId}")).hasAuthority("ADMIN");
                             auth.requestMatchers(antMatcher("/api/amenities")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/register/users")).permitAll(); ///api/users/login
@@ -156,7 +156,7 @@ public class WebSecurityConfig {
                     //auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("OWNER" );
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
 
-                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/hasAcceptedReservation")).hasAuthority("GUEST");
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/hasAcceptedReservation/{ownerId}")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/reviews/hasAcceptedReservationForOwner")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("OWNER");
                             auth.requestMatchers(antMatcher("/api/users/favorite/{userId}")).permitAll();

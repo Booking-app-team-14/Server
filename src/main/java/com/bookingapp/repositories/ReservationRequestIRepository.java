@@ -60,6 +60,8 @@ public interface ReservationRequestIRepository extends JpaRepository<Reservation
             "AND r.requestStatus = 'ACCEPTED' " +
             "AND r.endDate < CURRENT_DATE")
     boolean hasAcceptedReservation(Long userId, Long accommodationId);
+
+    List<ReservationRequest> findAllByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(Long accommodationId, Long id, RequestStatus requestStatus);
 }
 
 

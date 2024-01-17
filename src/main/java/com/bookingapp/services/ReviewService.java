@@ -2,6 +2,7 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,18 +58,31 @@ public class ReviewService {
         }
     }*/
 
-    public boolean hasAcceptedReservationForOwner( Long ownerId) {
+    public boolean hasAcceptedReservationForOwner(Long ownerId) {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserAccount user = (UserAccount) authentication.getPrincipal();
 
         Optional<Guest> optionalGuest = guestRepository.findById(user.getId());
 
-
         if (optionalGuest.isPresent()  ) {
             Guest guest = optionalGuest.get();
 
-        return reservationRequestRepository.hasAcceptedReservationForOwner(guest.getId(), ownerId);
-    }
+            for (ReservationRequest reservationRequest : reservationRequestRepository.findAll()) {
+
+                Owner owner = ownerRepository.findById(ownerId).get();
+
+                if (reservationRequest.getUserId().equals(guest.getId()) &&
+                        reservationRequest.getRequestStatus() == RequestStatus.ACCEPTED &&
+                        reservationRequest.getEndDate().isBefore(java.time.LocalDate.now()) &&
+                        reservationRequest.getUserUsername().equals(owner.getUsername())
+                ) {
+                    return true;
+                }
+            }
+
+//            return reservationRequestRepository.hasAcceptedReservationForOwner(guest.getId(), ownerId);
+        }
         return false;
     }
 
@@ -98,8 +113,7 @@ public class ReviewService {
             Guest sender = optionalGuest.get();
             Owner recipient = optionalOwner.get();
 
-            boolean hasAcceptedReservation = reservationRequestRepository
-                    .hasAcceptedReservationForOwner(sender.getId(), recipient.getId());
+            boolean hasAcceptedReservation = this.hasAcceptedReservationForOwner(recipient.getId());
 
             if (hasAcceptedReservation) {
                 Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);

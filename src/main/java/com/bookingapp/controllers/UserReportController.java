@@ -111,6 +111,7 @@ public class UserReportController {
         }
 
         userAccountService.save(reportedUser);
+        deleteUserReport(reportId);
         return new ResponseEntity<>("User Blocked", HttpStatus.OK);
     }
 

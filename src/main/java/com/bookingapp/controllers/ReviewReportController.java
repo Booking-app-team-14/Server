@@ -108,8 +108,8 @@ public class ReviewReportController {
 
         if (report != null) {
             AccommodationReview review = report.getAccommodationReview();
-            accommodationReviewService.delete(review);
             reviewReportService.delete(report);
+            accommodationReviewService.delete(review);
             return new ResponseEntity<>(report, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

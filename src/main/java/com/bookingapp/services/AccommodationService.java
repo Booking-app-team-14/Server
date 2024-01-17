@@ -169,7 +169,7 @@ public class AccommodationService {
 
         accommodation.setAvailability(availabilities);
 
-        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
+//        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
         accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
         accommodation.setRating(accommodationDTO.getRating());
@@ -460,7 +460,8 @@ public class AccommodationService {
         if (accommodationOptional.isPresent()) {
             Accommodation accommodation = accommodationOptional.get();
             reservation.setAccommodation(accommodation);
-            for (Availability availability : accommodation.getAvailability()) {
+            Set<Availability> accommodationAvailabilities = new HashSet<>(accommodation.getAvailability());
+            for (Availability availability : accommodationAvailabilities) {
                 if (availability.getStartDate().isEqual(startDate) && availability.getEndDate().isEqual(endDate)) {
                     accommodation.getAvailability().remove(availability);
                     reservation.getAvailability().add(availability);

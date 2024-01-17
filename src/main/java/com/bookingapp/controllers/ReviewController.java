@@ -123,12 +123,9 @@ public class ReviewController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/hasAcceptedReservationForOwner")
-    public ResponseEntity<Boolean> hasAcceptedReservationForOwner(
-
-            @RequestParam Long ownerId
-    ) {
-        boolean hasAcceptedReservation = reviewService.hasAcceptedReservationForOwner(  ownerId);
+    @GetMapping("/hasAcceptedReservationForOwner/{ownerId}")
+    public ResponseEntity<Boolean> hasAcceptedReservationForOwner(@PathVariable Long ownerId) {
+        boolean hasAcceptedReservation = reviewService.hasAcceptedReservationForOwner(ownerId);
         return new ResponseEntity<>(hasAcceptedReservation, HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ package com.bookingapp.controllers;
 import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.enums.ReviewStatus;
+import com.bookingapp.repositories.ReviewReportRepository;
 import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.ReviewService;

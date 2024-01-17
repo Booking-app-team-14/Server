@@ -124,17 +124,25 @@ public class AccommodationReviewService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserAccount user = (UserAccount) authentication.getPrincipal();
 
-        Optional<ReservationRequest> reservationRequest = reservationRequestRepository
-                .findFirstByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(
+        List<ReservationRequest> reservationRequest = reservationRequestRepository
+                .findAllByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(
                         accommodationId, user.getId(), RequestStatus.ACCEPTED);
 
-        return reservationRequest.map(request -> {
+        LocalDate now = LocalDate.now();
+        for (ReservationRequest request : reservationRequest) {
             LocalDate endDate = request.getEndDate();
-            LocalDate now = LocalDate.now();
+            if (endDate.isBefore(now) && now.isBefore(endDate.plusDays(7)) ){
+                return true;
+            }
+        }
+        return false;
 
-
-            return (endDate.isBefore(now) && now.isBefore(endDate.plusDays(7)) );
-        }).orElse(false);
+//        return reservationRequest.map(request -> {
+//            LocalDate endDate = request.getEndDate();
+//            LocalDate now = LocalDate.now();
+//
+//            return (endDate.isBefore(now) && now.isBefore(endDate.plusDays(7)) );
+//        }).orElse(false);
     }
 
 

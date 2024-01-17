@@ -20,21 +20,21 @@ public class NotificationDTO {
 
     }
 
-   /* public NotificationDTO(Long senderId, Long receiverId, String sentAt, boolean seen, String type) {
+   public NotificationDTO(Long senderId, Long receiverId, String sentAt, boolean seen, String type) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.sentAt = sentAt;
         this.seen = seen;
         this.type = type;
-    }*/
+    }
 
-    /*public NotificationDTO(Notification notification) {
+    public NotificationDTO(Notification notification) {
         this.senderId = notification.getSender().getId();
         this.receiverId = notification.getReceiver().getId();
         this.sentAt = notification.getSentAt().toString();
         this.seen = notification.isSeen();
         this.type = notification.getType();
-    }*/
+    }
 
 }
 

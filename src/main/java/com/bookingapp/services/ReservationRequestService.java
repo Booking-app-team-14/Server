@@ -36,10 +36,10 @@ public  class ReservationRequestService {
             throw new IllegalArgumentException("Check-out date should be after the check-in date");
         }
 
-        // Check-in date should be at least one day after today
-        if (startDate.isBefore(today.plusDays(1))) {
-            throw new IllegalArgumentException("Check-in date should be at least one day after today");
-        }
+//        // Check-in date should be at least one day after today
+//        if (startDate.isBefore(today.plusDays(1))) {
+//            throw new IllegalArgumentException("Check-in date should be at least one day after today");
+//        }
 
         // Additional validations based on reservation requirements
         if (reservation.getNumberOfGuests() < ac1.get().getMinNumberOfGuests() || reservation.getNumberOfGuests() > ac1.get().getMaxNumberOfGuests()) {
@@ -177,7 +177,8 @@ public  class ReservationRequestService {
         for (ReservationRequest reservationRequest : reservationsRequests) {
             if (reservationRequest.getEndDate().isBefore(LocalDate.now()) ||
                     ((reservationRequest.getStartDate().isBefore(LocalDate.now()) || reservationRequest.getStartDate().isEqual(LocalDate.now()))
-                    && (reservationRequest.getEndDate().isAfter(LocalDate.now())) || reservationRequest.getEndDate().isEqual(LocalDate.now()))
+                    && (reservationRequest.getEndDate().isAfter(LocalDate.now())) || reservationRequest.getEndDate().isEqual(LocalDate.now())
+                    || reservationRequest.getRequestStatus().equals(RequestStatus.DECLINED))
             ) {
                 continue;
             }
@@ -197,7 +198,9 @@ public  class ReservationRequestService {
         Owner owner = (Owner) userAccountService.findByUsername(ownerUsername);
         Set<ReservationRequest> reservationsRequests = ((Owner) userAccountService.findByUsername(ownerUsername)).getReservations();
 
-        for (ReservationRequest reservationRequest : reservationsRequests) {
+        Set<ReservationRequest> reservationsRequestsCopy = new HashSet<>(reservationsRequests);
+
+        for (ReservationRequest reservationRequest : reservationsRequestsCopy) {
             if (reservationRequest.getEndDate().isBefore(LocalDate.now()) ||
                     ((reservationRequest.getStartDate().isBefore(LocalDate.now()) || reservationRequest.getStartDate().isEqual(LocalDate.now()))
                             && (reservationRequest.getEndDate().isAfter(LocalDate.now())) || reservationRequest.getEndDate().isEqual(LocalDate.now()))
