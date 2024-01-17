@@ -2,15 +2,16 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.*;
-import com.bookingapp.repositories.GuestRepository;
-import com.bookingapp.repositories.OwnerRepository;
-import com.bookingapp.repositories.ReviewRepository;
+import com.bookingapp.enums.RequestStatus;
+import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +23,19 @@ public class ReviewService {
     private final OwnerRepository ownerRepository;
 
     @Autowired
+    private ReservationRequestIRepository reservationRequestRepository;
+
+    @Autowired
+    private UserAccountRepository userRepository;
+
+    @Autowired
     public ReviewService(ReviewRepository reviewRepository, GuestRepository guestRepository, OwnerRepository ownerRepository) {
         this.reviewRepository = reviewRepository;
         this.guestRepository = guestRepository;
         this.ownerRepository = ownerRepository;
     }
 
-    public Review saveReview(ReviewDTO reviewDTO) {
+    /*public Review saveReview(ReviewDTO reviewDTO) {
 
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -49,10 +56,82 @@ public class ReviewService {
 
             throw new EntityNotFoundException("Guest or Owner not found");
         }
+    }*/
+
+    public boolean hasAcceptedReservationForOwner(Long ownerId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+
+        Optional<Guest> optionalGuest = guestRepository.findById(user.getId());
+
+        if (optionalGuest.isPresent()  ) {
+            Guest guest = optionalGuest.get();
+
+            for (ReservationRequest reservationRequest : reservationRequestRepository.findAll()) {
+
+                Owner owner = ownerRepository.findById(ownerId).get();
+
+                if (reservationRequest.getUserId().equals(guest.getId()) &&
+                        reservationRequest.getRequestStatus() == RequestStatus.ACCEPTED &&
+                        reservationRequest.getEndDate().isBefore(java.time.LocalDate.now()) &&
+                        reservationRequest.getUserUsername().equals(owner.getUsername())
+                ) {
+                    return true;
+                }
+            }
+
+//            return reservationRequestRepository.hasAcceptedReservationForOwner(guest.getId(), ownerId);
+        }
+        return false;
     }
 
+    public boolean hasAcceptedReservation  (Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+
+        Optional<UserAccount> optionalUser = userRepository.findById(user.getId());
+
+
+        if (optionalUser.isPresent()  ) {
+            UserAccount userAcc = optionalUser.get();
+
+            return reservationRequestRepository.hasAcceptedReservation (userAcc.getId(), id);
+        }
+        return false;
+    }
+
+
+    public Review saveReview(ReviewDTO reviewDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+
+        Optional<Guest> optionalGuest = guestRepository.findById(user.getId());
+        Optional<Owner> optionalOwner = ownerRepository.findById(reviewDTO.getRecipientId());
+
+        if (optionalGuest.isPresent() && optionalOwner.isPresent()) {
+            Guest sender = optionalGuest.get();
+            Owner recipient = optionalOwner.get();
+
+            boolean hasAcceptedReservation = this.hasAcceptedReservationForOwner(recipient.getId());
+
+            if (hasAcceptedReservation) {
+                Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
+                review.setApproved(false);
+                reviewRepository.save(review);
+
+                return review;
+            } else {
+                throw new ValidationException("Guest must have at least one accepted reservation for the specified owner  in the past.");
+            }
+        } else {
+            throw new EntityNotFoundException("Guest or Owner not found");
+        }
+    }
+
+
     public List<Review> getAllReviewsByOwnerId(Long ownerId) {
-        return reviewRepository.findByRecipientId(ownerId);
+        return reviewRepository.findByRecipientIdAndApproved(ownerId, true);
 
     }
 
@@ -73,7 +152,7 @@ public class ReviewService {
     }
 
     public Double getAverageRatingByOwnerId(Long ownerId) {
-        List<Review> reviews = reviewRepository.findByRecipientId(ownerId);
+        List<Review> reviews = reviewRepository.findByRecipientIdAndApproved(ownerId, true);
 
         if (!reviews.isEmpty()) {
             double totalRating = 0;

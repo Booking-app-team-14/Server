@@ -88,6 +88,10 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected int numberOfReports;
 
+    // TODO: dodati listu notifikacija koje korisnik ne zeli da dobija
+//    @OneToMany
+//    private Set<String> notWantedNotificationTypes;
+
    /* @Column(name = "IS_ACTIVE", nullable = false)
     private boolean isActive;*/
 

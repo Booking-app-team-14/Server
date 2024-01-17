@@ -169,7 +169,7 @@ public class AccommodationService {
 
         accommodation.setAvailability(availabilities);
 
-        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
+//        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
         accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
         accommodation.setRating(accommodationDTO.getRating());
@@ -266,34 +266,83 @@ public class AccommodationService {
         return accommodationRepository.findAccommodationsByNameOrLocation(searchTerm);
     }
 
-    public boolean uploadAccommodationImage(Long id, String imageBytes) {
-        String imageType = null;
+    public boolean uploadAccommodationImage(Long accommodationId, String imageBytes) {
+        String imageType;
         try {
             imageType = imagesRepository.getImageType(imageBytes);
         } catch (IOException e) {
             return false;
         }
 
-        deleteAccommodationImage(id);
-
-        String relativePath = String.format("accommodations\\accommodation-%d", id);
-        String directoryPath = String.format("src/main/resources/images/accommodations/accommodation-%d", id);
+        String relativePath = String.format("accommodations/accommodation-%d", accommodationId);
+        String directoryPath = String.format("src/main/resources/images/accommodations/accommodation-%d", accommodationId);
         File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
-        /*relativePath += File.separator;
-        relativePath += "." + imageType;*/
-        String filename = UUID.randomUUID().toString();
-        String imagePath = String.format("%s%s%s.%s", relativePath, File.separator, filename, imageType);
+        int imageCount = new File(directoryPath).listFiles().length + 1; // Count existing images
+        String filename = String.format("accommodation-%d-%d.%s", accommodationId, imageCount, imageType);
+        String imagePath = String.format("%s/%s", relativePath, filename);
+
         try {
             imagesRepository.addImage(imageBytes, imageType, imagePath);
+
+            // Update the Accommodation entity's images field
+            Accommodation accommodation = accommodationRepository.findById(accommodationId).orElse(null);
+            if (accommodation != null) {
+                accommodation.getImages().add(imagePath);
+                accommodationRepository.save(accommodation);
+            } else {
+                // Handle if the accommodation with the given ID is not found
+                return false;
+            }
         } catch (Exception e) {
             return false;
         }
         return true;
     }
+
+
+
+     public boolean uploadAccommodationImages(Long accommodationId, List<String> imageBytesList) {
+        String imageType;
+        try {
+             imageType = imagesRepository.getImageType(imageBytesList.get(0));
+        } catch (IOException e) {
+            return false;
+        }
+
+        String relativePath = String.format("accommodations/accommodation-%d", accommodationId);
+        String directoryPath = String.format("src/main/resources/images/accommodations/accommodation-%d", accommodationId);
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        for (int i = 0; i < imageBytesList.size(); i++) {
+            int imageCount = new File(directoryPath).listFiles().length + i + 1;
+            String filename = String.format("accommodation-%d-%d.%s", accommodationId, imageCount, imageType);
+            String imagePath = String.format("%s/%s", relativePath, filename);
+
+            try {
+                imagesRepository.addImage(imageBytesList.get(i), imageType, imagePath);
+
+                Accommodation accommodation = accommodationRepository.findById(accommodationId).orElse(null);
+                if (accommodation != null) {
+                    accommodation.getImages().add(imagePath);
+                    accommodationRepository.save(accommodation);
+                } else {
+
+                    return false;
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public boolean deleteAccommodationImage(Long id) {
         String relativePath = findAccommodationImageName(id);
@@ -411,7 +460,8 @@ public class AccommodationService {
         if (accommodationOptional.isPresent()) {
             Accommodation accommodation = accommodationOptional.get();
             reservation.setAccommodation(accommodation);
-            for (Availability availability : accommodation.getAvailability()) {
+            Set<Availability> accommodationAvailabilities = new HashSet<>(accommodation.getAvailability());
+            for (Availability availability : accommodationAvailabilities) {
                 if (availability.getStartDate().isEqual(startDate) && availability.getEndDate().isEqual(endDate)) {
                     accommodation.getAvailability().remove(availability);
                     reservation.getAvailability().add(availability);
@@ -620,6 +670,14 @@ public class AccommodationService {
             availabilityService.save(availability);
         }
         this.save(accommodation);
+    }
+
+    public void setApprovedToFalseForAllOwnersApartments(Long ownerId) {
+        List<Accommodation> accommodations = accommodationRepository.findAllByOwnerId(ownerId);
+        for (Accommodation accommodation : accommodations) {
+            accommodation.setApproved(false);
+            accommodationRepository.save(accommodation);
+        }
     }
 
 }

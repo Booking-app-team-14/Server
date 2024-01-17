@@ -17,14 +17,14 @@ import java.util.Set;
 @Entity
 public class Owner extends UserAccount {
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany
     private Set<ReservationRequest> reservations;
 
     @OneToMany(cascade = {CascadeType.ALL})
     private Set<Accommodation> accommodations;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipient" )
     private Set<Review> reviewsReceived;
 
     public Owner() {

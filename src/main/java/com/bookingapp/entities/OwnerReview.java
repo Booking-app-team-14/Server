@@ -16,10 +16,10 @@ public class OwnerReview {
     @Id
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private UserAccount user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private UserAccount owner;
 
     private Integer rating;

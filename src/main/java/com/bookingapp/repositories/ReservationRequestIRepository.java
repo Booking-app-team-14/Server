@@ -33,6 +33,35 @@ public interface ReservationRequestIRepository extends JpaRepository<Reservation
             @Param("accommodationId") Long accommodationId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    boolean existsByAccommodationIdAndRequestStatusAndEndDateBefore(
+            Long accommodationId, RequestStatus requestStatus, LocalDate endDate);
+
+    Optional<ReservationRequest> findFirstByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(
+            Long accommodationId, Long userId, RequestStatus requestStatus);
+
+    @Query("SELECT COUNT(r) > 0 FROM ReservationRequest r " +
+            "WHERE r.userId = :guestId " +
+            "AND r.accommodationId IN (SELECT DISTINCT a.id FROM Accommodation a WHERE a.owner.Id = :ownerId) " +
+            "AND r.requestStatus = 'ACCEPTED' " +
+            "AND r.endDate < CURRENT_DATE")
+    boolean hasAcceptedReservationForOwner(Long guestId, Long ownerId);
+
+    @Query("SELECT COUNT(r) > 0 FROM ReservationRequest r " +
+            "WHERE r.userId = :guestId " +
+            "AND r.accommodationId IN (SELECT DISTINCT a.id FROM Accommodation a WHERE a.owner.Id = :ownerId) " +
+            "AND r.requestStatus = 'ACCEPTED' " +
+            "AND r.endDate < CURRENT_DATE")
+    boolean hasAcceptedReservationForGuest(Long ownerId, Long guestId );
+
+    @Query("SELECT COUNT(r) > 0 FROM ReservationRequest r " +
+            "WHERE r.userId = :userId " +
+            "AND r.accommodationId = :accommodationId " +
+            "AND r.requestStatus = 'ACCEPTED' " +
+            "AND r.endDate < CURRENT_DATE")
+    boolean hasAcceptedReservation(Long userId, Long accommodationId);
+
+    List<ReservationRequest> findAllByAccommodationIdAndUserIdAndRequestStatusOrderByEndDateDesc(Long accommodationId, Long id, RequestStatus requestStatus);
 }
 
 

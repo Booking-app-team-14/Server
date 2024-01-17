@@ -1,13 +1,17 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReviewReportDTO;
+import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.ReviewReport;
+import com.bookingapp.entities.UserAccount;
 import com.bookingapp.enums.ReportStatus;
 import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.ReviewReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,7 +21,7 @@ import java.util.List;
 @RequestMapping(value = "api/reviewReports")
 public class ReviewReportController {
 
-    @Autowired
+     @Autowired
     private ReviewReportService reviewReportService;
 
     @Autowired
@@ -85,5 +89,40 @@ public class ReviewReportController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping(value = "/{id}", name = "admin deletes a review report")
+    public ResponseEntity<ReviewReport> deleteReviewReport(@PathVariable Long id) {
+        ReviewReport report = reviewReportService.findById(id);
+
+        if (report != null) {
+            reviewReportService.delete(report);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(value = "/accommodationReviews/{reportId}", name = "owner deletes a review from the report")
+    public ResponseEntity<ReviewReport> deleteReviewFromReport(@PathVariable Long reportId) {
+        ReviewReport report = reviewReportService.findById(reportId);
+
+        if (report != null) {
+            AccommodationReview review = report.getAccommodationReview();
+            reviewReportService.delete(report);
+            accommodationReviewService.delete(review);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @GetMapping("/reviews/isReported/{reviewId}")
+    public ResponseEntity<Boolean> isReviewReported(@PathVariable Long reviewId) {
+        boolean isReported = reviewReportService.isReviewReported(reviewId);
+        return new ResponseEntity<>(isReported, HttpStatus.OK);
+    }
+
+
 
 }

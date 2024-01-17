@@ -66,4 +66,17 @@ public class OwnerReviewReportService {
             throw new EntityNotFoundException("OwnerReview with ID " + reportDTO.getReviewId() + " not found.");
         }
     }
+
+    public List<OwnerReviewReport> findAll() {
+        return reviewReportRepository.findAll();
+    }
+
+    public void deleteById(Long id) {
+        reviewReportRepository.deleteById(id);
+    }
+
+
+    public boolean isReviewReported(Long reviewId) {
+        return reviewReportRepository.existsByReviewId(reviewId);
+    }
 }

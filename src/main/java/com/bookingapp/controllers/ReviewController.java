@@ -1,9 +1,8 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.dtos.ReviewDTO;
-import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.Review;
+import com.bookingapp.repositories.OwnerReviewReportRepository;
 import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,17 @@ import java.util.Optional;
 public class ReviewController {
     @Autowired
     private final ReviewService reviewService;
+
+    @Autowired
+    private final OwnerReviewReportRepository ownerReviewReportRepository;
+
     @Autowired
     private AccommodationReviewService accommodationReviewService;
 
     @Autowired
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService, OwnerReviewReportRepository ownerReviewReportRepository) {
         this.reviewService = reviewService;
+        this.ownerReviewReportRepository = ownerReviewReportRepository;
     }
 
     @PostMapping
@@ -47,6 +51,9 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReviewById(@PathVariable Long reviewId) {
         Optional<Review> reviewToDelete = reviewService.getReviewById(reviewId);
         if (reviewToDelete.isPresent()) {
+
+            ownerReviewReportRepository.deleteByReviewId(reviewId);
+
             reviewService.deleteReviewById(reviewId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -116,6 +123,22 @@ public class ReviewController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/hasAcceptedReservationForOwner/{ownerId}")
+    public ResponseEntity<Boolean> hasAcceptedReservationForOwner(@PathVariable Long ownerId) {
+        boolean hasAcceptedReservation = reviewService.hasAcceptedReservationForOwner(ownerId);
+        return new ResponseEntity<>(hasAcceptedReservation, HttpStatus.OK);
+    }
 
+    @GetMapping(value = "/{reviewId}", name = "get review for accommodation")
+    public ResponseEntity<ReviewDTO> getReviewForAccommodation(@PathVariable Long reviewId) {
+        Optional<Review> review = reviewService.getReviewById(reviewId);
+
+        if (review.isPresent()) {
+            ReviewDTO reviewDTO = new ReviewDTO(review.get());
+            return new ResponseEntity<>(reviewDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
