@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class NotificationDTO {
 
+    private Long id;
     private Long senderId;
     private Long receiverId;
     private String sentAt; // epoch seconds
@@ -21,6 +22,7 @@ public class NotificationDTO {
     private NotificationType type;
 
     public NotificationDTO(Notification notification) {
+        this.id = notification.getId();
         this.senderId = notification.getSender().getId();
         this.receiverId = notification.getReceiver().getId();
         this.sentAt = notification.getSentAt().toString();
