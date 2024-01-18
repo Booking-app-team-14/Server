@@ -173,7 +173,7 @@ public class AccommodationService {
 
 //        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
-        accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
+        accommodation.setImages(accommodationDTO.getImages());
         accommodation.setRating(accommodationDTO.getRating());
         accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
         accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
@@ -679,7 +679,7 @@ public class AccommodationService {
             accommodation.setApproved(false);
             accommodationRepository.save(accommodation);
 
-            List<Guest> guests = userAccountService.findAllGuests(); // TODO check if this works
+            List<Guest> guests = userAccountService.findAllGuests();
             for (Guest guest : guests) {
                 guest.getFavouriteAccommodations().remove(accommodation);
                 userAccountService.save(guest);

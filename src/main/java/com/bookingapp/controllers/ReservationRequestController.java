@@ -44,7 +44,7 @@ public class ReservationRequestController {
             this.approveReservationRequest(request.getId());
         }
 
-//        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED); TODO uncomment
+        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED);
 
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
     }
@@ -96,7 +96,7 @@ public class ReservationRequestController {
             reservationRequest.setRequestStatus(RequestStatus.DECLINED);
             requestService.save(reservationRequest);
 
-//            requestService.sendNotificationForReservationForGuest(reservationRequest, false); // TODO uncomment
+            requestService.sendNotificationForReservationForGuest(reservationRequest, false);
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
         }
@@ -113,26 +113,7 @@ public class ReservationRequestController {
             reservationRequest.setRequestStatus(RequestStatus.ACCEPTED);
             requestService.save(reservationRequest);
 
-            // TODO premesti u neki servis, ne sme u kontroleru
-
-            List<ReservationRequest> requests = requestService.findByAccommodationId(reservationRequest.getAccommodationId());
-            List<ReservationRequest> overlappingRequests = requests.stream()
-                    .filter(r -> r.getRequestStatus().equals(RequestStatus.SENT))
-                    .filter(r ->
-                            (r.getStartDate().isBefore(reservationRequest.getEndDate()) && r.getEndDate().isAfter(reservationRequest.getStartDate())) ||
-                            (r.getStartDate().isEqual(reservationRequest.getEndDate()) || r.getEndDate().isEqual(reservationRequest.getStartDate())) ||
-                            (r.getStartDate().isBefore(reservationRequest.getStartDate()) && r.getEndDate().isAfter(reservationRequest.getEndDate())) ||
-                            (r.getStartDate().isAfter(reservationRequest.getStartDate()) && (r.getEndDate().isAfter(reservationRequest.getEndDate()) && r.getStartDate().isBefore(reservationRequest.getEndDate()))) ||
-                            (r.getStartDate().isBefore(reservationRequest.getStartDate()) && (r.getEndDate().isBefore(reservationRequest.getEndDate()) && r.getEndDate().isAfter(reservationRequest.getStartDate())))
-                    )
-                    .toList();
-
-            for (ReservationRequest r : overlappingRequests) {
-                r.setRequestStatus(RequestStatus.DECLINED);
-                requestService.save(r);
-
-//                requestService.sendNotificationForReservationForGuest(reservationRequest, false); // TODO uncomment
-            }
+            requestService.rejectOverlappingReservationRequests(reservationRequest);
 
             Reservation reservation = accommodationService.reserveAvailability(reservationRequest.getAccommodationId(), reservationRequest.getStartDate(), reservationRequest.getEndDate());
             reservationService.save(reservation);
@@ -144,7 +125,7 @@ public class ReservationRequestController {
             owner.getReservations().add(reservationRequest);
             userAccountService.save(owner);
 
-//            requestService.sendNotificationForReservationForGuest(reservationRequest, true); // TODO uncomment
+            requestService.sendNotificationForReservationForGuest(reservationRequest, true);
 
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
@@ -160,7 +141,7 @@ public class ReservationRequestController {
             ReservationRequest reservationRequest = reservationOptional.get();
 
             if (reservationRequest.getRequestStatus().equals(RequestStatus.SENT)) {
-//                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED); TODO uncomment
+                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
 
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
@@ -173,7 +154,7 @@ public class ReservationRequestController {
                 owner.getReservations().remove(reservationRequest);
                 userAccountService.save(owner);
 
-//                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED); TODO uncomment
+                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
 
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());

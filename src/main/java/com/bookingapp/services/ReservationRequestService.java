@@ -295,4 +295,25 @@ public  class ReservationRequestService {
         return requestRepository.findById(reservationRequestId).orElseThrow(() -> null);
     }
 
+    public void rejectOverlappingReservationRequests(ReservationRequest reservationRequest) {
+        List<ReservationRequest> requests = this.findByAccommodationId(reservationRequest.getAccommodationId());
+        List<ReservationRequest> overlappingRequests = requests.stream()
+                .filter(r -> r.getRequestStatus().equals(RequestStatus.SENT))
+                .filter(r ->
+                        (r.getStartDate().isBefore(reservationRequest.getEndDate()) && r.getEndDate().isAfter(reservationRequest.getStartDate())) ||
+                                (r.getStartDate().isEqual(reservationRequest.getEndDate()) || r.getEndDate().isEqual(reservationRequest.getStartDate())) ||
+                                (r.getStartDate().isBefore(reservationRequest.getStartDate()) && r.getEndDate().isAfter(reservationRequest.getEndDate())) ||
+                                (r.getStartDate().isAfter(reservationRequest.getStartDate()) && (r.getEndDate().isAfter(reservationRequest.getEndDate()) && r.getStartDate().isBefore(reservationRequest.getEndDate()))) ||
+                                (r.getStartDate().isBefore(reservationRequest.getStartDate()) && (r.getEndDate().isBefore(reservationRequest.getEndDate()) && r.getEndDate().isAfter(reservationRequest.getStartDate())))
+                )
+                .toList();
+
+        for (ReservationRequest r : overlappingRequests) {
+            r.setRequestStatus(RequestStatus.DECLINED);
+            this.save(r);
+
+            this.sendNotificationForReservationForGuest(reservationRequest, false);
+        }
+    }
+
 }
