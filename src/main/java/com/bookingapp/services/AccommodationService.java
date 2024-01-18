@@ -7,6 +7,7 @@ import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

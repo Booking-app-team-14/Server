@@ -2,6 +2,7 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.exceptions.ReviewNotAllowedException;
@@ -34,6 +35,9 @@ public class AccommodationReviewService {
 
     @Autowired
     private ReservationRequestIRepository reservationRequestRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public List<AccommodationReview> findAll() {
         return accommodationReviewRepository.findAll();
@@ -189,6 +193,17 @@ public class AccommodationReviewService {
 
     public void delete(AccommodationReview review) {
         accommodationReviewRepository.delete(review);
+    }
+
+    public void sendNotificationForAccommodationReview(AccommodationReview updatedAccommodationReview) {
+        NotificationAccommodationReviewed notification = new NotificationAccommodationReviewed();
+        notification.setAccommodationReviewId(updatedAccommodationReview.getId());
+        notification.setSender(updatedAccommodationReview.getUser());
+        notification.setReceiver(updatedAccommodationReview.getAccommodation().getOwner());
+        notification.setSentAt(LocalDateTime.now());
+        notification.setSeen(false);
+        notification.setType(NotificationType.ACCOMMODATION_REVIEWED);
+        notificationService.save(notification);
     }
 
 }

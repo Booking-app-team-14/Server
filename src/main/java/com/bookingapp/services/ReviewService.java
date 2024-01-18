@@ -2,6 +2,7 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +28,9 @@ public class ReviewService {
 
     @Autowired
     private UserAccountRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public ReviewService(ReviewRepository reviewRepository, GuestRepository guestRepository, OwnerRepository ownerRepository) {
@@ -180,6 +184,22 @@ public class ReviewService {
 
     public  Review findById(Long id) {
         return reviewRepository.findById(id).orElse(null);
+    }
+
+    public void deleteByReviewId(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
+
+    public void sendNotificationForOwnerReview(Review review) {
+        NotificationOwnerReviewed notification = new NotificationOwnerReviewed();
+        notification.setType(NotificationType.OWNER_REVIEWED);
+        notification.setReviewId(review.getId());
+        notification.setReceiver(review.getRecipient());
+        notification.setSender(review.getSender());
+        notification.setSeen(false);
+        notification.setSentAt(review.getTimestamp());
+        notificationService.save(notification);
+        notificationService.sendNotification(NotificationType.OWNER_REVIEWED.toString(), review.getRecipient().getUsername());
     }
 
 }

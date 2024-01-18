@@ -1,6 +1,7 @@
 package com.bookingapp.entities;
 
 import com.bookingapp.dtos.UserDTO;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Setter
@@ -88,12 +90,8 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected int numberOfReports;
 
-    // TODO: dodati listu notifikacija koje korisnik ne zeli da dobija
-//    @OneToMany
-//    private Set<String> notWantedNotificationTypes;
-
-   /* @Column(name = "IS_ACTIVE", nullable = false)
-    private boolean isActive;*/
+    @Enumerated(EnumType.STRING)
+    private Set<NotificationType> notWantedNotificationTypes;
 
     public UserAccount() {
 

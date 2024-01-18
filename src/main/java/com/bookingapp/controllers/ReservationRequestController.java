@@ -1,21 +1,18 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.ReservationRequestDTO;
+import com.bookingapp.entities.*;
 import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.Owner;
-import com.bookingapp.entities.Accommodation;
-import com.bookingapp.entities.Reservation;
-import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
-import com.bookingapp.services.AccommodationService;
-import com.bookingapp.services.ReservationRequestService;
-import com.bookingapp.services.ReservationService;
-import com.bookingapp.services.UserAccountService;
+import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,12 +43,11 @@ public class ReservationRequestController {
         if (acc.isPresent() && acc.get().isAutomatic()){
             this.approveReservationRequest(request.getId());
         }
-        // TODO: send notification (of type reservationRequestNotification) to owner
-        // check if receiver has that notification type enabled
-        // save notification in database
-        // servis.sendNotification("reservation-request-notification"); // sluzi da bi gost znao da je notifikacija stigla
+
+        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED);
+
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
-        }
+    }
 
 
     @GetMapping(value = "/requests/guest/{id}", name = "gets a requests by guest Id")
@@ -95,11 +91,12 @@ public class ReservationRequestController {
         Optional<ReservationRequest> reservationOptional = requestService.findById(id);
 
         if (reservationOptional.isPresent()) {
-            ReservationRequest reservation = reservationOptional.get();
+            ReservationRequest reservationRequest = reservationOptional.get();
 
-            reservation.setRequestStatus(RequestStatus.DECLINED);
-            requestService.save(reservation);
+            reservationRequest.setRequestStatus(RequestStatus.DECLINED);
+            requestService.save(reservationRequest);
 
+            requestService.sendNotificationForReservationForGuest(reservationRequest, false);
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
         }
@@ -116,6 +113,8 @@ public class ReservationRequestController {
             reservationRequest.setRequestStatus(RequestStatus.ACCEPTED);
             requestService.save(reservationRequest);
 
+            // TODO premesti u neki servis, ne sme u kontroleru
+
             List<ReservationRequest> requests = requestService.findByAccommodationId(reservationRequest.getAccommodationId());
             List<ReservationRequest> overlappingRequests = requests.stream()
                     .filter(r -> r.getRequestStatus().equals(RequestStatus.SENT))
@@ -131,6 +130,8 @@ public class ReservationRequestController {
             for (ReservationRequest r : overlappingRequests) {
                 r.setRequestStatus(RequestStatus.DECLINED);
                 requestService.save(r);
+
+                requestService.sendNotificationForReservationForGuest(reservationRequest, false);
             }
 
             Reservation reservation = accommodationService.reserveAvailability(reservationRequest.getAccommodationId(), reservationRequest.getStartDate(), reservationRequest.getEndDate());
@@ -142,6 +143,8 @@ public class ReservationRequestController {
             Owner owner = (Owner) userAccountService.findByUsername(accommodation.getOwner().getUsername());
             owner.getReservations().add(reservationRequest);
             userAccountService.save(owner);
+
+            requestService.sendNotificationForReservationForGuest(reservationRequest, true);
 
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
@@ -157,6 +160,7 @@ public class ReservationRequestController {
             ReservationRequest reservationRequest = reservationOptional.get();
 
             if (reservationRequest.getRequestStatus().equals(RequestStatus.SENT)) {
+                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
 
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
@@ -169,8 +173,10 @@ public class ReservationRequestController {
                 owner.getReservations().remove(reservationRequest);
                 userAccountService.save(owner);
 
-                userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
+                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
+
                 requestService.delete(reservationRequest);
+                userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
                 reservationService.delete(reservationRequest.getReservationId());
 
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);

@@ -27,10 +27,7 @@ public class AccommodationRequestService {
 
     @Autowired
     private AccommodationRequestRepository accommodationRequestRepository;
-    @Autowired
-    private AccommodationRepository accommodationRepository;
-    @Autowired
-    private UserAccountService userAccountService;
+
     @Autowired
     private AccommodationService accommodationService;
 

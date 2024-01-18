@@ -1,47 +1,44 @@
 package com.bookingapp.services;
 
 import com.bookingapp.dtos.NotificationDTO;
+import com.bookingapp.dtos.NotificationReservationCreatedDTO;
 import com.bookingapp.entities.Notification;
-import com.bookingapp.repositories.NotificationIRepository;
+import com.bookingapp.entities.NotificationReservationCreated;
+import com.bookingapp.enums.NotificationType;
+import com.bookingapp.repositories.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class NotificationService {
 
-//    private final NotificationIRepository notificationRepository;
-//
-//    @Autowired
-//    public NotificationService(NotificationIRepository notificationRepository) {
-//        this.notificationRepository = notificationRepository;
-//    }
-//
-//    public NotificationDTO createNotification(NotificationDTO notification) {
-//        return null;
-//    }
-//
-//    public NotificationDTO getNotificationById(Long notificationId) {
-//
-//        return null;
-//    }
-//
-//    public NotificationDTO updateNotification(Long notificationId, NotificationDTO updatedNotification) {
-//        return null;
-//    }
-//
-//    public boolean deleteNotification(Long notificationId) {
-//
-//        if (notificationRepository.existsById(notificationId)) {
-//            notificationRepository.deleteById(notificationId);
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//
-//    public List<Notification> findAllNotificationsByUsername(Long userId) {
-//        return null;
-//    }
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+
+    public void sendNotification(String notificationType, String username) {
+        simpMessagingTemplate.convertAndSend("/notifications/" + username, notificationType);
+    }
+
+    public void save(Notification notification) {
+        notificationRepository.save(notification);
+    }
+
+    public List<NotificationDTO> getAllWantedNotificationsForUser(Long userId) {
+        List<Notification> notifications = notificationRepository.findAllById(List.of(userId));
+        List<NotificationDTO> notificationDTOS = new ArrayList<>();
+        for (Notification notification : notifications) {
+            if (notification.getType().equals(NotificationType.RESERVATION_REQUEST_CREATED)){
+//                notificationDTOS.add(new NotificationReservationCreatedDTO((NotificationReservationCreated) notification, reservationRequestService)); // TODO
+            }
+        }
+        return notificationDTOS;
+    }
 }

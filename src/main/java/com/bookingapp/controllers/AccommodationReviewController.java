@@ -172,6 +172,8 @@ public class AccommodationReviewController {
             AccommodationReview updatedAccommodationReview = accommodationReviewToUpdate.get();
             updatedAccommodationReview.setStatus(ReviewStatus.APPROVED);
             accommodationReviewService.save(updatedAccommodationReview);
+
+            accommodationReviewService.sendNotificationForAccommodationReview(updatedAccommodationReview);
             return new ResponseEntity<>(new AccommodationReviewDTO(updatedAccommodationReview), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

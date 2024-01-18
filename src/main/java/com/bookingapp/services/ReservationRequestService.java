@@ -1,28 +1,39 @@
 package com.bookingapp.services;
 
+import com.bookingapp.dtos.ReservationRequestDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.repositories.ReservationRequestIRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
 public  class ReservationRequestService {
-    @Autowired
-    private  UserAccountService userAccountService;
 
     @Autowired
     private ReservationRequestIRepository requestRepository;
 
     @Autowired
-    AccommodationService accommodationService;
+    private AccommodationService accommodationService;
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
     public void createRequest(ReservationRequest reservation) {
         LocalDate startDate = reservation.getStartDate();
@@ -217,6 +228,70 @@ public  class ReservationRequestService {
         }
 
 
+    }
+
+    public void sendNotificationForReservation(ReservationRequest request, NotificationType type) {
+        Owner owner = (Owner) userAccountService.findByUsername(request.getUserUsername());
+        for (NotificationType notWantedType : owner.getNotWantedNotificationTypes()){
+            if (notWantedType.equals(type)){
+                return;
+            }
+        }
+
+        Guest guest = null;
+        try {
+            guest = (Guest)userAccountService.findById(request.getUserId());
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Notification notification = null;
+        if (type.equals(NotificationType.RESERVATION_REQUEST_CREATED)) {
+            notification = new NotificationReservationCreated();
+            ((NotificationReservationCreated) notification).setReservationRequestId(request.getId());
+        } else {
+            notification = new NotificationReservationCancelled();
+            ((NotificationReservationCancelled) notification).setReservationRequestId(request.getId());
+        }
+        notification.setSender(guest);
+        notification.setReceiver(owner);
+        notification.setSeen(false);
+        notification.setSentAt(LocalDateTime.now());
+        notification.setType(type);
+        notificationService.save(notification);
+        notificationService.sendNotification(type.toString(), owner.getUsername());
+    }
+
+    public void sendNotificationForReservationForGuest(ReservationRequest reservationRequest, boolean approved) {
+        Owner owner = (Owner) userAccountService.findByUsername(reservationRequest.getUserUsername());
+        for (NotificationType notWantedType : owner.getNotWantedNotificationTypes()){
+            if (notWantedType.equals(NotificationType.RESERVATION_REQUEST_RESPONSE)){
+                return;
+            }
+        }
+
+        Guest guest = null;
+        try {
+            guest = (Guest) userAccountService.findById(reservationRequest.getUserId());
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+
+        NotificationReservationRequestResponse notification = new NotificationReservationRequestResponse();
+        notification.setReservationRequestId(reservationRequest.getId());
+        notification.setSender(owner);
+        notification.setReceiver(guest);
+        notification.setApproved(approved);
+        notification.setSeen(false);
+
+        notification.setSentAt(LocalDateTime.now());
+        notification.setType(NotificationType.RESERVATION_REQUEST_RESPONSE);
+        notificationService.save(notification);
+        notificationService.sendNotification(NotificationType.RESERVATION_REQUEST_RESPONSE.toString(), guest.getUsername());
+    }
+
+    public ReservationRequest getReservationRequestById(Long reservationRequestId) {
+        return requestRepository.findById(reservationRequestId).orElseThrow(() -> null);
     }
 
 }

@@ -25,9 +25,6 @@ public class ReviewController {
     private final OwnerReviewReportRepository ownerReviewReportRepository;
 
     @Autowired
-    private AccommodationReviewService accommodationReviewService;
-
-    @Autowired
     public ReviewController(ReviewService reviewService, OwnerReviewReportRepository ownerReviewReportRepository) {
         this.reviewService = reviewService;
         this.ownerReviewReportRepository = ownerReviewReportRepository;
@@ -68,6 +65,8 @@ public class ReviewController {
             Review updatedReview = reviewToUpdate.get();
             updatedReview.setApproved(true);
             reviewService.save(updatedReview);
+
+            reviewService.sendNotificationForOwnerReview(updatedReview);
             return new ResponseEntity<>(updatedReview, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
