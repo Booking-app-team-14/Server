@@ -11,7 +11,9 @@ import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.Array2DHashSet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +31,7 @@ public class AccommodationDTO {
     private LocationDTO location;
     private AccommodationType type;
     private Set<String> images = new HashSet<>();
-    private Set<String> imageTypes = new HashSet<>();
+    private List<String> imageTypes = new ArrayList<>();
     private Set<String> imageBytes = new HashSet<>();
     private Set<AmenityDTO> amenities;
     private Double rating;
@@ -101,7 +103,7 @@ public class AccommodationDTO {
                 this.imageBytes.add(imageByte);
             }
         } catch (Exception e) {
-            this.imageTypes = new HashSet<>();
+            this.imageTypes = new ArrayList<>();
             this.imageBytes = new HashSet<>();
         }
     }
