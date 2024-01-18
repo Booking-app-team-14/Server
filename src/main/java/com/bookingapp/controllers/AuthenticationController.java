@@ -51,7 +51,7 @@ public class AuthenticationController {
         }
 
         if (user.isBlocked()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is blocked");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials!");
         }
 
         String jwt = tokenUtils.generateToken(user.getUsername());

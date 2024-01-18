@@ -678,6 +678,13 @@ public class AccommodationService {
         for (Accommodation accommodation : accommodations) {
             accommodation.setApproved(false);
             accommodationRepository.save(accommodation);
+
+            List<Guest> guests = userAccountService.findAllGuests(); // TODO check if this works
+            for (Guest guest : guests) {
+                guest.getFavouriteAccommodations().remove(accommodation);
+                userAccountService.save(guest);
+            }
+
         }
     }
 

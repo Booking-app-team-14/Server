@@ -44,7 +44,7 @@ public class ReservationRequestController {
             this.approveReservationRequest(request.getId());
         }
 
-        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED);
+//        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED); TODO uncomment
 
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
     }
@@ -96,7 +96,7 @@ public class ReservationRequestController {
             reservationRequest.setRequestStatus(RequestStatus.DECLINED);
             requestService.save(reservationRequest);
 
-            requestService.sendNotificationForReservationForGuest(reservationRequest, false);
+//            requestService.sendNotificationForReservationForGuest(reservationRequest, false); // TODO uncomment
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
         }
@@ -131,7 +131,7 @@ public class ReservationRequestController {
                 r.setRequestStatus(RequestStatus.DECLINED);
                 requestService.save(r);
 
-                requestService.sendNotificationForReservationForGuest(reservationRequest, false);
+//                requestService.sendNotificationForReservationForGuest(reservationRequest, false); // TODO uncomment
             }
 
             Reservation reservation = accommodationService.reserveAvailability(reservationRequest.getAccommodationId(), reservationRequest.getStartDate(), reservationRequest.getEndDate());
@@ -144,7 +144,7 @@ public class ReservationRequestController {
             owner.getReservations().add(reservationRequest);
             userAccountService.save(owner);
 
-            requestService.sendNotificationForReservationForGuest(reservationRequest, true);
+//            requestService.sendNotificationForReservationForGuest(reservationRequest, true); // TODO uncomment
 
         } else {
             return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
@@ -160,7 +160,7 @@ public class ReservationRequestController {
             ReservationRequest reservationRequest = reservationOptional.get();
 
             if (reservationRequest.getRequestStatus().equals(RequestStatus.SENT)) {
-                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
+//                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED); TODO uncomment
 
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
@@ -173,7 +173,7 @@ public class ReservationRequestController {
                 owner.getReservations().remove(reservationRequest);
                 userAccountService.save(owner);
 
-                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED);
+//                requestService.sendNotificationForReservation(reservationRequest, NotificationType.RESERVATION_REQUEST_CANCELLED); TODO uncomment
 
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());

@@ -15,7 +15,7 @@ import java.util.Set;
 public class Guest extends UserAccount {
 
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany
     @JoinTable(
             name = "guest_favourite_accommodations",
             joinColumns = @JoinColumn(name = "guest_id"),
