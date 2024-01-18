@@ -8,6 +8,7 @@ import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
 import lombok.Getter;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -84,7 +85,7 @@ public class AccommodationService {
     // DELETE
     public boolean deleteAccommodation(Long id) {
         if (accommodationRepository.existsById(id)) {
-            userAccountService.deleteAllGuestFavoriteAccommodation(id);
+//            userAccountService.deleteAllGuestFavoriteAccommodation(id);
             accommodationRepository.deleteById(id);
             return true;
         } else {
@@ -181,7 +182,6 @@ public class AccommodationService {
         accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
         accommodation.setApproved(false);
         accommodation.setOwner(user);
-
         accommodationRepository.save(accommodation);
         return accommodation;
     }

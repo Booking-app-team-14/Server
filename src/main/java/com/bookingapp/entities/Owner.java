@@ -20,7 +20,7 @@ public class Owner extends UserAccount {
     @OneToMany
     private Set<ReservationRequest> reservations;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany
     private Set<Accommodation> accommodations;
 
     @JsonIgnore

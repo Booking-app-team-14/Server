@@ -77,8 +77,7 @@ public class AccommodationController {
     @PostMapping(value = "accommodations/create", name = "owner adds an accommodation")
     public ResponseEntity<Long> addAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
         Accommodation accommodation = accommodationService.save(accommodationDTO);
-
-        accommodationRequestService.saveRequestFromAccommodation(accommodation);
+        AccommodationRequest request = accommodationRequestService.saveRequestFromAccommodation(accommodation);
         return new ResponseEntity<>(accommodation.getId(), HttpStatus.CREATED);
     }
 
