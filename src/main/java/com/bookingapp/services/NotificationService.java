@@ -45,7 +45,7 @@ public class NotificationService {
     }
 
     public List<NotificationDTO> getAllWantedNotificationsForUser(Long userId, ReservationRequestService reservationRequestService, AccommodationReviewService accommodationReviewService, ReviewService reviewService) {
-        List<Notification> notifications = notificationRepository.findAllById(List.of(userId));
+        List<Notification> notifications = notificationRepository.findAllNotificationsForUserById(userId);
         List<NotificationDTO> notificationDTOS = new ArrayList<>();
         for (Notification notification : notifications) {
             if (notification.getType().equals(NotificationType.RESERVATION_REQUEST_CREATED)){
@@ -68,6 +68,10 @@ public class NotificationService {
             notificationRepository.save(notification);
         }
         return notificationDTOS;
+    }
+
+    public void deleteNotification(Long notificationId) {
+        notificationRepository.deleteById(notificationId);
     }
 
 }
