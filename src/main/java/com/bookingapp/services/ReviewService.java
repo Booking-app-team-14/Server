@@ -191,6 +191,13 @@ public class ReviewService {
     }
 
     public void sendNotificationForOwnerReview(Review review) {
+        Owner owner = (Owner) userRepository.findByUsername(review.getRecipient().getUsername());
+        for (NotificationType notWantedType : owner.getNotWantedNotificationTypes()){
+            if (notWantedType.equals(NotificationType.OWNER_REVIEWED)){
+                return;
+            }
+        }
+
         NotificationOwnerReviewed notification = new NotificationOwnerReviewed();
         notification.setType(NotificationType.OWNER_REVIEWED);
         notification.setReviewId(review.getId());
