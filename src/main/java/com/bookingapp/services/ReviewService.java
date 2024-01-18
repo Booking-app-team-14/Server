@@ -205,7 +205,7 @@ public class ReviewService {
         notification.setSender(review.getSender());
         notification.setSeen(false);
         notification.setSentAt(review.getTimestamp());
-        notificationService.save(notification);
+        notificationService.saveOwnerReviewed(notification);
         notificationService.sendNotification(NotificationType.OWNER_REVIEWED.toString(), review.getRecipient().getUsername());
     }
 

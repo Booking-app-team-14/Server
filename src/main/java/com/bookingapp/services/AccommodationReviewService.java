@@ -210,7 +210,7 @@ public class AccommodationReviewService {
         notification.setSentAt(LocalDateTime.now());
         notification.setSeen(false);
         notification.setType(NotificationType.ACCOMMODATION_REVIEWED);
-        notificationService.save(notification);
+        notificationService.saveAccommodationsReviewed(notification);
     }
 
 }

@@ -1,5 +1,9 @@
 package com.bookingapp.dtos;
 
+import com.bookingapp.entities.NotificationReservationCancelled;
+import com.bookingapp.entities.NotificationReservationCreated;
+import com.bookingapp.entities.ReservationRequest;
+import com.bookingapp.services.ReservationRequestService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,5 +15,11 @@ import lombok.Setter;
 public class NotificationReservationCancelledDTO extends NotificationDTO {
 
     private ReservationRequestDTO reservation;
+
+    public NotificationReservationCancelledDTO(NotificationReservationCancelled notification, ReservationRequestService reservationRequestService) {
+        super(notification);
+        ReservationRequest reservationRequest = reservationRequestService.getReservationRequestById(notification.getReservationRequestId());
+        this.reservation = new ReservationRequestDTO(reservationRequest, reservationRequestService.getUserAccountService(), reservationRequestService.getAccommodationService());
+    }
 
 }

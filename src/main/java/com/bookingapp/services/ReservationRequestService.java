@@ -246,20 +246,32 @@ public  class ReservationRequestService {
             throw new RuntimeException(e);
         }
 
-        Notification notification = null;
         if (type.equals(NotificationType.RESERVATION_REQUEST_CREATED)) {
-            notification = new NotificationReservationCreated();
-            ((NotificationReservationCreated) notification).setReservationRequestId(request.getId());
+            NotificationReservationCreated notification = new NotificationReservationCreated();
+            notification.setReservationRequestId(request.getId());
+            notification.setSender(guest);
+            notification.setReceiver(owner);
+            notification.setSeen(false);
+            notification.setSentAt(LocalDateTime.now());
+            notification.setType(type);
+            notificationService.saveReservationRequestCreated(notification);
         } else {
-            notification = new NotificationReservationCancelled();
-            ((NotificationReservationCancelled) notification).setReservationRequestId(request.getId());
+            NotificationReservationCancelled notification = new NotificationReservationCancelled();
+            notification.setReservationRequestId(request.getId());
+            notification.setSender(guest);
+            notification.setReceiver(owner);
+            notification.setSeen(false);
+            notification.setSentAt(LocalDateTime.now());
+            notification.setType(type);
+            notificationService.saveReservationRequestCancelled(notification);
         }
-        notification.setSender(guest);
-        notification.setReceiver(owner);
-        notification.setSeen(false);
-        notification.setSentAt(LocalDateTime.now());
-        notification.setType(type);
-        notificationService.save(notification);
+//        notification.setSender(guest);
+//        notification.setReceiver(owner);
+//        notification.setSeen(false);
+//        notification.setSentAt(LocalDateTime.now());
+//        notification.setType(type);
+//        notificationService.saveReservationRequestCreated(notification);
+
         notificationService.sendNotification(type.toString(), owner.getUsername());
     }
 
@@ -287,7 +299,7 @@ public  class ReservationRequestService {
 
         notification.setSentAt(LocalDateTime.now());
         notification.setType(NotificationType.RESERVATION_REQUEST_RESPONSE);
-        notificationService.save(notification);
+        notificationService.saveRequestResponse(notification);
         notificationService.sendNotification(NotificationType.RESERVATION_REQUEST_RESPONSE.toString(), guest.getUsername());
     }
 

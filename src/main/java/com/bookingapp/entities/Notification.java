@@ -13,27 +13,28 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    protected Long Id;
 
     @JoinColumn(nullable = false)
     @ManyToOne
-    private UserAccount sender;
+    protected UserAccount sender;
 
     @JoinColumn(nullable = false)
     @ManyToOne
-    private UserAccount receiver;
+    protected UserAccount receiver;
 
     @Column(nullable = false)
-    private LocalDateTime sentAt;
+    protected LocalDateTime sentAt;
 
     @Column(nullable = false)
-    private boolean seen;
+    protected boolean seen;
 
     @Column(nullable = false)
-    private NotificationType type;
+    protected NotificationType type;
 
 }
