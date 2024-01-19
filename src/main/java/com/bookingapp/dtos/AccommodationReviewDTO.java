@@ -23,9 +23,9 @@ public class AccommodationReviewDTO {
     private Long accommodationId;
     @NotNull
     private Long userId;
-    @Min(value = -1)
+
     private Integer rating;
-    @NotEmpty
+
     private String comment;
     @NotNull
     private ReviewStatus status;

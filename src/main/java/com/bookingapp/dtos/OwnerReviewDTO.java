@@ -19,10 +19,11 @@ public class OwnerReviewDTO {
     private Long userId;
     @NotNull
     private Long ownerId;
-    @Min(value = -1)
+
     private Integer rating;
-    @NotEmpty
+
     private String comment;
+
     @NotNull
     private LocalDateTime sentAt;
 

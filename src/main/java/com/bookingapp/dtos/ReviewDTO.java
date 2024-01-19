@@ -19,7 +19,7 @@ public class ReviewDTO {
     private Long id;
     @NotEmpty
     private String comment;
-    @Min(value = -1)
+
     private int rating;
     @NotNull
     private LocalDateTime timestamp;
