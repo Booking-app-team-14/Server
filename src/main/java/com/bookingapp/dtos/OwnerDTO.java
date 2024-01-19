@@ -2,6 +2,7 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.Owner;
 import com.bookingapp.enums.Role;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,12 @@ import java.util.Set;
 @Component
 public class OwnerDTO extends UserDTO {
 
+    @NotEmpty
     private Set<Long> reservationsIds;
+    @NotEmpty
     private Set<Long> accommodationsIds;
-
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @NotEmpty
     private Set<Long> reviewsReceivedIds;
-
 
     public OwnerDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.OWNER, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
@@ -42,6 +42,7 @@ public class OwnerDTO extends UserDTO {
         this.setPhoneNumber(owner.getPhoneNumber());
         this.setBlocked(owner.isBlocked());
         this.setNumberOfReports(owner.getNumberOfReports());
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
             this.profilePictureBytes = imagesRepository.getImageBytes(owner.getProfilePicturePath());
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);

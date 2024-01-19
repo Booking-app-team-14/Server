@@ -2,6 +2,8 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.Notification;
 import com.bookingapp.enums.NotificationType;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class NotificationDTO {
 
+    @NotNull
     private Long id;
+    @NotNull
     private Long senderId;
+    @NotNull
     private Long receiverId;
+    @NotEmpty
     private String sentAt; // epoch seconds
     private boolean seen;
+    @NotNull
     private NotificationType type;
 
     public NotificationDTO(Notification notification) {

@@ -6,6 +6,7 @@ import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +23,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @Size(min = 5, max = 50)
     protected String username;
+    @NotEmpty
     protected String password;
+    @Size(min = 1, max = 50)
     protected String firstName;
+    @Size(min = 1, max = 50)
     protected String lastName;
+    @NotEmpty
     protected String address;
+    @NotEmpty
+    @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     protected String phoneNumber;
     protected boolean isBlocked;
     protected boolean verified;
+    @Min(value = 0)
     protected int numberOfReports;
+    @NotNull
     protected Role role;
+    @NotEmpty
     protected String profilePictureType;
+    @NotEmpty
     protected String profilePictureBytes;
 
     public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes){
@@ -63,9 +73,9 @@ public class UserDTO {
         this.isBlocked = user.isBlocked();
         this.verified=user.isVerified();
         this.numberOfReports = user.getNumberOfReports();
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
-            //this.profilePictureBytes = userService.getUserImage(user.getId());
-            this.profilePictureBytes = imagesRepository.getImageBytes(/*user.getProfilePicturePath()*/"userAvatars/user-5.png"/*+ user.getId() +".png"*/);
+            this.profilePictureBytes = imagesRepository.getImageBytes(user.getProfilePicturePath());
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
         } catch (Exception e) {
             this.profilePictureBytes = "";

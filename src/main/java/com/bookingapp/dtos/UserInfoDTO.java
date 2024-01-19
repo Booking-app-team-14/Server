@@ -2,6 +2,8 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.repositories.ImagesRepository;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +13,13 @@ import lombok.Setter;
 
 public class UserInfoDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @Size(min = 1, max = 50)
     protected String firstName;
+    @Size(min = 1, max = 50)
     protected String lastName;
+    @NotEmpty
     protected String profilePictureType;
+    @NotEmpty
     protected String profilePictureBytes;
 
     public UserInfoDTO(UserAccount user){
@@ -24,7 +28,7 @@ public class UserInfoDTO {
         this.lastName = user.getLastName();
 
         try{
-            //this.profilePictureBytes = userService.getUserImage(user.getId());
+            ImagesRepository imagesRepository = new ImagesRepository();
             this.profilePictureBytes = imagesRepository.getUserImage(user.getId());
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
         } catch (Exception e) {

@@ -2,6 +2,8 @@ package com.bookingapp.dtos;
 
 import com.bookingapp.entities.OwnerReviewReport;
 import com.bookingapp.enums.ReportStatus;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,14 +13,15 @@ import java.time.LocalDateTime;
 @Setter
 public class OwnerReviewReportDTO {
 
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long reviewId;
-
+    @NotEmpty
     private String reason;
-
+    @NotNull
     private ReportStatus status;
-
+    @NotNull
     private LocalDateTime sentAt;
 
     public OwnerReviewReportDTO(OwnerReviewReport reviewReport) {
