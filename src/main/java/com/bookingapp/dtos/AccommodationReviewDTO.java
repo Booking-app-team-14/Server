@@ -3,6 +3,9 @@ package com.bookingapp.dtos;
 import com.bookingapp.entities.AccommodationReview;
 import com.bookingapp.entities.Review;
 import com.bookingapp.enums.ReviewStatus;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,18 +17,19 @@ import java.util.List;
 @Setter
 public class AccommodationReviewDTO {
 
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long accommodationId;
-
+    @NotNull
     private Long userId;
-
+    @Min(value = -1)
     private Integer rating;
-
+    @NotEmpty
     private String comment;
-
+    @NotNull
     private ReviewStatus status;
-
+    @NotNull
     private LocalDateTime sentAt;
 
     public AccommodationReviewDTO(AccommodationReview accommodationReview) {

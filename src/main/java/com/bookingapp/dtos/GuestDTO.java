@@ -4,6 +4,8 @@ import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.Accommodation;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,14 @@ import java.util.stream.Collectors;
 @Component
 public class GuestDTO extends UserDTO {
 
+    @NotEmpty
     private Set<Long> favouriteAccommodationsIds;
+    @Min(value = 0)
     private int numberOfCancellations;
+    @NotEmpty
     private Set<Long> accommodationHistoryIds;
-
-    private ImagesRepository imagesRepository = new ImagesRepository();
+    @NotEmpty
     private Set<Long> reviewsSentIds;
-
 
     public GuestDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified, int numberOfReports, int numberOfCancellations, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.GUEST, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
@@ -32,8 +35,6 @@ public class GuestDTO extends UserDTO {
         this.favouriteAccommodationsIds = new HashSet<>();
         this.accommodationHistoryIds = new HashSet<>();
         this.reviewsSentIds = new HashSet<>();
-
-
     }
 
     public GuestDTO(Guest guest) {
@@ -46,6 +47,7 @@ public class GuestDTO extends UserDTO {
         this.setPhoneNumber(guest.getPhoneNumber());
         this.setBlocked(guest.isBlocked());
         this.setNumberOfReports(guest.getNumberOfReports());
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
             this.profilePictureBytes = imagesRepository.getImageBytes(guest.getProfilePicturePath());
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
@@ -60,7 +62,6 @@ public class GuestDTO extends UserDTO {
 
         this.accommodationHistoryIds = new HashSet<>();
         this.reviewsSentIds = new HashSet<>();
-
     }
 
     public GuestDTO() { }

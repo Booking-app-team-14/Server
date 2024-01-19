@@ -6,6 +6,7 @@ import com.bookingapp.entities.Owner;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.UserAccountService;
 import jakarta.persistence.Lob;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,17 +16,29 @@ import java.io.Serializable;
 @Setter
 public class AccommodationRequestDTO {
 
+    @NotNull
     private Long accommodationId;
+    @Size(min = 5, max = 100)
     private String name; // accommodation name
+    @NotEmpty
     private String type; // accommodation type
+    @NotEmpty
     private String ownerImageType; // owner profile picture type (jpg, png, etc.)
+    @NotEmpty
     private String ownerProfilePictureBytes;
+    @Size(min = 5, max = 50)
     private String ownerUsername;
+    @NotEmpty
     private String dateRequested; // date requested, (epoch seconds)
+    @NotEmpty
     private String requestType; // request type (new, updated)
+    @NotEmpty
     private String message;
+    @Min(value = -1)
     private int stars;
+    @NotEmpty
     private String imageType; // accommodation main picture type (jpg, png, etc.)
+    @NotEmpty
     private String mainPictureBytes;
 
     public AccommodationRequestDTO(Long accommodationId, String name, String type, String ownerImageType, String ownerProfilePictureBytes, String ownerUsername, String dateRequested, String requestType, String message, int stars, String imageType, String mainPictureBytes) {
@@ -47,25 +60,7 @@ public class AccommodationRequestDTO {
         this.accommodationId = accommodation.getId();
         this.name = accommodation.getName();
         this.type = accommodation.getType().toString();
-
-//        UserAccountService userAccountService = new UserAccountService();
-//        userAccountService.getOwners().forEach(o -> {
-//            Owner owner = (Owner) o;
-//            if (owner.getAccommodations().contains(accommodation)) {
-//                this.ownerUsername = owner.getUsername();
-//                String profilePicturePath = owner.getProfilePicturePath();
-//                ImagesRepository imagesRepository = new ImagesRepository();
-//                try {
-//                    this.ownerProfilePictureBytes = imagesRepository.getImageBytes(profilePicturePath);
-//                    this.ownerImageType = imagesRepository.getImageType(this.ownerProfilePictureBytes);
-//                } catch (Exception e) { }
-//            }
-//        });
-
         this.stars = accommodation.getRating().intValue();
-
-//        this.imageType = accommodation.getImageType();
-//        this.mainPictureBytes = accommodation.getMainPictureBytes();
     }
 
     public AccommodationRequestDTO(AccommodationRequest request) {

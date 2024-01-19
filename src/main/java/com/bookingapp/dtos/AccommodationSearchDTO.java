@@ -5,6 +5,10 @@ import com.bookingapp.entities.UserReport;
 import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,16 +20,23 @@ import java.util.Set;
 @Setter
 public class AccommodationSearchDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @NotNull
     private Long id;
+    @Size(min = 5, max = 100)
     private String name;
+    @NotEmpty
     private String description;
+    @NotNull
     private AccommodationType accommodationType;
+    @NotEmpty
     protected String imageType;
+    @NotEmpty
     protected String imageBytes;
+    @Min(value = -1)
     private Double rating;
+    @Min(value = 1)
     private Integer maxNumberOfGuests;
+    @Min(value = 1)
     private Double pricePerNight;
     private boolean approved;
 
@@ -46,13 +57,12 @@ public class AccommodationSearchDTO {
     public AccommodationSearchDTO() {
     }
 
-
-
     public AccommodationSearchDTO(Accommodation accommodation, AccommodationService accommodationService) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
         this.accommodationType= accommodation.getType();
+        ImagesRepository imagesRepository = new ImagesRepository();
         String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
         try {
             String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);

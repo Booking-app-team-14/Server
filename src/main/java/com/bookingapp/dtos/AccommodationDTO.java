@@ -9,7 +9,8 @@ import com.bookingapp.enums.Handling;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
-import jakarta.validation.constraints.Min;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,26 +24,41 @@ import java.util.stream.Collectors;
 @Setter
 public class AccommodationDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @NotNull
     private Long id;
+    @Size(min = 5, max = 100)
     private String name;
+    @NotEmpty
     private String description;
+    @NotNull
     private LocationDTO location;
+    @NotNull
     private AccommodationType type;
+    @NotEmpty
     private Set<String> images = new HashSet<>();
+    @NotEmpty
     private List<String> imageTypes = new ArrayList<>();
+    @NotEmpty
     private Set<String> imageBytes = new HashSet<>();
+    @NotNull
     private Set<AmenityDTO> amenities;
+    @Min(value = -1)
+    @Max(value = 5)
     private Double rating;
+    @Min(value = 1)
     private Integer minNumberOfGuests;
+    @Min(value = 1)
     private Integer maxNumberOfGuests;
+    @NotNull
     private Set<AvailabilityDTO> availability;
     @Min(value = 1)
     private Double pricePerNight;
     private boolean pricePerGuest;
     private boolean automatic;
+    @NotNull
+    @Min(value = 0)
     private Integer cancellationDeadline;
+    @NotNull
     private Long owner_Id;
 
     public AccommodationDTO(
@@ -96,6 +112,7 @@ public class AccommodationDTO {
         this.automatic = accommodation.isAutomatic();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
             List<String> imageBytes = accommodationService.getAllAccommodationImages(this.id);
             for (String imageByte:imageBytes) {

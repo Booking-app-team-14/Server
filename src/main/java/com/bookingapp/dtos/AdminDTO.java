@@ -15,8 +15,6 @@ import java.io.IOException;
 @Component
 public class AdminDTO extends UserDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
     public AdminDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, boolean isBlocked, boolean verified,int numberOfReports, String profilePictureType, String profilePictureBytes) {
         super(username, password, firstName, lastName, address, phoneNumber, Role.ADMIN, isBlocked, verified, numberOfReports, profilePictureType, profilePictureBytes);
     }
@@ -31,6 +29,7 @@ public class AdminDTO extends UserDTO {
         this.setPhoneNumber(admin.getPhoneNumber());
         this.setBlocked(admin.isBlocked());
         this.setNumberOfReports(admin.getNumberOfReports());
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
             this.profilePictureBytes = imagesRepository.getImageBytes(admin.getProfilePicturePath());
             this.profilePictureType = imagesRepository.getImageType(this.profilePictureBytes);
