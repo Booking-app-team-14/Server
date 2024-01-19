@@ -34,11 +34,11 @@ public class AccommodationDTO {
     private LocationDTO location;
     @NotNull
     private AccommodationType type;
-    @NotEmpty
+
     private Set<String> images = new HashSet<>();
-    @NotEmpty
+
     private List<String> imageTypes = new ArrayList<>();
-    @NotEmpty
+
     private Set<String> imageBytes = new HashSet<>();
     @NotNull
     private Set<AmenityDTO> amenities;

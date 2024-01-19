@@ -36,16 +36,15 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false, unique = true)
     protected String username;
 
-    @NotEmpty
     @Size(min = 8)
     @Column(nullable = false)
     protected String password;
 
-    @Size(min = 5, max = 50)
+    @Size(min = 1, max = 50)
     @Column(nullable = false)
     protected String firstName;
 
-    @Size(min = 5, max = 50)
+    @Size(min = 1, max = 50)
     @Column(nullable = false)
     protected String lastName;
 
@@ -53,7 +52,6 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected String address;
 
-    @NotEmpty
     @Column(nullable = false)
     protected String profilePicturePath;
 
@@ -80,7 +78,6 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     protected int numberOfReports;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private Set<NotificationType> notWantedNotificationTypes;
 

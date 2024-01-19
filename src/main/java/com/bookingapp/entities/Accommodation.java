@@ -52,7 +52,6 @@ public class Accommodation {
     @Enumerated(EnumType.STRING)
     private AccommodationType type;
 
-    @NotEmpty
     @ElementCollection
     @Column(nullable=false)
     private Set<String> images;
@@ -86,7 +85,6 @@ public class Accommodation {
     @Column(nullable=false)
     private Double pricePerNight;
 
-    @Min(value = 1)
     @Column(nullable=false)
     private boolean pricePerGuest;
 

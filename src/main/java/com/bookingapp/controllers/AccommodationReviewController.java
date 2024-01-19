@@ -41,89 +41,12 @@ public class AccommodationReviewController {
         this.reviewReportRepository = reviewReportRepository;
     }
 
-
     @GetMapping(value = "/accommodations/{id}/accommodationReviews", name = "user gets all approved reviews for accommodation")
     public ResponseEntity<List<AccommodationReviewDTO>> getAccommodationReviews(@PathVariable Long id) {
-
         List<AccommodationReviewDTO> accommodationReviewsDTO = new ArrayList<>();
         accommodationReviewsDTO.add(new AccommodationReviewDTO());
         return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
-
-//        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-//
-//        if (accommodation == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllApprovedByAccommodationId(id);
-//
-//        List<AccommodationReviewDTO> accommodationReviewsDTO = new ArrayList<>();
-//        for (AccommodationReview r : accommodationReviews) {
-//            accommodationReviewsDTO.add(new AccommodationReviewDTO(r));
-//        }
-//
-//        return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
     }
-
-   /* @GetMapping(value = "/accommodationReviews", name = "admin gets all pending reviews")
-    public ResponseEntity<List<AccommodationReviewDTO>> getAccommodationReviews() {
-        List<AccommodationReview> accommodationReviews = accommodationReviewService.findAllPending();
-
-        List<AccommodationReviewDTO> accommodationReviewsDTO = new ArrayList<>();
-        for (AccommodationReview r : accommodationReviews) {
-            accommodationReviewsDTO.add(new AccommodationReviewDTO(r));
-        }
-
-        return new ResponseEntity<>(accommodationReviewsDTO, HttpStatus.OK);
-    }*/
-
-    @PutMapping(value = "/accommodationReviews/{id}", /*consumes = "text/plain",*/ name = "admin approves/rejects the review")
-    public ResponseEntity<AccommodationReviewDTO> updateAccommodationReview(@PathVariable Long id){//, @RequestBody String status) {
-
-        return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.OK);
-
-//        AccommodationReview accommodationReview = accommodationReviewService.findById(id);
-//
-//        if (accommodationReview == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        switch (status) {
-//            case "APPROVED" -> accommodationReview.setStatus(ReviewStatus.APPROVED);
-//            case "REJECTED" -> accommodationReview.setStatus(ReviewStatus.REJECTED);
-//            default -> {
-//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//            }
-//        }
-//
-//        accommodationReviewService.save(accommodationReview);
-//
-//        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.OK);
-    }
-
-    //@PostMapping(value = "/accommodations/{id}/accommodationReviews", /*consumes = "application/json",*/ name = "user adds a review for the accommodation")
-    //public ResponseEntity<AccommodationReviewDTO> addAccommodationReview(@PathVariable Long id){//, @RequestBody AccommodationReviewDTO accommodationReviewDTO) {
-
-        //return new ResponseEntity<>(new AccommodationReviewDTO(), HttpStatus.CREATED);
-
-//        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
-//
-//        if (accommodation == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        AccommodationReview accommodationReview = new AccommodationReview();
-//        accommodationReview.setAccommodation(new Accommodation());//accommodation.get());
-//        accommodationReview.setUser(userAccountService.getUserById(accommodationReviewDTO.getUserId()));
-//        accommodationReview.setComment(accommodationReviewDTO.getComment());
-//        accommodationReview.setRating(accommodationReviewDTO.getRating());
-//        accommodationReview.setStatus(ReviewStatus.PENDING);
-//        accommodationReview.setSentAt(accommodationReviewDTO.getSentAt());
-//
-//        accommodationReviewService.save(accommodationReview);
-//
-//        return new ResponseEntity<>(new AccommodationReviewDTO(accommodationReview), HttpStatus.CREATED);
-    //}
 
     @PostMapping(value = "/accommodations/accommodationReviews", name = "user adds a review for accommodation")
     public ResponseEntity<AccommodationReview> addAccommodationReview(@RequestBody AccommodationReviewDTO reviewDTO) {
@@ -213,9 +136,9 @@ public class AccommodationReviewController {
         return new ResponseEntity<>(hasAcceptedReservation, HttpStatus.OK);
     }
 
-    @GetMapping("/accommodationReviews/{id}")
-    public ResponseEntity<AccommodationReviewDTO> getAccommodationReviewById(@PathVariable Long id) {
-        Optional<AccommodationReview> accommodationReview = accommodationReviewService.getReviewById(id);
+    @GetMapping("/accommodationReviews/{reviewId}")
+    public ResponseEntity<AccommodationReviewDTO> getAccommodationReviewById(@PathVariable Long reviewId) {
+        Optional<AccommodationReview> accommodationReview = accommodationReviewService.getReviewById(reviewId);
         return accommodationReview.map(review -> new ResponseEntity<>(new AccommodationReviewDTO(review), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

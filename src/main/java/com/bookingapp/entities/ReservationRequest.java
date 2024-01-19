@@ -60,11 +60,9 @@ public class ReservationRequest {
     @Column(nullable = false)
     private String type;
 
-    @NotEmpty
     @Column(nullable = false)
     private String userImageType;
 
-    @NotEmpty
     @Column(nullable = false)
     @Lob
     private String userProfilePictureBytes;
@@ -81,11 +79,9 @@ public class ReservationRequest {
     @Column(nullable = false)
     private int stars;
 
-    @NotEmpty
     @Column(nullable = false)
     private String imageType; // accommodation main picture type (jpg, png, etc.)
 
-    @NotEmpty
     @Column(nullable = false)
     @Lob
     private String mainPictureBytes;

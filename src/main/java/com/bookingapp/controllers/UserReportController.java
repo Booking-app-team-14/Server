@@ -4,6 +4,7 @@ import com.bookingapp.dtos.UserReportDTO;
 import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.entities.UserReport;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.repositories.UserReportRepository;
 import com.bookingapp.services.UserReportService;
 import com.bookingapp.services.UserAccountService;
@@ -110,6 +111,7 @@ public class UserReportController {
             accommodationService.setApprovedToFalseForAllOwnersApartments(reportedUser.getId());
         }
 
+        reportedUser.getNotWantedNotificationTypes().add(NotificationType.RESERVATION_REQUEST_RESPONSE);
         userAccountService.save(reportedUser);
         deleteUserReport(reportId);
         return new ResponseEntity<>("User Blocked", HttpStatus.OK);

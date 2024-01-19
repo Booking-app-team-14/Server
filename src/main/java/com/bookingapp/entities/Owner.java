@@ -26,7 +26,6 @@ public class Owner extends UserAccount {
     @OneToMany
     private Set<Accommodation> accommodations;
 
-    @NotNull
     @JsonIgnore
     @OneToMany(mappedBy = "recipient" )
     private Set<Review> reviewsReceived;

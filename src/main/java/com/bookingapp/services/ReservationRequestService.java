@@ -328,4 +328,24 @@ public  class ReservationRequestService {
         }
     }
 
+    public boolean guestHasActiveRequests(Long id) {
+        for (ReservationRequest rr : this.findByUserId(id)) {
+            if (rr.getRequestStatus() == RequestStatus.ACCEPTED &&
+                    (rr.getEndDate().isAfter(LocalDate.now()) || rr.getEndDate().isEqual(LocalDate.now()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean ownerHasActiveRequests(Owner owner) {
+        for (ReservationRequest rr : owner.getReservations()){
+            if (rr.getRequestStatus() == RequestStatus.ACCEPTED &&
+                    (rr.getEndDate().isAfter(LocalDate.now()) || rr.getEndDate().isEqual(LocalDate.now()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

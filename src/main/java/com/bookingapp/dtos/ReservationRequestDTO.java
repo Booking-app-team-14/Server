@@ -40,9 +40,7 @@ public class ReservationRequestDTO {
     private String name;
     @NotEmpty
     private String type;
-    @NotEmpty
     private String userImageType;
-    @NotEmpty
     private String userProfilePictureBytes;
     @NotEmpty
     private String userUsername;
@@ -50,9 +48,7 @@ public class ReservationRequestDTO {
     private String dateRequested; // date requested, (epoch seconds)
     @Min(value = -1)
     private int stars;
-    @NotEmpty
     private String imageType; // accommodation main picture type (jpg, png, etc.)
-    @NotEmpty
     private String mainPictureBytes;
 
     public ReservationRequestDTO(Long guestId,Long accommodationId,double totalPrice, LocalDate startDate, LocalDate endDate, int numberOfGuests, RequestStatus status){

@@ -34,7 +34,6 @@ public class Guest extends UserAccount {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Set<Accommodation> history;
 
-    @NotNull
     @JsonIgnore
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private Set<Review> reviewsSent;

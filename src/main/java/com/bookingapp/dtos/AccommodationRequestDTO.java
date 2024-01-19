@@ -22,9 +22,7 @@ public class AccommodationRequestDTO {
     private String name; // accommodation name
     @NotEmpty
     private String type; // accommodation type
-    @NotEmpty
     private String ownerImageType; // owner profile picture type (jpg, png, etc.)
-    @NotEmpty
     private String ownerProfilePictureBytes;
     @Size(min = 5, max = 50)
     private String ownerUsername;
@@ -36,9 +34,7 @@ public class AccommodationRequestDTO {
     private String message;
     @Min(value = -1)
     private int stars;
-    @NotEmpty
     private String imageType; // accommodation main picture type (jpg, png, etc.)
-    @NotEmpty
     private String mainPictureBytes;
 
     public AccommodationRequestDTO(Long accommodationId, String name, String type, String ownerImageType, String ownerProfilePictureBytes, String ownerUsername, String dateRequested, String requestType, String message, int stars, String imageType, String mainPictureBytes) {

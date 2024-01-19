@@ -261,22 +261,13 @@ public class UserAccountController {
         }
         if (userAccount.getRole() == Role.GUEST) {
             Guest guest = (Guest) userAccount;
-            for (ReservationRequest rr : reservationRequestService.findByUserId(guest.getId())) {
-                if (rr.getRequestStatus() == RequestStatus.ACCEPTED &&
-                        (rr.getEndDate().isAfter(LocalDate.now()) || rr.getEndDate().isEqual(LocalDate.now()))) {
-                    return new ResponseEntity<>("Guest has active requests", HttpStatus.OK);
-                }
-            }
+            if (reservationRequestService.guestHasActiveRequests(guest.getId()))
+                return new ResponseEntity<>("Guest has active requests", HttpStatus.OK);
         }
         else if (userAccount.getRole() == Role.OWNER) {
             Owner owner = (Owner) userAccount;
-            for (ReservationRequest rr : owner.getReservations()){
-                if (rr.getRequestStatus() == RequestStatus.ACCEPTED &&
-                        (rr.getEndDate().isAfter(LocalDate.now()) || rr.getEndDate().isEqual(LocalDate.now()))) {
-                    return new ResponseEntity<>("Owner has active requests", HttpStatus.OK);
-                }
-
-            }
+            if (reservationRequestService.ownerHasActiveRequests(owner))
+                return new ResponseEntity<>("Owner has active requests", HttpStatus.OK);
         }
 
 //        Activation a = activationService.getActivationByUserId(Id);
@@ -289,6 +280,8 @@ public class UserAccountController {
             reservationRequestService.cancelAllReservationsForOwner(userAccount.getUsername());
             accommodationService.setApprovedToFalseForAllOwnersApartments(userAccount.getId());
         }
+
+        userAccount.getNotWantedNotificationTypes().add(NotificationType.RESERVATION_REQUEST_RESPONSE);
 
         userAccount.setBlocked(true);
         userAccountService.save(userAccount);

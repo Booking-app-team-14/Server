@@ -24,9 +24,7 @@ public class AccommodationRequest {
     private String name; // accommodation name
     @NotEmpty
     private String type; // accommodation type
-    @NotEmpty
     private String ownerImageType; // owner profile picture type (jpg, png, etc.)
-    @NotEmpty
     @Lob
     private String ownerProfilePictureBytes;
     @Size(min = 5, max = 50)
@@ -39,9 +37,7 @@ public class AccommodationRequest {
     private String message;
     @Min(value = -1)
     private int stars;
-    @NotEmpty
     private String imageType; // accommodation main picture type (jpg, png, etc.)
-    @NotEmpty
     @Lob
     private String mainPictureBytes;
     @Lob

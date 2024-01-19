@@ -23,9 +23,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDTO {
 
+    @Email
     @Size(min = 5, max = 50)
     protected String username;
-    @NotEmpty
+    @Size(min = 8)
     protected String password;
     @Size(min = 1, max = 50)
     protected String firstName;
@@ -42,9 +43,7 @@ public class UserDTO {
     protected int numberOfReports;
     @NotNull
     protected Role role;
-    @NotEmpty
     protected String profilePictureType;
-    @NotEmpty
     protected String profilePictureBytes;
 
     public UserDTO(String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePictureType, String profilePictureBytes){

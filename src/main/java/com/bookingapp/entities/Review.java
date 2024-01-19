@@ -24,10 +24,8 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(nullable = false)
     private boolean reported;
 
-    @Column(nullable = false)
     private boolean approved;
 
     @NotNull
