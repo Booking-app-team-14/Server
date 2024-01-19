@@ -110,7 +110,6 @@ public class WebSecurityConfig {
 
                     auth.requestMatchers(antMatcher("/api/userReports/isReported/{userId}")).hasAnyAuthority ("OWNER", "GUEST");
                             //    api/ownerReviewReports/reviews/report
-                    auth.requestMatchers(antMatcher("/api/notifications")).permitAll();
                     auth.requestMatchers(antMatcher("/api/notifications/{notificationId}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/ownerReviewReports/reviews/report")).hasAuthority("OWNER");
                     auth.requestMatchers(antMatcher("/api/reviews/report/{reviewId}")).hasAuthority("OWNER");
@@ -175,6 +174,7 @@ public class WebSecurityConfig {
                             //api/accommodations/{accommodationId}/average-rating
                     auth.requestMatchers(antMatcher("/api/accommodation/{accommodationId}/average-rating")).permitAll();
                     auth.requestMatchers(antMatcher("/api/users/{userId}/not-wanted-notifications")).hasAnyAuthority("OWNER", "GUEST");
+                    auth.requestMatchers(antMatcher("/api/notifications/{userId}/{setSeen}")).hasAnyAuthority("OWNER", "GUEST");
                             auth.requestMatchers(antMatcher("/error")).permitAll();
                             auth.requestMatchers(antMatcher("/socket")).permitAll();
                             auth.requestMatchers(antMatcher("/socket/*")).permitAll();
@@ -217,7 +217,6 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/desc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/rating/asc"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/desc"),
-                        antMatcher(HttpMethod.GET, "/api/notifications"),
                         antMatcher(HttpMethod.DELETE, "/api/notifications/{notificationId}"),
                         antMatcher(HttpMethod.GET, "/api/accommodations/sort/price/asc"),
                         antMatcher(HttpMethod.POST, "/api/requests"), antMatcher(HttpMethod.GET, "/api/users/token/{token}"),

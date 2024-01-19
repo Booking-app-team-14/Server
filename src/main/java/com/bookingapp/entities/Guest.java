@@ -3,6 +3,9 @@ package com.bookingapp.entities;
 import com.bookingapp.dtos.GuestDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +17,7 @@ import java.util.Set;
 @Entity
 public class Guest extends UserAccount {
 
-
+    @NotNull
     @ManyToMany
     @JoinTable(
             name = "guest_favourite_accommodations",
@@ -24,12 +27,14 @@ public class Guest extends UserAccount {
     )
     private Set<Accommodation> favouriteAccommodations;
 
+    @Min(value = 0)
     private int numberOfCancellations;
 
+    @NotNull
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Set<Accommodation> history;
 
-
+    @NotNull
     @JsonIgnore
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private Set<Review> reviewsSent;

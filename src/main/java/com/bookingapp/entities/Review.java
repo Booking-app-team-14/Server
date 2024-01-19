@@ -1,6 +1,7 @@
 package com.bookingapp.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,14 +16,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    //@Column(nullable = false)
     private String comment;
 
-
-     //@Column(nullable = false)
     private Integer rating;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
@@ -32,10 +30,12 @@ public class Review {
     @Column(nullable = false)
     private boolean approved;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "guest_id")
     private Guest sender;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private Owner recipient;
@@ -52,4 +52,5 @@ public class Review {
         this.reported = false;
         this.approved = true;
     }
+
 }

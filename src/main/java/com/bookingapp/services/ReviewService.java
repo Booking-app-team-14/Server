@@ -4,6 +4,7 @@ import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
+import com.bookingapp.exceptions.UnauthorizedAccessException;
 import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -12,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 

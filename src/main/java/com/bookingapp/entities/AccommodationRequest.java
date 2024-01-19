@@ -3,6 +3,10 @@ package com.bookingapp.entities;
 import com.bookingapp.dtos.AccommodationRequestDTO;
 import com.bookingapp.entities.Accommodation;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,18 +18,30 @@ public class AccommodationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private Long accommodationId;
+    @Size(min = 5, max = 100)
     private String name; // accommodation name
+    @NotEmpty
     private String type; // accommodation type
+    @NotEmpty
     private String ownerImageType; // owner profile picture type (jpg, png, etc.)
+    @NotEmpty
     @Lob
     private String ownerProfilePictureBytes;
+    @Size(min = 5, max = 50)
     private String ownerUsername;
+    @NotEmpty
     private String dateRequested; // date requested, (epoch seconds)
+    @NotEmpty
     private String requestType; // request type (new, updated)
+    @NotEmpty
     private String message;
+    @Min(value = -1)
     private int stars;
+    @NotEmpty
     private String imageType; // accommodation main picture type (jpg, png, etc.)
+    @NotEmpty
     @Lob
     private String mainPictureBytes;
     @Lob

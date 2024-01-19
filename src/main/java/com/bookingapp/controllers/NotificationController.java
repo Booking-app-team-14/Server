@@ -32,9 +32,9 @@ public class NotificationController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping(value = "/{userId}", name = "user gets all his wanted notifications")
-    public ResponseEntity<List<NotificationDTO>> getAllWantedNotificationsForUser(@PathVariable Long userId) {
-        List<NotificationDTO> notificationDTOS = notificationService.getAllWantedNotificationsForUser(userId, reservationRequestService, accommodationReviewService, reviewService);
+    @GetMapping(value = "/{userId}/{setSeen}", name = "user gets all his wanted notifications")
+    public ResponseEntity<List<NotificationDTO>> getAllWantedNotificationsForUser(@PathVariable Long userId, @PathVariable Boolean setSeen) {
+        List<NotificationDTO> notificationDTOS = notificationService.getAllWantedNotificationsForUser(userId, setSeen, reservationRequestService, accommodationReviewService, reviewService);
         return new ResponseEntity<>(notificationDTOS, HttpStatus.OK);
     }
 

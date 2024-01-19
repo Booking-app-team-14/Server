@@ -1,4 +1,4 @@
-package com.bookingapp.entities;
+package com.bookingapp.exceptions;
 
 public class UnauthorizedAccessException extends RuntimeException {
     public UnauthorizedAccessException(String message) {

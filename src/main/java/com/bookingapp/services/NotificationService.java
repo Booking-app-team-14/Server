@@ -49,7 +49,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public List<NotificationDTO> getAllWantedNotificationsForUser(Long userId, ReservationRequestService reservationRequestService, AccommodationReviewService accommodationReviewService, ReviewService reviewService) {
+    public List<NotificationDTO> getAllWantedNotificationsForUser(Long userId, Boolean setSeen, ReservationRequestService reservationRequestService, AccommodationReviewService accommodationReviewService, ReviewService reviewService) {
         List<Notification> notifications = notificationRepository.findAllNotificationsForUserById(userId);
         List<NotificationDTO> notificationDTOS = new ArrayList<>();
         UserAccount userAccount = userAccountRepository.findById(userId).get();
@@ -92,7 +92,7 @@ public class NotificationService {
                 notificationDTOS.add(new NotificationReservationRequestResponseDTO((NotificationReservationRequestResponse) notification, reservationRequestService));
             }
 
-            notification.setSeen(true);
+            if (setSeen) notification.setSeen(true);
             notificationRepository.save(notification);
         }
 

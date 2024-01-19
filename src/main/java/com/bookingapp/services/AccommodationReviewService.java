@@ -6,6 +6,7 @@ import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.exceptions.ReviewNotAllowedException;
+import com.bookingapp.exceptions.UnauthorizedAccessException;
 import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,10 +6,7 @@ import com.bookingapp.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,35 +26,38 @@ import java.util.stream.Collectors;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class UserAccount implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long Id;
 
-    @NotBlank
+    @Size(min = 5, max = 100)
     @Email
     @Column(nullable = false, unique = true)
     protected String username;
 
-    @NotBlank
+    @NotEmpty
     @Size(min = 8)
     @Column(nullable = false)
     protected String password;
 
-    @NotBlank
+    @Size(min = 5, max = 50)
     @Column(nullable = false)
     protected String firstName;
 
-    @NotBlank
+    @Size(min = 5, max = 50)
     @Column(nullable = false)
     protected String lastName;
 
-    @NotBlank
+    @NotEmpty
     @Column(nullable = false)
     protected String address;
 
+    @NotEmpty
+    @Column(nullable = false)
     protected String profilePicturePath;
 
-    @NotBlank
+    @NotEmpty
     @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
     @Column(nullable = false)
     protected String phoneNumber;
@@ -65,18 +65,7 @@ public class UserAccount implements UserDetails {
     @Column(name = "last_password_reset_date")
     private Timestamp lastPasswordResetDate;
 
-    /*@Column(name = "enabled")
-    private boolean enabled;
-
-    @Column(name = "last_password_reset_date")
-    private Timestamp lastPasswordResetDate;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;*/
-
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     protected Role role;
@@ -87,9 +76,11 @@ public class UserAccount implements UserDetails {
     @Column(name = "verified", nullable = false, columnDefinition = "boolean default false")
     private boolean verified;
 
+    @Min(value = 0)
     @Column(nullable = false)
     protected int numberOfReports;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Set<NotificationType> notWantedNotificationTypes;
 
@@ -110,7 +101,6 @@ public class UserAccount implements UserDetails {
         this.verified=verified;
         this.numberOfReports = numberOfReports;
         this.profilePicturePath = profilePicturePath;
-        //this.isActive = isActive;
     }
 
     public UserAccount(UserDTO dto){
@@ -126,16 +116,8 @@ public class UserAccount implements UserDetails {
         this.numberOfReports = dto.getNumberOfReports();
     }
 
-    /*public void setPassword(String password) {
-        Timestamp now = new Timestamp(new Date().getTime());
-        this.setLastPasswordResetDate(now);
-        this.password = password;
-    }*/
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convert Role enum to GrantedAuthority
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
@@ -158,15 +140,5 @@ public class UserAccount implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-
-    /*@Override
-    public boolean isEnabled() {
-        return enabled;
-    }*/
-   /* public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }*/
-
 
 }
