@@ -272,7 +272,7 @@ public  class ReservationRequestService {
 //        notification.setType(type);
 //        notificationService.saveReservationRequestCreated(notification);
 
-        notificationService.sendNotification(type.toString(), owner.getUsername());
+        notificationService.sendNotification(owner.getUsername());
     }
 
     public void sendNotificationForReservationForGuest(ReservationRequest reservationRequest, boolean approved) {
@@ -300,7 +300,7 @@ public  class ReservationRequestService {
         notification.setSentAt(LocalDateTime.now());
         notification.setType(NotificationType.RESERVATION_REQUEST_RESPONSE);
         notificationService.saveRequestResponse(notification);
-        notificationService.sendNotification(NotificationType.RESERVATION_REQUEST_RESPONSE.toString(), guest.getUsername());
+        notificationService.sendNotification(guest.getUsername());
     }
 
     public ReservationRequest getReservationRequestById(Long reservationRequestId) {

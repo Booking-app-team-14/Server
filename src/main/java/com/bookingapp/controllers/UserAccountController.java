@@ -2,6 +2,7 @@ package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
@@ -361,7 +362,29 @@ public class UserAccountController {
         }
         return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
 
+    }
 
+    @GetMapping(value = "/users/{userId}/not-wanted-notifications")
+    public ResponseEntity<List<NotificationType>> getNotWantedNotifications(@PathVariable Long userId) {
+        UserAccount user = userAccountService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new ArrayList<>(user.getNotWantedNotificationTypes()), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{userId}/not-wanted-notifications")
+    public ResponseEntity<Boolean> setNotWantedNotifications(@PathVariable Long userId, @RequestBody String notWantedNotificationType) {
+        UserAccount user = userAccountService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
+
+        NotificationType type = NotificationType.valueOf(notWantedNotificationType);
+
+        boolean response = user.getNotWantedNotificationTypes().contains(type) ? user.getNotWantedNotificationTypes().remove(type) : user.getNotWantedNotificationTypes().add(type);
+        userAccountService.save(user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

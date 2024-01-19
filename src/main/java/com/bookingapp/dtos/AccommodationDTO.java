@@ -9,6 +9,7 @@ import com.bookingapp.enums.Handling;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +38,7 @@ public class AccommodationDTO {
     private Integer minNumberOfGuests;
     private Integer maxNumberOfGuests;
     private Set<AvailabilityDTO> availability;
+    @Min(value = 1)
     private Double pricePerNight;
     private boolean pricePerGuest;
     private boolean automatic;

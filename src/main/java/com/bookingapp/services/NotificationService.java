@@ -4,6 +4,8 @@ import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
 import com.bookingapp.enums.NotificationType;
 import com.bookingapp.repositories.NotificationRepository;
+import com.bookingapp.repositories.UserAccountRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,11 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public void sendNotification(String notificationType, String username) {
-        simpMessagingTemplate.convertAndSend("/notifications", notificationType + " " + username);
+    @Autowired
+    private UserAccountRepository userAccountRepository;
+
+    public void sendNotification(String username) {
+        simpMessagingTemplate.convertAndSend("/topic/notifications", username);
     }
 
     public void saveAccommodationsReviewed(NotificationAccommodationReviewed notification) {
@@ -47,7 +52,30 @@ public class NotificationService {
     public List<NotificationDTO> getAllWantedNotificationsForUser(Long userId, ReservationRequestService reservationRequestService, AccommodationReviewService accommodationReviewService, ReviewService reviewService) {
         List<Notification> notifications = notificationRepository.findAllNotificationsForUserById(userId);
         List<NotificationDTO> notificationDTOS = new ArrayList<>();
+        UserAccount userAccount = userAccountRepository.findById(userId).get();
         for (Notification notification : notifications) {
+
+            if (userAccount.getNotWantedNotificationTypes().contains(NotificationType.RESERVATION_REQUEST_CREATED) && notification.getType().equals(NotificationType.RESERVATION_REQUEST_CREATED)){
+                this.deleteNotification(notification.getId());
+                continue;
+            }
+            else if (userAccount.getNotWantedNotificationTypes().contains(NotificationType.RESERVATION_REQUEST_CANCELLED) && notification.getType().equals(NotificationType.RESERVATION_REQUEST_CANCELLED)){
+                this.deleteNotification(notification.getId());
+                continue;
+            }
+            else if (userAccount.getNotWantedNotificationTypes().contains(NotificationType.ACCOMMODATION_REVIEWED) && notification.getType().equals(NotificationType.ACCOMMODATION_REVIEWED)){
+                this.deleteNotification(notification.getId());
+                continue;
+            }
+            else if (userAccount.getNotWantedNotificationTypes().contains(NotificationType.OWNER_REVIEWED) && notification.getType().equals(NotificationType.OWNER_REVIEWED)){
+                this.deleteNotification(notification.getId());
+                continue;
+            }
+            else if (userAccount.getNotWantedNotificationTypes().contains(NotificationType.RESERVATION_REQUEST_RESPONSE) && notification.getType().equals(NotificationType.RESERVATION_REQUEST_RESPONSE)){
+                this.deleteNotification(notification.getId());
+                continue;
+            }
+
             if (notification.getType().equals(NotificationType.RESERVATION_REQUEST_CREATED)){
                 notificationDTOS.add(new NotificationReservationCreatedDTO((NotificationReservationCreated) notification, reservationRequestService));
             }
@@ -67,7 +95,12 @@ public class NotificationService {
             notification.setSeen(true);
             notificationRepository.save(notification);
         }
-        return notificationDTOS;
+
+        List<NotificationDTO> invertedNotificationDTOS = new ArrayList<>();
+        for (int i = notificationDTOS.size() - 1; i >= 0; i--) {
+            invertedNotificationDTOS.add(notificationDTOS.get(i));
+        }
+        return invertedNotificationDTOS;
     }
 
     public void deleteNotification(Long notificationId) {
