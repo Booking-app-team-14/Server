@@ -247,7 +247,7 @@ public class UserAccountController {
     public ResponseEntity<Double> getOwnerRating(@PathVariable Long id) {
         Double rating = userAccountService.getOwnerRating(id);
         if (rating == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(-1D, HttpStatus.OK);
         }
         return new ResponseEntity<>(rating, HttpStatus.OK);
     }
