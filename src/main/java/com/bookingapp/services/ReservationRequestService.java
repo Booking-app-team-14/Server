@@ -324,7 +324,7 @@ public  class ReservationRequestService {
             r.setRequestStatus(RequestStatus.DECLINED);
             this.save(r);
 
-            this.sendNotificationForReservationForGuest(reservationRequest, false);
+            this.sendNotificationForReservationForGuest(r, false);
         }
     }
 

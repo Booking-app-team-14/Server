@@ -122,7 +122,6 @@ public class UserAccountController {
         if (user == null) {
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
         }
-        user.setUsername(userDTO.getUsername());
         if (userDTO.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
