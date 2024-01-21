@@ -120,7 +120,9 @@ public class ReviewService {
             boolean hasAcceptedReservation = this.hasAcceptedReservationForOwner(recipient.getId());
 
             if (hasAcceptedReservation) {
-                Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
+                int ratingValue = ( reviewDTO.getRating() != 0) ? reviewDTO.getRating() : -1;
+
+                Review review = new Review(reviewDTO.getComment(), ratingValue, sender, recipient);
                 review.setApproved(false);
                 reviewRepository.save(review);
 
@@ -160,11 +162,15 @@ public class ReviewService {
 
         if (!reviews.isEmpty()) {
             double totalRating = 0;
+            int size=0;
             for (Review review : reviews) {
+                if (review.getRating() != -1) {
                 totalRating += review.getRating();
+                size++;
+                }
             }
 
-            return totalRating / reviews.size();
+            return totalRating / size;
         } else {
             return null;
         }

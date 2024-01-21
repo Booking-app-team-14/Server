@@ -101,7 +101,9 @@ public class AccommodationReviewService {
 
            //if (hasAcceptedReservation(accommodation.getId())) {
                if (isWithinSevenDaysFromEnd(reviewDTO.getAccommodationId() )) {
-                   AccommodationReview review = new AccommodationReview(accommodation, sender, reviewDTO.getRating(),
+                   int ratingValue = (reviewDTO.getRating() != null && reviewDTO.getRating() != 0) ? reviewDTO.getRating() : -1;
+
+                   AccommodationReview review = new AccommodationReview(accommodation, sender, ratingValue,
                            reviewDTO.getComment(), ReviewStatus.PENDING, LocalDateTime.now());
                    return accommodationReviewRepository.save(review);
                } else {
@@ -182,11 +184,15 @@ public class AccommodationReviewService {
 
         if (!reviews.isEmpty()) {
             double totalRating = 0;
+            int size=0;
             for (AccommodationReview review : reviews) {
+                if (review.getRating() != -1) {
                 totalRating += review.getRating();
+                size++;
+                }
             }
 
-            return totalRating / reviews.size();
+            return totalRating / size;
         } else {
             return null;
         }

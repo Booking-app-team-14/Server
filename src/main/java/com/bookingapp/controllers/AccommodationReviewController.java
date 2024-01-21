@@ -62,11 +62,18 @@ public class AccommodationReviewController {
     }
 
     //ostali--> promentii na status approved
-    @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "get all approved  reviews for a specific accommodation")
+     @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "get all approved  reviews for a specific accommodation")
     public ResponseEntity<List<AccommodationReview>>  getApprovedAccommodationReviews(@PathVariable Long accommodationId) {
         List<AccommodationReview> pendingReviews = accommodationReviewService.getApprovedAccommodationReviewsByAccommodation( accommodationId);
         return new ResponseEntity<>(pendingReviews, HttpStatus.OK);
     }
+
+   /* @GetMapping(value = "/accommodations/{accommodationId}/accommodationReviews/pending", name = "admin gets all pending reviews for accommodations")
+    public ResponseEntity<List<AccommodationReviewDTO>> getApprovedAccommodationReviews(@PathVariable Long accommodationId) {
+        List<AccommodationReview> accommodationReviews = accommodationReviewService.getApprovedAccommodationReviewsByAccommodation( accommodationId);
+        List<AccommodationReviewDTO> accommodationReviewDTOs = AccommodationReviewDTO.convertToDTO(accommodationReviews);
+        return new ResponseEntity<>(accommodationReviewDTOs, HttpStatus.OK);
+    }*/
 
     @DeleteMapping("/accommodationReviews/{reviewId}")
     public ResponseEntity<Void> deleteAccommodationReviewById(@PathVariable Long reviewId) {
@@ -113,9 +120,6 @@ public class AccommodationReviewController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-
-
     @GetMapping("/accommodation/{accommodationId}/average-rating")
     public ResponseEntity<String> getAverageRatingByAccommodationId(@PathVariable Long accommodationId) {
         Double averageRating = accommodationReviewService.getAverageRatingByAccommodationId(accommodationId);
