@@ -2,10 +2,13 @@ package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.*;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
+import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.ActivationService;
+import com.bookingapp.services.ReservationRequestService;
 import com.bookingapp.services.UserAccountService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,8 +44,10 @@ public class UserAccountController {
     private ActivationService activationService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ReservationRequestService reservationRequestService;
 
     @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
     public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) throws MessagingException, UnsupportedEncodingException {
@@ -66,6 +72,7 @@ public class UserAccountController {
             throw new RuntimeException(e);
         }
         user.setProfilePicturePath("userAvatars/user-" + user.getId() + ".png");
+        user.setNotWantedNotificationTypes(new HashSet<>());
         userAccountService.save(user);
 
         // aktivacioni token
@@ -115,7 +122,6 @@ public class UserAccountController {
         if (user == null) {
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
         }
-        user.setUsername(userDTO.getUsername());
         if (userDTO.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
@@ -246,29 +252,41 @@ public class UserAccountController {
         return new ResponseEntity<>(rating, HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/{Id}")
+    @DeleteMapping(value = "/users/{Id}")
     public ResponseEntity<String> deleteUserAccount(@PathVariable Long Id) {
-        // TODO check if guest or owner have any active requests, if yes, don't allow delete
         UserAccount userAccount = userAccountService.getUserById(Id);
         if (userAccount == null) {
             return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
         }
         if (userAccount.getRole() == Role.GUEST) {
             Guest guest = (Guest) userAccount;
-             // check if guest has active requests
-//            return new ResponseEntity<>("Guest has active requests", HttpStatus.BAD_REQUEST);
+            if (reservationRequestService.guestHasActiveRequests(guest.getId()))
+                return new ResponseEntity<>("Guest has active requests", HttpStatus.OK);
         }
         else if (userAccount.getRole() == Role.OWNER) {
             Owner owner = (Owner) userAccount;
-            // check if owner has active requests
-//            return new ResponseEntity<>("Owner has active requests", HttpStatus.BAD_REQUEST);
+            if (reservationRequestService.ownerHasActiveRequests(owner))
+                return new ResponseEntity<>("Owner has active requests", HttpStatus.OK);
         }
 
-        Activation a = activationService.getActivationByUserId(Id);
-        activationService.deleteActivation(a);
+//        Activation a = activationService.getActivationByUserId(Id);
+//        activationService.deleteActivation(a);
 
-        userAccountService.deleteUser(Id);
-        userAccountService.deleteUserImage(Id);
+        if (userAccount.getRole() == Role.GUEST) {
+            reservationRequestService.cancelAllReservationsForGuest(userAccount.getId());
+        }
+        else if (userAccount.getRole() == Role.OWNER) {
+            reservationRequestService.cancelAllReservationsForOwner(userAccount.getUsername());
+            accommodationService.setApprovedToFalseForAllOwnersApartments(userAccount.getId());
+        }
+
+        userAccount.getNotWantedNotificationTypes().add(NotificationType.RESERVATION_REQUEST_RESPONSE);
+
+        userAccount.setBlocked(true);
+        userAccountService.save(userAccount);
+
+//        userAccountService.deleteUser(Id);
+//        userAccountService.deleteUserImage(Id);
 
         return new ResponseEntity<>("Account Deleted", HttpStatus.OK);
     }
@@ -336,7 +354,29 @@ public class UserAccountController {
         }
         return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
 
+    }
 
+    @GetMapping(value = "/users/{userId}/not-wanted-notifications")
+    public ResponseEntity<List<NotificationType>> getNotWantedNotifications(@PathVariable Long userId) {
+        UserAccount user = userAccountService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(new ArrayList<>(user.getNotWantedNotificationTypes()), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{userId}/not-wanted-notifications")
+    public ResponseEntity<Boolean> setNotWantedNotifications(@PathVariable Long userId, @RequestBody String notWantedNotificationType) {
+        UserAccount user = userAccountService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
+
+        NotificationType type = NotificationType.valueOf(notWantedNotificationType);
+
+        boolean response = user.getNotWantedNotificationTypes().contains(type) ? user.getNotWantedNotificationTypes().remove(type) : user.getNotWantedNotificationTypes().add(type);
+        userAccountService.save(user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

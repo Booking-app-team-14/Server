@@ -27,12 +27,12 @@ public class AccommodationRequestService {
 
     @Autowired
     private AccommodationRequestRepository accommodationRequestRepository;
-    @Autowired
-    private AccommodationRepository accommodationRepository;
-    @Autowired
-    private UserAccountService userAccountService;
+
     @Autowired
     private AccommodationService accommodationService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
 //    @Autowired
 //    private AccommodationRequestMapper modelMapper;
@@ -59,29 +59,32 @@ public class AccommodationRequestService {
         accommodationRequest.setMessage("I'm posting my new accommodation, please approve! Thanks.");
         accommodationRequest.setRequestType("new");
 
-
         accommodationRequest.setName(accommodation.getName());
         accommodationRequest.setType(accommodation.getType().toString());
 
         accommodationRequest.setOwnerUsername(accommodation.getOwner().getUsername());
 
-//        userAccountService.getOwners().forEach(o -> {
-//            Owner owner = (Owner) o;
-//            if (owner.getAccommodations().contains(accommodation)) {
-//                accommodationRequest.setOwnerUsername(owner.getUsername());
-//                String profilePicturePath = owner.getProfilePicturePath();
-//                ImagesRepository imagesRepository = new ImagesRepository();
-//                try {
-//                    accommodationRequest.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(profilePicturePath));
-//                    accommodationRequest.setOwnerImageType(imagesRepository.getImageType(accommodationRequest.getOwnerProfilePictureBytes()));
-//                } catch (Exception e) { }
-//            }
-//        });
+        ImagesRepository imagesRepository = new ImagesRepository();
+        userAccountService.getOwners().forEach(o -> {
+            Owner owner = (Owner) o;
+            if (accommodation.getOwner().getUsername().equals(owner.getUsername())) {
+                String profilePicturePath = owner.getProfilePicturePath();
+                try {
+                    accommodationRequest.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(profilePicturePath));
+                    accommodationRequest.setOwnerImageType(imagesRepository.getImageType(accommodationRequest.getOwnerProfilePictureBytes()));
+                } catch (Exception ignored) { }
+            }
+        });
 
-            accommodationRequest.setStars(0);
+//        try {
+//            accommodationRequest.setMainPictureBytes(imagesRepository.getImageBytes(accommodation.getImages().stream().findFirst().get()));
+//            accommodationRequest.setImageType(imagesRepository.getImageType(accommodationRequest.getMainPictureBytes()));
+//        } catch (Exception ignored) { }
 
-            accommodationRequestRepository.save(accommodationRequest);
-            return accommodationRequest;
+        accommodationRequest.setStars(0);
+
+        accommodationRequestRepository.save(accommodationRequest);
+        return accommodationRequest;
 
     }
 
@@ -89,7 +92,13 @@ public class AccommodationRequestService {
     public List<AccommodationRequestDTO> getAllAccommodationRequests() {
         List<AccommodationRequest> requests = accommodationRequestRepository.findAll();
         List<AccommodationRequestDTO> dtos = new ArrayList<>();
+        ImagesRepository imagesRepository = new ImagesRepository();
         for (AccommodationRequest request : requests) {
+            try {
+                Accommodation accommodation = accommodationService.getAccommodationById(request.getAccommodationId()).get();
+                request.setMainPictureBytes(imagesRepository.getImageBytes(accommodation.getImages().stream().findFirst().get()));
+                request.setImageType(imagesRepository.getImageType(request.getMainPictureBytes()));
+            } catch (Exception ignored) { }
             AccommodationRequestDTO dto = new AccommodationRequestDTO(request);
             dtos.add(dto);
         }
@@ -110,7 +119,7 @@ public class AccommodationRequestService {
         accommodationRequestDTO.setRequestType("updated");
         accommodationRequestDTO.setOwnerUsername(accommodation.getOwner().getUsername());
         ImagesRepository imagesRepository = new ImagesRepository();
-        try { // TODO check if this works, because on the frontend it's returning nulls
+        try {
             accommodationRequestDTO.setOwnerProfilePictureBytes(imagesRepository.getImageBytes(accommodation.getOwner().getProfilePicturePath()));
             accommodationRequestDTO.setOwnerImageType(imagesRepository.getImageType(accommodationRequestDTO.getOwnerProfilePictureBytes()));
             accommodationRequestDTO.setMainPictureBytes(imagesRepository.getImageBytes(accommodation.getImages().stream().findFirst().get()));
@@ -150,12 +159,12 @@ public class AccommodationRequestService {
                     AccommodationRequest request = this.findByAccommodationId(r.getAccommodationId());
                     if (request == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-                    if (request.getSerializedAccommodationUpdateDTO() == null) { // create accommodation
+                    if (request.getSerializedAccommodationUpdateDTO() == null) { // create accommodation request
                         accommodation.setApproved(true);
                         accommodationService.save(accommodation);
                         deleteRequestByAccommodationId(r.getAccommodationId());
 
-                    } else { // update accommodation
+                    } else { // update accommodation request
                         AccommodationUpdateDTO deserialized = AccommodationUpdateDTO.deserializeFromString(request.getSerializedAccommodationUpdateDTO());
                         accommodationService.update(accommodation, deserialized);
                         deleteRequestByAccommodationId(r.getAccommodationId());
@@ -173,14 +182,31 @@ public class AccommodationRequestService {
                 Optional<Accommodation> accommodationOpt = accommodationService.getAccommodationById(id);
                 if (accommodationOpt.isPresent()) {
                     Accommodation accommodation = accommodationOpt.get();
-                    accommodation.setApproved(true);
-                    accommodationService.save(accommodation);
-                    deleteRequestByAccommodationId(r.getAccommodationId());
+
+                    AccommodationRequest request = this.findByAccommodationId(r.getAccommodationId());
+                    if (request == null) return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+
+                    if (request.getSerializedAccommodationUpdateDTO() == null) { // create accommodation request
+                        accommodationService.deleteAccommodation(id);
+                        deleteRequestByAccommodationId(r.getAccommodationId());
+                    } else { // update accommodation request
+                        accommodation.setApproved(true);
+                        accommodationService.save(accommodation);
+                        deleteRequestByAccommodationId(r.getAccommodationId());
+                    }
                 }
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(false, HttpStatus.OK);
+    }
+
+    public AccommodationRequest findById(Long requestId) {
+        return accommodationRequestRepository.findById(requestId).get();
+    }
+
+    public void saveRaw(AccommodationRequest request) {
+        accommodationRequestRepository.save(request);
     }
 
 }

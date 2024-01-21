@@ -1,6 +1,7 @@
 package com.bookingapp.repositories;
 
 import com.bookingapp.entities.OwnerReviewReport;
+import com.bookingapp.entities.Review;
 import com.bookingapp.entities.ReviewReport;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

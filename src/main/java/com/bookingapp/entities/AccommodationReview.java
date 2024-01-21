@@ -2,6 +2,9 @@ package com.bookingapp.entities;
 
 import com.bookingapp.enums.ReviewStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,19 +19,24 @@ public class AccommodationReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne
     private Accommodation accommodation;
 
+    @NotNull
     @ManyToOne
     private Guest user;
 
+//    @Min(value = -1)
     private Integer rating;
 
     private String comment;
 
+    @NotNull
     @Column(nullable = false)
     private ReviewStatus status;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime sentAt;
 

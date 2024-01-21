@@ -2,6 +2,7 @@ package com.bookingapp.entities;
 
 import com.bookingapp.enums.ReportStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,15 +17,17 @@ public class ReviewReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    @NotNull
     @OneToOne
     private AccommodationReview accommodationReview;
 
-    //@Column(nullable = false)
     private String reason;
 
+    @NotNull
     @Column(nullable = false)
     private ReportStatus status;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime sentAt;
 

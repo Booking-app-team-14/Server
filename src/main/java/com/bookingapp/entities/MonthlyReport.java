@@ -1,6 +1,8 @@
 package com.bookingapp.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,12 +14,12 @@ public class MonthlyReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     private Accommodation accommodation;
 
-    //@Column(nullable=false)
-    //private int year;
-
+    @NotEmpty
     @Column(nullable=false)
     private String monthName;
+
 }

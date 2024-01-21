@@ -1,6 +1,9 @@
 package com.bookingapp.dtos;
 
 import com.bookingapp.entities.OwnerReview;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,16 +13,18 @@ import java.time.LocalDateTime;
 @Setter
 public class OwnerReviewDTO {
 
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long userId;
-
+    @NotNull
     private Long ownerId;
 
     private Integer rating;
 
     private String comment;
 
+    @NotNull
     private LocalDateTime sentAt;
 
     public OwnerReviewDTO(OwnerReview ownerReview) {
@@ -43,8 +48,4 @@ public class OwnerReviewDTO {
     public OwnerReviewDTO() {
     }
 
-    @Override
-    public String toString() {
-        return "test";
-    }
 }

@@ -1,5 +1,8 @@
 package com.bookingapp.dtos;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,19 +15,32 @@ import java.util.Set;
 @Setter
 public class AccommodationUpdateDTO implements Serializable {
 
+    @NotNull
     private Long id;
+    @NotNull
     private Set<Image> images;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String description;
+    @NotEmpty
     private String type;
+    @Min(value = 1)
     private Integer minNumberOfGuests;
+    @Min(value = 1)
     private Integer maxNumberOfGuests;
+    @NotNull
     private Set<Long> amenities;
+    @NotNull
     private LocationDTO location;
     private boolean pricePerGuest;
+    @Min(value = 1)
     private Double defaultPrice;
+    @NotNull
     private Set<UpdateAvailabilityDTO> availability;
+    @Min(value = 0)
     private Integer cancellationDeadline;
+    @NotEmpty
     private String message;
     private boolean automaticHandling;
 

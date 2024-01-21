@@ -2,7 +2,9 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
+import com.bookingapp.exceptions.UnauthorizedAccessException;
 import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -11,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,9 @@ public class ReviewService {
 
     @Autowired
     private UserAccountRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public ReviewService(ReviewRepository reviewRepository, GuestRepository guestRepository, OwnerRepository ownerRepository) {
@@ -116,7 +120,9 @@ public class ReviewService {
             boolean hasAcceptedReservation = this.hasAcceptedReservationForOwner(recipient.getId());
 
             if (hasAcceptedReservation) {
-                Review review = new Review(reviewDTO.getComment(), reviewDTO.getRating(), sender, recipient);
+                int ratingValue = ( reviewDTO.getRating() != 0) ? reviewDTO.getRating() : -1;
+
+                Review review = new Review(reviewDTO.getComment(), ratingValue, sender, recipient);
                 review.setApproved(false);
                 reviewRepository.save(review);
 
@@ -156,11 +162,15 @@ public class ReviewService {
 
         if (!reviews.isEmpty()) {
             double totalRating = 0;
+            int size=0;
             for (Review review : reviews) {
+                if (review.getRating() != -1) {
                 totalRating += review.getRating();
+                size++;
+                }
             }
 
-            return totalRating / reviews.size();
+            return totalRating / size;
         } else {
             return null;
         }
@@ -180,6 +190,29 @@ public class ReviewService {
 
     public  Review findById(Long id) {
         return reviewRepository.findById(id).orElse(null);
+    }
+
+    public void deleteByReviewId(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
+
+    public void sendNotificationForOwnerReview(Review review) {
+        Owner owner = (Owner) userRepository.findByUsername(review.getRecipient().getUsername());
+        for (NotificationType notWantedType : owner.getNotWantedNotificationTypes()){
+            if (notWantedType.equals(NotificationType.OWNER_REVIEWED)){
+                return;
+            }
+        }
+
+        NotificationOwnerReviewed notification = new NotificationOwnerReviewed();
+        notification.setType(NotificationType.OWNER_REVIEWED);
+        notification.setReviewId(review.getId());
+        notification.setReceiver(review.getRecipient());
+        notification.setSender(review.getSender());
+        notification.setSeen(false);
+        notification.setSentAt(review.getTimestamp());
+        notificationService.saveOwnerReviewed(notification);
+        notificationService.sendNotification(review.getRecipient().getUsername());
     }
 
 }

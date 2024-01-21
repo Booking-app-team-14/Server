@@ -247,4 +247,8 @@ public class UserAccountService implements UserDetailsService {
         return true;
     }
 
+    public List<Guest> findAllGuests() {
+        return userAccountRepository.findAllGuests();
+    }
+
 }

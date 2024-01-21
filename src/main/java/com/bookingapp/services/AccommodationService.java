@@ -7,6 +7,8 @@ import com.bookingapp.repositories.AccommodationRepository;
 import com.bookingapp.repositories.GuestRepository;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.repositories.LocationRepository;
+import lombok.Getter;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -83,7 +85,7 @@ public class AccommodationService {
     // DELETE
     public boolean deleteAccommodation(Long id) {
         if (accommodationRepository.existsById(id)) {
-            userAccountService.deleteAllGuestFavoriteAccommodation(id);
+//            userAccountService.deleteAllGuestFavoriteAccommodation(id);
             accommodationRepository.deleteById(id);
             return true;
         } else {
@@ -171,7 +173,7 @@ public class AccommodationService {
 
 //        fillAvailabilityForCurrentYear(accommodation, accommodationDTO.getAvailability());
 
-        accommodation.setImages(accommodationDTO.getImages()); // TODO: popraviti
+        accommodation.setImages(accommodationDTO.getImages());
         accommodation.setRating(accommodationDTO.getRating());
         accommodation.setMinNumberOfGuests(accommodationDTO.getMinNumberOfGuests());
         accommodation.setMaxNumberOfGuests(accommodationDTO.getMaxNumberOfGuests());
@@ -180,7 +182,6 @@ public class AccommodationService {
         accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
         accommodation.setApproved(false);
         accommodation.setOwner(user);
-
         accommodationRepository.save(accommodation);
         return accommodation;
     }
@@ -677,6 +678,13 @@ public class AccommodationService {
         for (Accommodation accommodation : accommodations) {
             accommodation.setApproved(false);
             accommodationRepository.save(accommodation);
+
+            List<Guest> guests = userAccountService.findAllGuests();
+            for (Guest guest : guests) {
+                guest.getFavouriteAccommodations().remove(accommodation);
+                userAccountService.save(guest);
+            }
+
         }
     }
 

@@ -1,6 +1,9 @@
 package com.bookingapp.dtos;
 
 import com.bookingapp.entities.Review;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,18 +15,25 @@ import java.util.List;
 @Setter
 public class ReviewDTO {
 
+    @NotNull
     private Long id;
+    @NotEmpty
     private String comment;
+
     private int rating;
+    @NotNull
     private LocalDateTime timestamp;
     private boolean reported;
     private boolean approved;
+    @NotNull
     private Long senderId;
+    @NotNull
     private Long recipientId;
 
     public ReviewDTO() {
         this.timestamp = LocalDateTime.now();
     }
+
     public ReviewDTO(String comment, int rating, Long senderId, Long recipientId) {
         this.comment = comment;
         this.rating = rating;
@@ -33,6 +43,7 @@ public class ReviewDTO {
         this.reported = false;
         this.approved = false;
     }
+
     public ReviewDTO(Review review) {
         this.id = review.getId();
         this.comment = review.getComment();

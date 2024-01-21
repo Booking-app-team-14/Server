@@ -3,6 +3,8 @@ package com.bookingapp.dtos;
 import com.bookingapp.entities.Amenity;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AmenityService;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +15,13 @@ import java.util.List;
 @Setter
 public class AmenityDTO {
 
+    @NotNull
     private Long id;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String description;
+    @NotEmpty
     private String icon;
     protected String iconType;
     protected String iconBytes;

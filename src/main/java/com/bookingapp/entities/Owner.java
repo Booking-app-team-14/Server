@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,10 +18,12 @@ import java.util.Set;
 @Entity
 public class Owner extends UserAccount {
 
+    @NotNull
     @OneToMany
     private Set<ReservationRequest> reservations;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @NotNull
+    @OneToMany
     private Set<Accommodation> accommodations;
 
     @JsonIgnore

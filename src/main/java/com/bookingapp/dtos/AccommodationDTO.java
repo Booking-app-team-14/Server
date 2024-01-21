@@ -9,9 +9,12 @@ import com.bookingapp.enums.Handling;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import com.bookingapp.services.AmenityService;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,25 +24,41 @@ import java.util.stream.Collectors;
 @Setter
 public class AccommodationDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @NotNull
     private Long id;
+    @Size(min = 5, max = 100)
     private String name;
+    @NotEmpty
     private String description;
+    @NotNull
     private LocationDTO location;
+    @NotNull
     private AccommodationType type;
+
     private Set<String> images = new HashSet<>();
-    private Set<String> imageTypes = new HashSet<>();
+
+    private List<String> imageTypes = new ArrayList<>();
+
     private Set<String> imageBytes = new HashSet<>();
+    @NotNull
     private Set<AmenityDTO> amenities;
+    @Min(value = -1)
+    @Max(value = 5)
     private Double rating;
+    @Min(value = 1)
     private Integer minNumberOfGuests;
+    @Min(value = 1)
     private Integer maxNumberOfGuests;
+    @NotNull
     private Set<AvailabilityDTO> availability;
+    @Min(value = 1)
     private Double pricePerNight;
     private boolean pricePerGuest;
     private boolean automatic;
+    @NotNull
+    @Min(value = 0)
     private Integer cancellationDeadline;
+    @NotNull
     private Long owner_Id;
 
     public AccommodationDTO(
@@ -93,6 +112,7 @@ public class AccommodationDTO {
         this.automatic = accommodation.isAutomatic();
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.owner_Id=accommodation.getOwner().getId();
+        ImagesRepository imagesRepository = new ImagesRepository();
         try{
             List<String> imageBytes = accommodationService.getAllAccommodationImages(this.id);
             for (String imageByte:imageBytes) {
@@ -101,7 +121,7 @@ public class AccommodationDTO {
                 this.imageBytes.add(imageByte);
             }
         } catch (Exception e) {
-            this.imageTypes = new HashSet<>();
+            this.imageTypes = new ArrayList<>();
             this.imageBytes = new HashSet<>();
         }
     }

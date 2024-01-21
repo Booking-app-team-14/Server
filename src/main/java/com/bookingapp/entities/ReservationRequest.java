@@ -3,6 +3,10 @@ package com.bookingapp.entities;
 import com.bookingapp.dtos.ReservationRequestDTO;
 import com.bookingapp.enums.RequestStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,52 +23,69 @@ public class ReservationRequest {
     @Column(nullable = true)
     private Long reservationId;
 
-//    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
- //   private Guest from;
-
+    @NotNull
     @Column(nullable = false)
     private Long userId;
 
+    @NotNull
     @Column(nullable = false)
     private Long accommodationId;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDate startDate;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDate endDate;
 
+    @Min(value = 1)
     @Column(nullable = false)
     private int numberOfGuests;
 
+    @Min(value = 1)
     @Column(nullable = false)
     private double totalPrice;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus requestStatus;
 
+    @Size(min = 5, max = 50)
     @Column(nullable = false)
     private String name;
 
+    @NotNull
     @Column(nullable = false)
     private String type;
+
     @Column(nullable = false)
     private String userImageType;
+
     @Column(nullable = false)
     @Lob
     private String userProfilePictureBytes;
+
+    @Size(min = 5, max = 50)
     @Column(nullable = false)
     private String userUsername;
+
+    @NotEmpty
     @Column(nullable = false)
     private String dateRequested; // date requested, (epoch seconds)
+
+    @Min(value = -1)
     @Column(nullable = false)
     private int stars;
+
     @Column(nullable = false)
     private String imageType; // accommodation main picture type (jpg, png, etc.)
+
     @Column(nullable = false)
     @Lob
     private String mainPictureBytes;
+
     public ReservationRequest() {
 
     }
@@ -87,4 +108,5 @@ public class ReservationRequest {
         this.userImageType = rdto.getUserImageType();
         this.userProfilePictureBytes= rdto.getUserProfilePictureBytes();
     }
+
 }

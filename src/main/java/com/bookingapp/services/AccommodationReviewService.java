@@ -2,13 +2,12 @@ package com.bookingapp.services;
 
 import com.bookingapp.dtos.AccommodationReviewDTO;
 import com.bookingapp.entities.*;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.ReviewStatus;
 import com.bookingapp.exceptions.ReviewNotAllowedException;
-import com.bookingapp.repositories.AccommodationRepository;
-import com.bookingapp.repositories.AccommodationReviewRepository;
-import com.bookingapp.repositories.GuestRepository;
-import com.bookingapp.repositories.ReservationRequestIRepository;
+import com.bookingapp.exceptions.UnauthorizedAccessException;
+import com.bookingapp.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -30,10 +29,16 @@ public class AccommodationReviewService {
     private AccommodationRepository accommodationRepository;
 
     @Autowired
-    private GuestRepository userRepository;
+    private GuestRepository guestRepository;
 
     @Autowired
     private ReservationRequestIRepository reservationRequestRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserAccountRepository userRepository;
 
     public List<AccommodationReview> findAll() {
         return accommodationReviewRepository.findAll();
@@ -87,7 +92,7 @@ public class AccommodationReviewService {
        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
        UserAccount user = (UserAccount) authentication.getPrincipal();
        Optional<Accommodation> optionalAccommodation = accommodationRepository.findById(reviewDTO.getAccommodationId());
-       Optional<Guest> optionalGuest = userRepository.findById(user.getId());
+       Optional<Guest> optionalGuest = guestRepository.findById(user.getId());
 
        if (optionalGuest.isPresent() && optionalAccommodation.isPresent()) {
            Guest sender = optionalGuest.get();
@@ -96,7 +101,9 @@ public class AccommodationReviewService {
 
            //if (hasAcceptedReservation(accommodation.getId())) {
                if (isWithinSevenDaysFromEnd(reviewDTO.getAccommodationId() )) {
-                   AccommodationReview review = new AccommodationReview(accommodation, sender, reviewDTO.getRating(),
+                   int ratingValue = (reviewDTO.getRating() != null && reviewDTO.getRating() != 0) ? reviewDTO.getRating() : -1;
+
+                   AccommodationReview review = new AccommodationReview(accommodation, sender, ratingValue,
                            reviewDTO.getComment(), ReviewStatus.PENDING, LocalDateTime.now());
                    return accommodationReviewRepository.save(review);
                } else {
@@ -177,11 +184,15 @@ public class AccommodationReviewService {
 
         if (!reviews.isEmpty()) {
             double totalRating = 0;
+            int size=0;
             for (AccommodationReview review : reviews) {
+                if (review.getRating() != -1) {
                 totalRating += review.getRating();
+                size++;
+                }
             }
 
-            return totalRating / reviews.size();
+            return totalRating / size;
         } else {
             return null;
         }
@@ -189,6 +200,24 @@ public class AccommodationReviewService {
 
     public void delete(AccommodationReview review) {
         accommodationReviewRepository.delete(review);
+    }
+
+    public void sendNotificationForAccommodationReview(AccommodationReview updatedAccommodationReview) {
+        Owner owner = (Owner) userRepository.findByUsername(updatedAccommodationReview.getAccommodation().getOwner().getUsername());
+        for (NotificationType notWantedType : owner.getNotWantedNotificationTypes()){
+            if (notWantedType.equals(NotificationType.ACCOMMODATION_REVIEWED)){
+                return;
+            }
+        }
+
+        NotificationAccommodationReviewed notification = new NotificationAccommodationReviewed();
+        notification.setAccommodationReviewId(updatedAccommodationReview.getId());
+        notification.setSender(updatedAccommodationReview.getUser());
+        notification.setReceiver(updatedAccommodationReview.getAccommodation().getOwner());
+        notification.setSentAt(LocalDateTime.now());
+        notification.setSeen(false);
+        notification.setType(NotificationType.ACCOMMODATION_REVIEWED);
+        notificationService.saveAccommodationsReviewed(notification);
     }
 
 }

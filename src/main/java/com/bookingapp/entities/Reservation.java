@@ -1,6 +1,8 @@
 package com.bookingapp.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,9 +18,11 @@ public class Reservation {
     @GeneratedValue
     private Long id;
 
+    @NotEmpty
     @OneToMany
     private Set<Availability> availability;
 
+    @NotNull
     @ManyToOne
     private Accommodation accommodation;
 

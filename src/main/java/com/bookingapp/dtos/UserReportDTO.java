@@ -1,6 +1,9 @@
 package com.bookingapp.dtos;
 
 import com.bookingapp.entities.UserReport;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,16 +13,17 @@ import java.time.LocalDateTime;
 @Setter
 public class UserReportDTO {
 
+    @NotNull
     private Long id;
-
+    @NotNull
     private Long reportingUserId;
-
+    @NotNull
     private Long reportedUserId;
-
+    @Min(value = 0)
     private Integer reportedUserNumberOfReports;
-
+    @NotEmpty
     private String description;
-
+    @NotNull
     private LocalDateTime sentAt;
 
     public UserReportDTO(UserReport report) {

@@ -8,6 +8,7 @@ import com.bookingapp.enums.AccommodationType;
 import com.bookingapp.repositories.ImagesRepository;
 import com.bookingapp.services.AccommodationService;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,27 +20,28 @@ import java.time.LocalDateTime;
 @Setter
 public class AccommodationReportDTO {
 
-    private ImagesRepository imagesRepository = new ImagesRepository();
-
+    @Size(min = 5, max = 100)
     private String accommodationName;
-
+    @NotNull
     private AccommodationType type;
-
+    @NotEmpty
     protected String imageType;
-
+    @NotEmpty
     protected String imageBytes;
-
+    @Min(value = -1)
+    @Max(value = 5)
     private Double rating;
-
+    @Min(value = 1)
     private Integer minNumberOfGuests;
-
+    @Min(value = 1)
     private Integer maxNumberOfGuests;
-
+    @Min(value = 1)
     private Double pricePerNight;
-
+    @Min(value = 0)
     private int numberOfReservations;
-
+    @Min(value = 0)
     private double totalProfit;
+
     public AccommodationReportDTO() {
     }
 
@@ -52,7 +54,7 @@ public class AccommodationReportDTO {
         this.pricePerNight = accommodation.getPricePerNight();
         this.numberOfReservations = numberOfReservations;
         this.totalProfit = totalProfit;
-
+        ImagesRepository imagesRepository = new ImagesRepository();
         String accommodationImagePath = accommodationService.findAccommodationImageName(accommodation.getId());
         try {
             String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
@@ -61,6 +63,5 @@ public class AccommodationReportDTO {
         } catch (IOException ignored) { }
 
     }
-
 
 }

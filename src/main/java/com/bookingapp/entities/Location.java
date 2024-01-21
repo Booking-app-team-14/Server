@@ -3,6 +3,7 @@ package com.bookingapp.entities;
 
 import com.bookingapp.dtos.LocationDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,12 +17,15 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     @Column(nullable=false)
     private String country;
 
+    @NotEmpty
     @Column(nullable=false)
     private String city;
 
+    @NotEmpty
     @Column(nullable=false)
     private String address;
 
@@ -36,4 +40,5 @@ public class Location {
         this.city=city;
         this.address=address;
     }
+
 }
