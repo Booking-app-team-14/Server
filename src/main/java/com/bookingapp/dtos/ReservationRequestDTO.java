@@ -51,21 +51,32 @@ public class ReservationRequestDTO {
     private String imageType; // accommodation main picture type (jpg, png, etc.)
     private String mainPictureBytes;
 
-    public ReservationRequestDTO(Long guestId,Long accommodationId,double totalPrice, LocalDate startDate, LocalDate endDate, int numberOfGuests, RequestStatus status){
+    public ReservationRequestDTO(Long guestId,Long accommodationId, double totalPrice, LocalDate startDate, LocalDate endDate, int numberOfGuests, String ownerUsername){
         this.guestId = guestId;
         this.accommodationId = accommodationId;
         this.totalPrice = totalPrice;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numberOfGuests = numberOfGuests;
-        this.requestStatus = status;
+
+        this.id = -1L;
+        this.requestStatus = RequestStatus.SENT;
+        this.name = "AAAAAAAAAA";
+        this.type = "AAAAAAAAAA";
+        this.userImageType = "AAAAAAAAAA";
+        this.userProfilePictureBytes = "AAAAAAAAAA";
+        this.userUsername = ownerUsername;
+        this.dateRequested = "AAAAAAAAAA";
+        this.stars = -1;
+        this.imageType = "AAAAAAAAAA";
+        this.mainPictureBytes = "AAAAAAAAAA";
     }
 
     public ReservationRequestDTO() {
 
     }
 
-    public ReservationRequestDTO(ReservationRequest r, UserAccountService userAccountService, AccommodationService accommodationService) {
+    public ReservationRequestDTO(ReservationRequest r) {
         this.id = r.getId();
         this.guestId = r.getUserId();
         this.accommodationId = r.getAccommodationId();
@@ -79,16 +90,6 @@ public class ReservationRequestDTO {
         this.type = r.getType();
         this.userUsername =r.getUserUsername();
         this.stars = r.getStars();
-
-        String accommodationImagePath = accommodationService.findAccommodationImageName(this.accommodationId);
-        ImagesRepository imagesRepository = new ImagesRepository();
-        try {
-            this.mainPictureBytes = imagesRepository.getImageBytes(accommodationImagePath);
-            this.imageType = imagesRepository.getImageType(this.mainPictureBytes);
-
-            this.userProfilePictureBytes = userAccountService.getUserImage(this.guestId);
-            this.userImageType = imagesRepository.getImageType(this.userProfilePictureBytes);
-        } catch (IOException ignored) { }
     }
 
 }

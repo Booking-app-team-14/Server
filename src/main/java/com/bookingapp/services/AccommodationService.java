@@ -460,7 +460,6 @@ public class AccommodationService {
         Reservation reservation = new Reservation();
         if (accommodationOptional.isPresent()) {
             Accommodation accommodation = accommodationOptional.get();
-            reservation.setAccommodation(accommodation);
             Set<Availability> accommodationAvailabilities = new HashSet<>(accommodation.getAvailability());
             for (Availability availability : accommodationAvailabilities) {
                 if (availability.getStartDate().isEqual(startDate) && availability.getEndDate().isEqual(endDate)) {
@@ -539,6 +538,10 @@ public class AccommodationService {
                 }
             }
             accommodationRepository.save(accommodation);
+            reservation.setAccommodation(accommodation);
+        }
+        else{
+            return null;
         }
         return reservation;
     }

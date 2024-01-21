@@ -38,9 +38,14 @@ public class ReservationRequestController {
     @PostMapping(value = "/requests", name = "guest makes a reservation request")
     public ResponseEntity<Long> createReservationRequest(@RequestBody ReservationRequestDTO requestDTO) {
         ReservationRequest request = new ReservationRequest(requestDTO);
-        requestService.createRequest(request);
+        try {
+            requestService.createRequest(request);
+        }
+        catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         Optional<Accommodation> acc = accommodationService.getAccommodationById(request.getAccommodationId());
-        if (acc.isPresent() && acc.get().isAutomatic()){
+        if (acc.isPresent() && acc.get().isAutomatic()) {
             this.approveReservationRequest(request.getId());
         }
 
@@ -58,8 +63,8 @@ public class ReservationRequestController {
         }
         List<ReservationRequestDTO> result = new ArrayList<>();
 
-        for (ReservationRequest request: requests ){
-            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        for (ReservationRequest request : requests) {
+            result.add(new ReservationRequestDTO(request));
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -73,15 +78,15 @@ public class ReservationRequestController {
 
         List<ReservationRequestDTO> result = new ArrayList<>();
 
-        for (ReservationRequest request: requests ){
-            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        for (ReservationRequest request : requests) {
+            result.add(new ReservationRequestDTO(request));
         }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
-    @PutMapping(value="/requests/{Id}",name="updates the status of the request")
+    @PutMapping(value = "/requests/{Id}", name = "updates the status of the request")
     public ResponseEntity<ReservationRequestDTO> updateReservationRequest(@PathVariable Long requestId/* @RequestBody RequestDTO updatedRequest*/) {
         return new ResponseEntity<>(new ReservationRequestDTO(), HttpStatus.OK);
     }
@@ -104,11 +109,12 @@ public class ReservationRequestController {
     }
 
     @PutMapping(value = "/requests/approve/{id}", name = "owner approves a reservation request")
-    public ResponseEntity<String> approveReservationRequest(@PathVariable Long id) {
+    public ResponseEntity<ReservationRequestDTO> approveReservationRequest(@PathVariable Long id) {
         Optional<ReservationRequest> reservationOptional = requestService.findById(id);
+        ReservationRequest reservationRequest = null;
 
         if (reservationOptional.isPresent()) {
-            ReservationRequest reservationRequest = reservationOptional.get();
+            reservationRequest = reservationOptional.get();
 
             reservationRequest.setRequestStatus(RequestStatus.ACCEPTED);
             requestService.save(reservationRequest);
@@ -124,13 +130,10 @@ public class ReservationRequestController {
             Owner owner = (Owner) userAccountService.findByUsername(accommodation.getOwner().getUsername());
             owner.getReservations().add(reservationRequest);
             userAccountService.save(owner);
-
-            requestService.sendNotificationForReservationForGuest(reservationRequest, true);
-
         } else {
-            return new ResponseEntity<>("Reservation request not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Reservation request approved", HttpStatus.OK);
+        return new ResponseEntity<>(new ReservationRequestDTO(reservationRequest), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/requests/{id}")
@@ -146,7 +149,7 @@ public class ReservationRequestController {
                 requestService.delete(reservationRequest);
                 userAccountService.increaseNumberOfCancellations(reservationRequest.getUserId());
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
-            } else if (reservationRequest.getRequestStatus().equals(RequestStatus.ACCEPTED)){
+            } else if (reservationRequest.getRequestStatus().equals(RequestStatus.ACCEPTED)) {
                 accommodationService.cancelReservation(reservationRequest);
 
                 Accommodation accommodation = accommodationService.findById(reservationRequest.getAccommodationId()).get();
@@ -173,20 +176,16 @@ public class ReservationRequestController {
     public ResponseEntity<List<ReservationRequestDTO>> getAllGuestHistoryReservations(@PathVariable Long Id) {
         List<ReservationRequestDTO> reservations = new ArrayList<ReservationRequestDTO>();
         return new ResponseEntity<>(reservations, HttpStatus.OK);
-//        List<Request> reservations = requestService.findAllRequestsByUsername(Id);
-//
-//        List<RequestDTO> requestsDTO = new ArrayList<>();
-//        for (Request r : reservations) {
-//            requestsDTO.add(new RequestDTO(r));
-//        }
-//
-//        return new ResponseEntity<>(requestsDTO, HttpStatus.OK);
-        }
-/*
-    public ResponseEntity<List<Request>> getRequestsByUserId(@PathVariable Long userId) {
-        List<Request> requests = requestService.getRequestsByUserId(userId);
-        return ResponseEntity.ok(requests);
     }
-    */
+
+    @GetMapping(value = "/requests/{id}", name = "gets a request by id")
+    public ResponseEntity<ReservationRequestDTO> getReservationRequestById(@PathVariable Long id) {
+        Optional<ReservationRequest> request = requestService.findById(id);
+        if (request.isPresent()) {
+            return new ResponseEntity<>(new ReservationRequestDTO(request.get()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

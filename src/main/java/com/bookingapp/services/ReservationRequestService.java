@@ -323,8 +323,6 @@ public  class ReservationRequestService {
         for (ReservationRequest r : overlappingRequests) {
             r.setRequestStatus(RequestStatus.DECLINED);
             this.save(r);
-
-            this.sendNotificationForReservationForGuest(reservationRequest, false);
         }
     }
 

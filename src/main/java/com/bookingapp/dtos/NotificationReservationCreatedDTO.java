@@ -20,7 +20,7 @@ public class NotificationReservationCreatedDTO extends NotificationDTO {
     public NotificationReservationCreatedDTO(NotificationReservationCreated notification, ReservationRequestService reservationRequestService) {
         super(notification);
         ReservationRequest reservationRequest = reservationRequestService.getReservationRequestById(notification.getReservationRequestId());
-        this.reservation = new ReservationRequestDTO(reservationRequest, reservationRequestService.getUserAccountService(), reservationRequestService.getAccommodationService());
+        this.reservation = new ReservationRequestDTO(reservationRequest);
     }
 
 }

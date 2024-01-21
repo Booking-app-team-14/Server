@@ -21,7 +21,7 @@ public class NotificationReservationCancelledDTO extends NotificationDTO {
     public NotificationReservationCancelledDTO(NotificationReservationCancelled notification, ReservationRequestService reservationRequestService) {
         super(notification);
         ReservationRequest reservationRequest = reservationRequestService.getReservationRequestById(notification.getReservationRequestId());
-        this.reservation = new ReservationRequestDTO(reservationRequest, reservationRequestService.getUserAccountService(), reservationRequestService.getAccommodationService());
+        this.reservation = new ReservationRequestDTO(reservationRequest);
     }
 
 }
