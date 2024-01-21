@@ -2,6 +2,9 @@ package com.bookingapp.entities;
 
 import com.bookingapp.enums.ReviewStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,19 +19,25 @@ public class OwnerReview {
     @Id
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @NotNull
+    @OneToOne
     private UserAccount user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @NotNull
+    @OneToOne
     private UserAccount owner;
 
+    @Min(value = -1)
     private Integer rating;
 
+    @NotEmpty
     private String comment;
 
+    @NotNull
     @Column(nullable = false)
     private ReviewStatus status;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime sentAt;
 

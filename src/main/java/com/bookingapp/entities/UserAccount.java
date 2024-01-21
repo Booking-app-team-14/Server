@@ -1,71 +1,141 @@
 package com.bookingapp.entities;
 
+import com.bookingapp.dtos.UserDTO;
+import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
 @Entity
-public class UserAccount {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class UserAccount implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    protected Long Id;
 
-    @NotBlank
+    @Size(min = 5, max = 100)
     @Email
     @Column(nullable = false, unique = true)
-    private String username;
+    protected String username;
 
-    @NotBlank
     @Size(min = 8)
     @Column(nullable = false)
-    private String password;
+    protected String password;
 
-    @NotBlank
+    @Size(min = 1, max = 50)
     @Column(nullable = false)
-    private String firstName;
+    protected String firstName;
 
-    @NotBlank
+    @Size(min = 1, max = 50)
     @Column(nullable = false)
-    private String lastName;
+    protected String lastName;
 
-    @NotBlank
+    @NotEmpty
     @Column(nullable = false)
-    private String address;
+    protected String address;
 
-    @NotBlank
-    @Pattern(regexp = "\\d{10}")
     @Column(nullable = false)
-    private String phoneNumber;
+    protected String profilePicturePath;
 
+    @NotEmpty
+    @Pattern(regexp = "^\\+\\d{1,2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{4}$")
+    @Column(nullable = false)
+    protected String phoneNumber;
+
+    @Column(name = "last_password_reset_date")
+    private Timestamp lastPasswordResetDate;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    protected Role role;
 
     @Column(nullable = false)
-    private boolean isBlocked;
+    protected boolean isBlocked;
 
-    @Column(nullable = false)
-    private String imagePath;
+    @Column(name = "verified", nullable = false, columnDefinition = "boolean default false")
+    private boolean verified;
 
+    @Min(value = 0)
     @Column(nullable = false)
-    private int numberOfReports;
+    protected int numberOfReports;
+
+    @Enumerated(EnumType.STRING)
+    private Set<NotificationType> notWantedNotificationTypes;
+
     public UserAccount() {
 
     }
 
-    public UserAccount(Long id, String username, String imagePath, Integer numberOfReports, Boolean blocked) {
-        this.userId = id;
+    public UserAccount(Long id, String username, String password, String firstName, String lastName, String address, String phoneNumber, Role role, boolean isBlocked, boolean verified, int numberOfReports, String profilePicturePath) {
+        this.Id = id;
         this.username = username;
-        this.imagePath = imagePath;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.isBlocked = isBlocked;
+        this.verified=verified;
         this.numberOfReports = numberOfReports;
-        this.isBlocked = blocked;
+        this.profilePicturePath = profilePicturePath;
     }
+
+    public UserAccount(UserDTO dto){
+        this.username = dto.getUsername();
+        this.password = dto.getPassword();
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.address = dto.getAddress();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.role = dto.getRole();
+        this.isBlocked = dto.isBlocked();
+        this.verified=dto.isVerified();
+        this.numberOfReports = dto.getNumberOfReports();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

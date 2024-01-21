@@ -1,58 +1,47 @@
 package com.bookingapp.controllers;
 
-import com.bookingapp.entities.Notification;
+import com.bookingapp.dtos.NotificationDTO;
+import com.bookingapp.services.AccommodationReviewService;
 import com.bookingapp.services.NotificationService;
+import com.bookingapp.services.ReservationRequestService;
+import com.bookingapp.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
-@RequestMapping("/notifications")
+import java.util.List;
+
+@Controller
+@RequestMapping("/api/notifications")
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    private ReservationRequestService reservationRequestService;
+
+    @Autowired
+    private AccommodationReviewService accommodationReviewService;
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @GetMapping(value = "/{userId}/{setSeen}", name = "user gets all his wanted notifications")
+    public ResponseEntity<List<NotificationDTO>> getAllWantedNotificationsForUser(@PathVariable Long userId, @PathVariable Boolean setSeen) {
+        List<NotificationDTO> notificationDTOS = notificationService.getAllWantedNotificationsForUser(userId, setSeen, reservationRequestService, accommodationReviewService, reviewService);
+        return new ResponseEntity<>(notificationDTOS, HttpStatus.OK);
     }
 
-
-    @PostMapping("/create")
-    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
-        Notification createdNotification = notificationService.createNotification(notification);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdNotification);
-    }
-
-    @GetMapping("/{notificationId}")
-    public ResponseEntity<Notification> getNotificationById(@PathVariable Long notificationId) {
-        Notification notification = notificationService.getNotificationById(notificationId);
-        if (notification != null) {
-            return ResponseEntity.ok(notification);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PutMapping("/{notificationId}/update")
-    public ResponseEntity<Notification> updateNotification(@PathVariable Long notificationId, @RequestBody Notification updatedNotification) {
-        Notification notification = notificationService.updateNotification(notificationId, updatedNotification);
-        if (notification != null) {
-            return ResponseEntity.ok(notification);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    @DeleteMapping("/{notificationId}/delete")
+    @DeleteMapping(value = "/{notificationId}", name = "user deletes notification")
     public ResponseEntity<Void> deleteNotification(@PathVariable Long notificationId) {
-        boolean deleted = notificationService.deleteNotification(notificationId);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        notificationService.deleteNotification(notificationId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }

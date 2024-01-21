@@ -1,63 +1,121 @@
 package com.bookingapp.controllers;
-
+import com.bookingapp.dtos.AccommodationDTO;
 import com.bookingapp.dtos.AccommodationReportDTO;
+import com.bookingapp.dtos.MonthlyAccommodationReportDTO;
+import com.bookingapp.entities.*;
+import com.bookingapp.enums.RequestStatus;
+import com.bookingapp.enums.Role;
 import com.bookingapp.services.AccommodationReportService;
+import com.bookingapp.services.AccommodationService;
+import com.bookingapp.services.ReservationRequestService;
+import com.bookingapp.services.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/accommodation-reports")
 public class AccommodationReportController {
 
-    private final AccommodationReportService reportService;
+    @Autowired
+    private AccommodationService accommodationService;
 
     @Autowired
-    public AccommodationReportController(AccommodationReportService reportService) {
-        this.reportService = reportService;
-    }
+    private UserAccountService userAccountService;
 
-    // CREATE
-    @PostMapping
-    public ResponseEntity<AccommodationReportDTO> createReport(@RequestBody AccommodationReportDTO reportDTO) {
-        AccommodationReportDTO createdReport = reportService.createReport(reportDTO);
-        return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
-    }
+    @Autowired
+    private ReservationRequestService reservationRequestService;
 
-    // READ
-    @GetMapping
-    public ResponseEntity<List<AccommodationReportDTO>> getAllReports() {
-        List<AccommodationReportDTO> reports = reportService.getAllReports();
-        return new ResponseEntity<>(reports, HttpStatus.OK);
-    }
+    @GetMapping(value = "/{ownerId}")
+    public ResponseEntity<List<AccommodationReportDTO>> getAllAccommodationReports(
+            @PathVariable Long ownerId,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AccommodationReportDTO> getReportById(@PathVariable Long id) {
-        Optional<AccommodationReportDTO> report = Optional.ofNullable(reportService.getReportById(id));
-        return report.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
+        UserAccount userAccount = userAccountService.getUserById(ownerId);
 
-    // UPDATE
-    @PutMapping("/{id}")
-    public ResponseEntity<AccommodationReportDTO> updateReport(@PathVariable Long id, @RequestBody AccommodationReportDTO reportDTO) {
-        Optional<AccommodationReportDTO> updatedReport = Optional.ofNullable(reportService.updateReport(id, reportDTO));
-        return updatedReport.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    // DELETE
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
-        if (reportService.deleteReport(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (userAccount.getRole() != Role.OWNER) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        Owner owner = (Owner) userAccount;
+
+        List<Accommodation> accommodations = accommodationService.findAllByPricePerNightAsc().stream().filter(accommodation -> Objects.equals(accommodation.getOwner().getId(), ownerId)).toList();
+        List<ReservationRequest> reservationRequests= reservationRequestService.findAll().stream().filter(reservationRequest -> reservationRequest.getUserUsername().equals(owner.getUsername())).toList();
+
+        List<AccommodationReportDTO> accDTOList = new ArrayList<>();
+
+        for (Accommodation accommodation : accommodations) {
+            int numberOfReservations = getNumberOfReservations(accommodation, reservationRequests, startDate, endDate);
+            double totalProfit = getTotalProfit(accommodation, reservationRequests, startDate, endDate);
+
+            accDTOList.add(new AccommodationReportDTO(accommodation, numberOfReservations, totalProfit, accommodationService));
+        }
+
+        return new ResponseEntity<>(accDTOList, HttpStatus.OK);
     }
+
+    private int getNumberOfReservations(Accommodation accommodation, List<ReservationRequest> reservationRequests, LocalDate startDate, LocalDate endDate) {
+        return (int) reservationRequests.stream()
+                .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
+                .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
+                .filter(this::isReservationFinal)
+                .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
+                .count();
+    }
+
+    private double getTotalProfit(Accommodation accommodation, List<ReservationRequest> reservationRequests, LocalDate startDate, LocalDate endDate) {
+        return reservationRequests.stream()
+                .filter(request -> request.getAccommodationId().equals(accommodation.getId()))
+                .filter(request -> isReservationWithinDateRange(request, startDate, endDate))
+                .filter(this::isReservationFinal)
+                .filter(request -> request.getRequestStatus() == RequestStatus.ACCEPTED)
+                .mapToDouble(ReservationRequest::getTotalPrice)
+                .sum();
+    }
+
+    private boolean isReservationWithinDateRange(ReservationRequest request, LocalDate startDate, LocalDate endDate) {
+        return (request.getStartDate().isBefore(endDate) || request.getStartDate().isEqual(endDate))
+                && (request.getEndDate().isAfter(startDate) || request.getEndDate().isEqual(startDate));
+    }
+
+
+    private boolean isReservationFinal(ReservationRequest reservation) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = reservation.getStartDate();
+
+
+        return today.isAfter(startDate);
+    }
+    @GetMapping(value = "/{accommodationId}/monthly-report")
+    public ResponseEntity<Map<String, MonthlyAccommodationReportDTO>> getMonthlyAccommodationReport(
+            @PathVariable Long accommodationId,
+            @RequestParam int year) {
+
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
+
+        List<ReservationRequest> reservationRequests = reservationRequestService.findAllByAccommodationAndYear(accommodation.get(), year);
+
+        Map<String, MonthlyAccommodationReportDTO> monthlyReportMap = new LinkedHashMap<>();
+
+        for (int month = 1; month <= 12; month++) {
+            LocalDate startDate = LocalDate.of(year, month, 1);
+            LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+            int numberOfReservations = getNumberOfReservations(accommodation.get(), reservationRequests, startDate, endDate);
+            double totalProfit = getTotalProfit(accommodation.get(), reservationRequests, startDate, endDate);
+
+            MonthlyAccommodationReportDTO monthlyReportDTO = new MonthlyAccommodationReportDTO(startDate.getMonth().toString(), numberOfReservations, totalProfit);
+            monthlyReportMap.put(startDate.getMonth().toString(), monthlyReportDTO);
+        }
+
+        return new ResponseEntity<>(monthlyReportMap, HttpStatus.OK);
+    }
+
+
+
 }

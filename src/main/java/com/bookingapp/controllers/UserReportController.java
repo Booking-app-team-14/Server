@@ -1,12 +1,19 @@
 package com.bookingapp.controllers;
 
 import com.bookingapp.dtos.UserReportDTO;
+import com.bookingapp.entities.Guest;
 import com.bookingapp.entities.UserAccount;
 import com.bookingapp.entities.UserReport;
+import com.bookingapp.enums.NotificationType;
+import com.bookingapp.repositories.UserReportRepository;
 import com.bookingapp.services.UserReportService;
 import com.bookingapp.services.UserAccountService;
+import com.bookingapp.enums.Role;
+import com.bookingapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -14,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/userReports")
+@RequestMapping(value = "/api/userReports")
 public class UserReportController {
 
     @Autowired
@@ -23,6 +30,14 @@ public class UserReportController {
     @Autowired
     private UserAccountService userAccountService;
 
+    @Autowired
+    private ReservationRequestService reservationRequestService;
+
+    @Autowired
+    private AccommodationService accommodationService;
+
+    @Autowired
+    private UserReportRepository userReportRepository;
     @GetMapping
     public ResponseEntity<List<UserReportDTO>> getUserReports(){
             List<UserReport> userReports = userReportService.findAll();
@@ -37,53 +52,83 @@ public class UserReportController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserReportDTO> getUserReport(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
 
-        if (userReport == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(new UserReportDTO(), HttpStatus.OK);
 
-        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.OK);
+//        UserReport userReport = userReportService.findOne(id);
+//
+//        if (userReport == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteUserReport(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<String> updateReportedUser(@PathVariable Long id) {
 
-        if (userReport != null) {
-            userReportService.remove(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>("User Blocked", HttpStatus.OK);
+
+//        UserReport userReport = userReportService.findOne(id);
+//
+//        if (userReport == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        UserAccount reportedUser = userReport.getReportedUser();
+//        reportedUser.setBlocked(true);
+//        userAccountService.save(reportedUser);
+//
+//        deleteUserReport(id);
+//        return new ResponseEntity<>("User Blocked", HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/reportedUser")
-    public ResponseEntity<Void> updateReportedUser(@PathVariable Long id) {
-        UserReport userReport = userReportService.findOne(id);
 
-        if (userReport == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    ///api/userReports/report
+    @PostMapping("/report")
+    public ResponseEntity<UserReport> saveUserReport(@RequestBody UserReportDTO userReportDTO) {
+        UserReport userReport = userReportService.submitUserReport(userReportDTO);
+        return new ResponseEntity<>(userReport, HttpStatus.CREATED);
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserReport(@PathVariable Long id) {
+        userReportService.deleteUserReport(id);
+        return new ResponseEntity<>("Deleted", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/block-user/{reportId}", name = "admin blocks a user")
+    public ResponseEntity<String> blockUser(@PathVariable Long reportId) {
+        UserReport userReport = userReportService.findOne(reportId);
         UserAccount reportedUser = userReport.getReportedUser();
         reportedUser.setBlocked(true);
+
+        if (reportedUser.getRole() == Role.GUEST) {
+            reservationRequestService.cancelAllReservationsForGuest(reportedUser.getId());
+        }
+        else if (reportedUser.getRole() == Role.OWNER) {
+            reservationRequestService.cancelAllReservationsForOwner(reportedUser.getUsername());
+            accommodationService.setApprovedToFalseForAllOwnersApartments(reportedUser.getId());
+        }
+
+        reportedUser.getNotWantedNotificationTypes().add(NotificationType.RESERVATION_REQUEST_RESPONSE);
         userAccountService.save(reportedUser);
-
-        deleteUserReport(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        deleteUserReport(reportId);
+        return new ResponseEntity<>("User Blocked", HttpStatus.OK);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<UserReportDTO> saveUserReport(@RequestBody UserReportDTO userReportDTO) {
-        UserReport userReport = new UserReport();
-        userReport.setReportingUser(userAccountService.getUserById(userReportDTO.getReportingUserId()));
-        userReport.setReportedUser(userAccountService.getUserById(userReportDTO.getReportedUserId()));
-        userReport.setDescription(userReportDTO.getDescription());
-        userReport.setSentAt(userReportDTO.getSentAt());
 
-        userReport = userReportService.save(userReport);
-        return new ResponseEntity<>(new UserReportDTO(userReport), HttpStatus.CREATED);
+    @GetMapping("/isReported/{userId}")
+    public ResponseEntity<Boolean> isUserReported(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserAccount) {
+            UserAccount reportingUser = (UserAccount) authentication.getPrincipal();
+            UserAccount reportedUser = userAccountService.getUserById(userId);
+
+            boolean isReported = userReportRepository.existsByReportingUserAndReportedUser(reportingUser, reportedUser);
+            return ResponseEntity.ok(isReported);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
     }
-
 }

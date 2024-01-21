@@ -1,5 +1,7 @@
 package com.bookingapp.entities;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,15 +17,19 @@ public class UserReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserAccount reportingUser;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     private UserAccount reportedUser;
 
+    @NotEmpty
     @Column(nullable = false)
     private String description;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
@@ -31,11 +37,11 @@ public class UserReport {
 
     }
 
-    public UserReport(UserAccount reportingUser, UserAccount reportedUser, String description, LocalDateTime sentAt) {
+    public UserReport(UserAccount reportingUser, UserAccount reportedUser, String description) {
     	this.reportingUser = reportingUser;
     	this.reportedUser = reportedUser;
     	this.description = description;
-    	this.sentAt = sentAt;
+    	this.sentAt = LocalDateTime.now();
     }
 
 }

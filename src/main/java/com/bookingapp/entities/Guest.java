@@ -1,12 +1,15 @@
 package com.bookingapp.entities;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.bookingapp.dtos.GuestDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -14,17 +17,44 @@ import java.util.Set;
 @Entity
 public class Guest extends UserAccount {
 
-
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
+    @NotNull
+    @ManyToMany
+    @JoinTable(
+            name = "guest_favourite_accommodations",
+            joinColumns = @JoinColumn(name = "guest_id"),
+            inverseJoinColumns = @JoinColumn(name = "favourite_accommodations_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"guest_id", "favourite_accommodations_id"})
+    )
     private Set<Accommodation> favouriteAccommodations;
 
-    @Column(nullable = false)
+    @Min(value = 0)
     private int numberOfCancellations;
 
+    @NotNull
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     private Set<Accommodation> history;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private Set<Review> reviewsSent;
 
     public Guest() {
 
     }
+
+    public Guest(GuestDTO guestDTO) {
+        this.username = guestDTO.getUsername();
+        this.password = guestDTO.getPassword();
+        this.address = guestDTO.getAddress();
+        this.firstName = guestDTO.getFirstName();
+        this.lastName = guestDTO.getLastName();
+        this.role = guestDTO.getRole();
+        this.phoneNumber = guestDTO.getPhoneNumber();
+        this.isBlocked = guestDTO.isBlocked();
+        this.numberOfReports = guestDTO.getNumberOfReports();
+        this.numberOfCancellations = guestDTO.getNumberOfCancellations();
+        this.favouriteAccommodations = new HashSet<Accommodation>();
+        this.history = new HashSet<Accommodation>();
+    }
+
 }

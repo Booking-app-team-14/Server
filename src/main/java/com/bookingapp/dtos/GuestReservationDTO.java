@@ -1,8 +1,7 @@
 package com.bookingapp.dtos;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,30 +9,23 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
-@Entity
 
 public class GuestReservationDTO {
 
-    @Id
-    private Long id;
-    @Column(nullable = false)
+    @NotNull
     private Long reservationId;
-    @Column(nullable = false)
+    @NotNull
     private Long accommodationId;
-    @Column(nullable = false)
+    @NotNull
     private LocalDate startDate;
-    @Column(nullable = false)
+    @NotNull
     private LocalDate endDate;
 
-    public GuestReservationDTO(Long id, Long reservationId, Long accommodationId, LocalDate startDate, LocalDate endDate){
-        this.id = id;
+    public GuestReservationDTO(Long reservationId, Long accommodationId, LocalDate startDate, LocalDate endDate){
         this.reservationId = reservationId;
         this.accommodationId = accommodationId;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public GuestReservationDTO() {
-
-    }
 }
