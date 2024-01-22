@@ -145,7 +145,7 @@ public class ReservationRequestControllerIntegrationTest {
         requestDTO.setUserUsername("mniko");
         requestDTO.setId(10L);
 
-        // Mock behavior when accommodation is not found
+
         when(accommodationRepository.findById(2L)).thenReturn(Optional.empty());
 
 
@@ -153,11 +153,11 @@ public class ReservationRequestControllerIntegrationTest {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // Perform the test
+
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/requests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest())  // Assuming you handle this case with a bad request status
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
         int statusCode = result.getResponse().getStatus();
