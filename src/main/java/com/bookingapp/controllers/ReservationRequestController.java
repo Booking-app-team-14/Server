@@ -39,17 +39,19 @@ public class ReservationRequestController {
     public ResponseEntity<Long> createReservationRequest(@RequestBody ReservationRequestDTO requestDTO) {
         ReservationRequest request = new ReservationRequest(requestDTO);
         try {
+            Optional<Accommodation> acc = accommodationService.getAccommodationById(request.getAccommodationId());
+            if (acc.isEmpty()) {
+                throw new IllegalArgumentException("Accommodation not found");
+            }
             requestService.createRequest(request);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+
         Optional<Accommodation> acc = accommodationService.getAccommodationById(request.getAccommodationId());
         if (acc.isPresent() && acc.get().isAutomatic()) {
             this.approveReservationRequest(request.getId());
         }
-
-        requestService.sendNotificationForReservation(request, NotificationType.RESERVATION_REQUEST_CREATED);
 
         return new ResponseEntity<>(request.getId(), HttpStatus.CREATED);
     }
