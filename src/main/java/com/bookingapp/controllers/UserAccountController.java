@@ -49,6 +49,21 @@ public class UserAccountController {
     @Autowired
     private ReservationRequestService reservationRequestService;
 
+    @GetMapping(value = "/users/{id}/usernameAndNumberOfCancellations", produces = "text/plain")
+    public ResponseEntity<String> getUsernameAndNumberOfCancellations(@PathVariable Long id) {
+        UserAccount userAccount = userAccountService.getUserById(id);
+        if (userAccount == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        if (userAccount.getRole() == Role.GUEST) {
+            Guest guest = (Guest) userAccount;
+            String username = userAccount.getUsername();
+            int numberOfCancellations = guest.getNumberOfCancellations();
+            return new ResponseEntity<>(username + " | " + String.valueOf(numberOfCancellations), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+    }
+
     @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
     public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) throws MessagingException, UnsupportedEncodingException {
         UserAccount user = switch (role) {
