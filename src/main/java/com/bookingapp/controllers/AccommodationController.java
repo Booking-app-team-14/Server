@@ -44,15 +44,14 @@ public class AccommodationController {
     @Autowired
     private LocationRepository locationRepository;
 
-    @GetMapping(value = "accommodations/{id}/nameType", produces = "text/plain")
+    @GetMapping(value = "accommodations/{id}/cancellationDeadline", produces = "text/plain")
     public ResponseEntity<String>  getAccommodationNameAndType(@PathVariable Long id) {
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
         if (accommodation.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        String name = accommodation.get().getName();
-        String type = accommodation.get().getType().toString();
-        return new ResponseEntity<>(name + " | " + type, HttpStatus.OK);
+        String deadline = String.valueOf(accommodation.get().getCancellationDeadline());
+        return new ResponseEntity<>(deadline, HttpStatus.OK);
     }
 
     @GetMapping(value = "accommodations/{id}")
