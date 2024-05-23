@@ -76,6 +76,28 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation.get().getName() + " | " + type, HttpStatus.OK);
     }
 
+    @GetMapping(value = "accommodations/{id}/nameAndTypeAndBytes")
+    public ResponseEntity<String> getAccommodationNameAndTypeAndBytes(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        String type = accommodation.get().getType().toString();
+        if (type.equals("STUDIO")) {
+            type = "Studio";
+        } else if (type.equals("ROOM")) {
+            type = "Room";
+        } else if (type.equals("APARTMENT")) {
+            type = "Apartment";
+        } else if (type.equals("VILLA")) {
+            type = "Villa";
+        } else if (type.equals("HOTEL")) {
+            type = "Hotel";
+        }
+        String imageBytes = accommodationService.getAccommodationImage(id);
+        return new ResponseEntity<>(accommodation.get().getName() + " | " + type + " | " + imageBytes, HttpStatus.OK);
+    }
+
     @GetMapping(value = "accommodations/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
         Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
