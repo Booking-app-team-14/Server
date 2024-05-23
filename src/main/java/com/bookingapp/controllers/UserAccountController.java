@@ -149,6 +149,31 @@ public class UserAccountController {
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
 
+    @PutMapping(value = "/users/{id}/basicInfo", name = "user updates his basic info")
+    public ResponseEntity<String> updateUserBasicInfo(@PathVariable Long id, @RequestBody UserBasicInfoNoImageDTO userDTO) {
+        UserAccount user = userAccountService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setAddress(userDTO.getAddress());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        userAccountService.save(user);
+        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{id}/password", name = "user updates his password")
+    public ResponseEntity<String> updateUserPassword(@PathVariable Long id, @RequestBody String password) {
+        UserAccount user = userAccountService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        user.setPassword(passwordEncoder.encode(password));
+        userAccountService.save(user);
+        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
+    }
+
     @PutMapping(value = "/guest/{id}", name = "guest cancels his reservations")
     public ResponseEntity<String> updateGuestAccount(@PathVariable Long id) {
         boolean ok = userAccountService.increaseNumberOfCancellations(id);
@@ -176,6 +201,17 @@ public class UserAccountController {
             Admin admin = (Admin) user;
             return new ResponseEntity<>(new AdminDTO(admin), HttpStatus.OK);
         }
+    }
+
+    @GetMapping(value = "/users/{id}/basicInfo")
+    public ResponseEntity<UserBasicInfoDTO> getUserBasicInfoById(@PathVariable Long id) {
+        UserAccount u = userAccountService.getUserById(id);
+        if (u == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        UserBasicInfoDTO user = new UserBasicInfoDTO(u);
+        user.setProfilePictureBytes(userAccountService.getUserImage(id));
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(value = "/users/owner/{userId}")
