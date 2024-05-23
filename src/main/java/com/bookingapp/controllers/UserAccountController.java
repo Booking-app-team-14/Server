@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -265,6 +266,17 @@ public class UserAccountController {
             return new ResponseEntity<>(-1D, HttpStatus.OK);
         }
         return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/owners/{id}/ratingString")
+    public ResponseEntity<String> getOwnerRatingString(@PathVariable Long id) {
+        Double rating = userAccountService.getOwnerRating(id);
+        if (rating == null) {
+            return new ResponseEntity<>("-1", HttpStatus.OK);
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedRating = decimalFormat.format(rating);
+        return new ResponseEntity<>(formattedRating, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/users/{Id}")

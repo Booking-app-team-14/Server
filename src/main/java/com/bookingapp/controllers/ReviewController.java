@@ -58,6 +58,28 @@ public class ReviewController {
         }
     }
 
+    ///api/reviews/owner/{ownerId}/average-rating
+    @GetMapping("/owner/{ownerId}/average-rating")
+    public ResponseEntity<String> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
+        Double averageRating = reviewService.getAverageRatingByOwnerId(ownerId);
+
+        if (averageRating != null) {
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            String formattedRating = decimalFormat.format(averageRating);
+
+            return new ResponseEntity<>(formattedRating, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/owner/requests", name = "admin gets all pending reviews for owners")
+    public ResponseEntity<List<ReviewDTO>> getAllPendingOwnerReviews() {
+        List<Review> reviews = reviewService.getAllPendingOwnerReviews();
+        List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
+        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+    }
+
     @PutMapping(value = "/admin/{reviewId}", name = "admin accepts the review")
     public ResponseEntity<Review> updateReviewById(@PathVariable Long reviewId) {
         Optional<Review> reviewToUpdate = reviewService.getReviewById(reviewId);
@@ -84,27 +106,7 @@ public class ReviewController {
         }
     }
 
-    ///api/reviews/owner/{ownerId}/average-rating
-    @GetMapping("/owner/{ownerId}/average-rating")
-    public ResponseEntity<String> getAverageRatingByOwnerId(@PathVariable Long ownerId) {
-        Double averageRating = reviewService.getAverageRatingByOwnerId(ownerId);
 
-        if (averageRating != null) {
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            String formattedRating = decimalFormat.format(averageRating);
-
-            return new ResponseEntity<>(formattedRating, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping(value = "/owner/requests", name = "admin gets all pending reviews for owners")
-    public ResponseEntity<List<ReviewDTO>> getAllPendingOwnerReviews() {
-        List<Review> reviews = reviewService.getAllPendingOwnerReviews();
-        List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
-        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
-    }
     ///api/reviews/report/{reviewId}
 
     @PutMapping("/report/{reviewId}")
