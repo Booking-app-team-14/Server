@@ -131,6 +131,14 @@ public class UserAccountController {
         return new ResponseEntity<>(userId, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/users/androidToken/{token}", name = "android get user id by bearer token")
+    public ResponseEntity<Long> getUserAccountByTokenAndroid(@PathVariable String token) {
+        Long userId = userAccountService.getUserIdByToken(token);
+        if (userId == null) {
+            return new ResponseEntity<>((long) -1, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userId, HttpStatus.OK);
+    }
 
     @PutMapping(value = "/users/{id}", name = "user updates his profile")
     public ResponseEntity<String> updateUserAccount(@PathVariable Long id, @RequestBody UserDTO userDTO) {

@@ -28,10 +28,10 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//import org.springframework.web.filter.CorsFilter;
+//import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -96,7 +96,7 @@ public class WebSecurityConfig {
 
         http
                 // Enable CORS
-                .cors(withDefaults())
+                //.cors(withDefaults())
                 //Disable CSRF
                 .csrf(AbstractHttpConfigurer::disable)
                 // Set session management to stateless
@@ -154,6 +154,20 @@ public class WebSecurityConfig {
                     auth.requestMatchers(antMatcher("/api/userReports/report")).hasAnyAuthority("GUEST","OWNER"  );
                     //auth.requestMatchers(antMatcher("/api/userReports/report")).hasAuthority("OWNER" );
                     auth.requestMatchers(antMatcher("/api/accommodations/accommodationReviews")).hasAuthority("GUEST");
+
+                            auth.requestMatchers(antMatcher("/api/role")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/nameType")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/nameAndType")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/users/{id}/usernameAndNumberOfCancellations")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/cancellationDeadline")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{accommodationId}/ratingString")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/reviews/owner/{ownerId}/average-rating")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/owners/{id}/ratingString")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/accommodations/{id}/nameAndTypeAndBytes")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/users/{id}/basicInfo")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/users/{id}/password")).permitAll();
+                            auth.requestMatchers(antMatcher("/api//users/androidToken/{token}")).permitAll();
+
 
                             auth.requestMatchers(antMatcher("/api/accommodations/{id}/hasAcceptedReservation/{ownerId}")).hasAuthority("GUEST");
                     auth.requestMatchers(antMatcher("/api/reviews/hasAcceptedReservationForOwner")).hasAuthority("GUEST");
@@ -233,15 +247,17 @@ public class WebSecurityConfig {
                         antMatcher(HttpMethod.GET, "/api/reviews/owner/{ownerId}/average-rating"));
 
     }
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200","http://192.168.1.4").allowedMethods("GET", "POST", "PUT", "DELETE").allowedHeaders("*");;
-            }
-        };
-    }
+
+    // disable CORS for Android app
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**").allowedOrigins("http://localhost:4200","http://192.168.1.4").allowedMethods("GET", "POST", "PUT", "DELETE").allowedHeaders("*");;
+//            }
+//        };
+//    }
 }
 
 
