@@ -190,6 +190,12 @@ public class AccommodationController {
         }
         Accommodation accommodation = accommodationOpt.get();
         accommodation.setApproved(false);
+        // sanitize image bytes sent from the Android app
+        // TODO: check if this works (or is it even necessary)
+        for (Image image : accommodationUpdateDTO.getImages()) {
+            image.setImageBytes(image.getImageBytes().replaceAll("[^A-Za-z0-9+/=]", ""));
+        }
+        //
         accommodationService.save(accommodation);
 //        accommodation = accommodationService.update(accommodation, accommodationUpdateDTO);
 

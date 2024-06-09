@@ -6,10 +6,7 @@ import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
-import com.bookingapp.services.AccommodationService;
-import com.bookingapp.services.ActivationService;
-import com.bookingapp.services.ReservationRequestService;
-import com.bookingapp.services.UserAccountService;
+import com.bookingapp.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -49,6 +46,22 @@ public class UserAccountController {
 
     @Autowired
     private ReservationRequestService reservationRequestService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @GetMapping(value = "/users/username/token/{token}", produces = "text/plain")
+    public ResponseEntity<String> getUsername(@PathVariable String token) {
+        Long userId = userAccountService.getUserIdByToken(token);
+        if (userId == null) {
+            return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        UserAccount userAccount = userAccountService.getUserById(userId);
+        if (userAccount == null) {
+            return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAccount.getUsername(), HttpStatus.OK);
+    }
 
     @GetMapping(value = "/users/{id}/usernameAndNumberOfCancellations", produces = "text/plain")
     public ResponseEntity<String> getUsernameAndNumberOfCancellations(@PathVariable Long id) {
@@ -259,7 +272,9 @@ public class UserAccountController {
 
     @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")
     public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody String imageBytes) {
-        boolean ok = userAccountService.uploadAvatarImage(id, imageBytes);
+        notificationService.sendNotification("admin@admin.com");
+        String sanitizedInput = imageBytes.replaceAll("[^A-Za-z0-9+/=]", "");
+        boolean ok = userAccountService.uploadAvatarImage(id, sanitizedInput);
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
@@ -267,7 +282,7 @@ public class UserAccountController {
         ImagesRepository imagesRepository = new ImagesRepository();
         String imageType = null;
         try {
-            imageType = imagesRepository.getImageType(imageBytes);
+            imageType = imagesRepository.getImageType(sanitizedInput);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
