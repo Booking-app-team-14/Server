@@ -155,6 +155,17 @@ public  class ReservationRequestService {
     public List<ReservationRequest> findByUsername(String username) {
         return  requestRepository.findByUsername(username);
     }
+
+    public List<ReservationRequest> findByOwnerId(Long id) {
+        String username = null;
+        try {
+            username = userAccountService.findById(id).getUsername();
+        } catch (AccessDeniedException e) {
+            return null;
+        }
+        return  requestRepository.findByUsername(username);
+    }
+
     public List<ReservationRequest> findAll(){
         return  requestRepository.findAll();
     }

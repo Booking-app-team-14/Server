@@ -272,7 +272,6 @@ public class UserAccountController {
 
     @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")
     public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody String imageBytes) {
-        notificationService.sendNotification("admin@admin.com");
         String sanitizedInput = imageBytes.replaceAll("[^A-Za-z0-9+/=]", "");
         boolean ok = userAccountService.uploadAvatarImage(id, sanitizedInput);
         if (!ok) {

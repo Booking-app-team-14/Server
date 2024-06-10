@@ -80,6 +80,21 @@ public class ReservationRequestController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/requests/owner/id/{id}", name = "gets requests by owner id")
+    public ResponseEntity<List<ReservationRequestDTO>> getReservationRequestsByOwnerId(@PathVariable Long id)  {
+        List<ReservationRequest> requests = requestService.findByOwnerId(id);
+        if (requests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<ReservationRequestDTO> result = new ArrayList<>();
+
+        for (ReservationRequest request: requests ){
+            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
     @PutMapping(value="/requests/{Id}",name="updates the status of the request")
     public ResponseEntity<ReservationRequestDTO> updateReservationRequest(@PathVariable Long requestId/* @RequestBody RequestDTO updatedRequest*/) {
