@@ -19,14 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -440,7 +438,48 @@ public class UserAccountController {
         return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
 
     }
+    @GetMapping("accommodations-mobile/favourite/{userId}")
+    public ResponseEntity<List<AccommodationMobileDTO>> getAllMobileAccommodations(@PathVariable Long userId) {
 
+        UserAccount user = userAccountService.getUserById(userId);
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        List<AccommodationMobileDTO> favouriteAccommodations = new ArrayList<>();
+        Guest guest = (Guest) user;
+        if (!guest.getFavouriteAccommodations().isEmpty()) {
+            for (Accommodation acc : guest.getFavouriteAccommodations()) {
+                AccommodationMobileDTO mobAcc = new AccommodationMobileDTO(acc);
+                favouriteAccommodations.add(mobAcc);
+                String accommodationImagePath = accommodationService.findAccommodationImageName(acc.getId());
+                try {
+                    String imageBytes = getImageBytes(accommodationImagePath);
+                    mobAcc.setMainPictureBytes(imageBytes);
+                } catch (IOException ignored) {
+                }
+            }
+        }else {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
+
+    }
+
+    public String getImageBytes(String relativePath) throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/images/" + relativePath);
+        if (inputStream == null) {
+            throw new IOException("Image not found");
+        }
+        int imageSize = inputStream.available();
+        byte[] buffer = new byte[imageSize];
+        int bytesRead = inputStream.read(buffer);
+        if (bytesRead != imageSize) {
+            throw new IOException("Error reading image:");
+        }
+        inputStream.close();
+        return Base64.getEncoder().encodeToString(buffer);
+    }
     @GetMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<List<NotificationType>> getNotWantedNotifications(@PathVariable Long userId) {
         UserAccount user = userAccountService.getUserById(userId);
@@ -449,6 +488,7 @@ public class UserAccountController {
         }
         return new ResponseEntity<>(new ArrayList<>(user.getNotWantedNotificationTypes()), HttpStatus.OK);
     }
+
 
     @PutMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<Boolean> setNotWantedNotifications(@PathVariable Long userId, @RequestBody String notWantedNotificationType) {

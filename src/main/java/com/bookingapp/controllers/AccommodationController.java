@@ -267,6 +267,12 @@ public class AccommodationController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("accommodations-mobile/sort/price/asc")
+    public ResponseEntity<List<AccommodationMobileDTO>> getAllMobileAccommodations() {
+        List<AccommodationMobileDTO> ownersAccommodationDTO = accommodationService.getAllMobileAccommodations();
+        return new ResponseEntity<>(ownersAccommodationDTO, HttpStatus.OK);
+    }
+
     @GetMapping("accommodations/sort/price/desc")
     public ResponseEntity<List<AccommodationSearchDTO>> getAllAccommodationsSortedByPriceDesc() {
         List<Accommodation> accommodations = accommodationService.findAllByPricePerNightDesc();
