@@ -482,6 +482,7 @@ public class UserAccountController {
     }
     @GetMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<List<NotificationType>> getNotWantedNotifications(@PathVariable Long userId) {
+        System.out.println("GET Not wanted notifs");
         UserAccount user = userAccountService.getUserById(userId);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -492,6 +493,7 @@ public class UserAccountController {
 
     @PutMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<Boolean> setNotWantedNotifications(@PathVariable Long userId, @RequestBody String notWantedNotificationType) {
+        System.out.println("PUT Not wanted notifs");
         UserAccount user = userAccountService.getUserById(userId);
         if (user == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);

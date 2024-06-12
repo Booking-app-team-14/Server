@@ -163,7 +163,7 @@ public  class ReservationRequestService {
         } catch (AccessDeniedException e) {
             return null;
         }
-        return  requestRepository.findByUsername(username);
+        return requestRepository.findByUsername(username);
     }
 
     public List<ReservationRequest> findAll(){

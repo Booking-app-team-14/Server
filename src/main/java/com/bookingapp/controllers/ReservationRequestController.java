@@ -132,16 +132,12 @@ public class ReservationRequestController {
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(value = "query", required = false) String query) {
 
-        Optional<ReservationRequest> requests = requestService.findById(id);
+        List<ReservationRequest> requests = requestService.findByUserId(id);
         UserAccount user = userAccountService.getUserById(id);
-        if (requests.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        List<ReservationRequest> requests1= Collections.singletonList(requests.get());
         // Filter the requests
         if (status != null && !status.equalsIgnoreCase("all")) {
             RequestStatus requestStatus = RequestStatus.valueOf(status.toUpperCase());
-            requests1 = requests1.stream()
+            requests = requests.stream()
                     .filter(r -> r.getRequestStatus() == requestStatus && r.getRequestStatus() != RequestStatus.ACCEPTED)
                     .collect(Collectors.toList());
         }
@@ -150,14 +146,14 @@ public class ReservationRequestController {
             LocalDate start = LocalDate.parse(startDate);
             LocalDate end = LocalDate.parse(endDate);
 
-            requests1 = requests1.stream()
+            requests = requests.stream()
                     .filter(r -> !r.getStartDate().isBefore(start) && !r.getEndDate().isAfter(end))
                     .collect(Collectors.toList());
         }
 
         if(Objects.equals(user.getRole().toString(), "GUEST")) {
             if (query != null && !query.isEmpty()) {
-                requests1 = requests1.stream()
+                requests = requests.stream()
                         .filter(r -> r.getUserUsername().toLowerCase().contains(query.toLowerCase()))
                         .collect(Collectors.toList());
             }
@@ -165,13 +161,13 @@ public class ReservationRequestController {
         }
         else{
             if (query != null && !query.isEmpty()) {
-                requests1 = requests1.stream()
+                requests = requests.stream()
                         .filter(r -> userAccountService.getUserById(r.getUserId()).getUsername().toLowerCase().contains(query.toLowerCase()))
                         .collect(Collectors.toList());
             }
         }
         if (query != null && !query.isEmpty()) {
-            requests1 = requests1.stream()
+            requests = requests.stream()
                     .filter(r -> r.getUserUsername().toLowerCase().contains(query.toLowerCase()))
                     .collect(Collectors.toList());
         }
@@ -179,6 +175,22 @@ public class ReservationRequestController {
         List<ReservationRequestDTO> result = requests.stream()
                 .map(request -> new ReservationRequestDTO(request, userAccountService, accommodationService))
                 .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/requests/guest/id/{id}", name = "gets requests by guest id")
+    public ResponseEntity<List<ReservationRequestDTO>> getReservationRequestsByGuestId2(@PathVariable Long id)  {
+        List<ReservationRequest> requests = requestService.findByUserId(id);
+        if (requests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<ReservationRequestDTO> result = new ArrayList<>();
+
+        for (ReservationRequest request: requests ){
+            result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
+        }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

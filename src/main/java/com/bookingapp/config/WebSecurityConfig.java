@@ -168,6 +168,7 @@ public class WebSecurityConfig {
                             auth.requestMatchers(antMatcher("/api/users/{id}/password")).permitAll();
                             auth.requestMatchers(antMatcher("/api//users/androidToken/{token}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/users/username/token/{token}")).permitAll();
+                            auth.requestMatchers(antMatcher("/api/requests/guest/id/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests/owner/id/{id}")).permitAll();
                             auth.requestMatchers(antMatcher("/api/requests/filtered-host/{id}")).permitAll();
                     auth.requestMatchers(antMatcher("/api/requests/filtered-guest/{id}")).permitAll();
