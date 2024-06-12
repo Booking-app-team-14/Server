@@ -12,10 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,6 +37,7 @@ public class ReservationRequestController {
     @PostMapping(value = "/requests", name = "guest makes a reservation request")
     public ResponseEntity<Long> createReservationRequest(@RequestBody ReservationRequestDTO requestDTO) {
         ReservationRequest request = new ReservationRequest(requestDTO);
+        System.out.println(request.toString());
         requestService.createRequest(request);
         Optional<Accommodation> acc = accommodationService.getAccommodationById(request.getAccommodationId());
         if (acc.isPresent() && acc.get().isAutomatic()){
@@ -76,6 +76,109 @@ public class ReservationRequestController {
         for (ReservationRequest request: requests ){
             result.add(new ReservationRequestDTO(request, userAccountService, accommodationService));
         }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/requests/filtered-host/{id}", name = "gets requests by owner id")
+    public ResponseEntity<List<ReservationRequestDTO>> getFilteredReservationRequestsByOwnerId(
+            @PathVariable Long id,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
+            @RequestParam(value = "query", required = false) String query) {
+
+        List<ReservationRequest> requests = requestService.findByOwnerId(id);
+        UserAccount user = userAccountService.getUserById(id);
+        if (requests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Filter the requests
+        if (status != null && !status.equalsIgnoreCase("all")) {
+            RequestStatus requestStatus = RequestStatus.valueOf(status.toUpperCase());
+            requests = requests.stream()
+                    .filter(r -> r.getRequestStatus() == requestStatus && r.getRequestStatus() != RequestStatus.ACCEPTED)
+                    .collect(Collectors.toList());
+        }
+
+        if (startDate != null && endDate != null) {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+            requests = requests.stream()
+                    .filter(r -> !r.getStartDate().isBefore(start) && !r.getEndDate().isAfter(end))
+                    .collect(Collectors.toList());
+        }
+
+        if (query != null && !query.isEmpty()) {
+            requests = requests.stream()
+                    .filter(r -> userAccountService.getUserById(r.getUserId()).getUsername().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        List<ReservationRequestDTO> result = requests.stream()
+                .map(request -> new ReservationRequestDTO(request, userAccountService, accommodationService))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+
+    @GetMapping(value = "/requests/filtered-guest/{id}", name = "gets requests by owner id")
+    public ResponseEntity<List<ReservationRequestDTO>> getFilteredReservationRequestsByGuestId(
+            @PathVariable Long id,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
+            @RequestParam(value = "query", required = false) String query) {
+
+        Optional<ReservationRequest> requests = requestService.findById(id);
+        UserAccount user = userAccountService.getUserById(id);
+        if (requests.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<ReservationRequest> requests1= Collections.singletonList(requests.get());
+        // Filter the requests
+        if (status != null && !status.equalsIgnoreCase("all")) {
+            RequestStatus requestStatus = RequestStatus.valueOf(status.toUpperCase());
+            requests1 = requests1.stream()
+                    .filter(r -> r.getRequestStatus() == requestStatus && r.getRequestStatus() != RequestStatus.ACCEPTED)
+                    .collect(Collectors.toList());
+        }
+
+        if (startDate != null && endDate != null) {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            requests1 = requests1.stream()
+                    .filter(r -> !r.getStartDate().isBefore(start) && !r.getEndDate().isAfter(end))
+                    .collect(Collectors.toList());
+        }
+
+        if(Objects.equals(user.getRole().toString(), "GUEST")) {
+            if (query != null && !query.isEmpty()) {
+                requests1 = requests1.stream()
+                        .filter(r -> r.getUserUsername().toLowerCase().contains(query.toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+
+        }
+        else{
+            if (query != null && !query.isEmpty()) {
+                requests1 = requests1.stream()
+                        .filter(r -> userAccountService.getUserById(r.getUserId()).getUsername().toLowerCase().contains(query.toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (query != null && !query.isEmpty()) {
+            requests1 = requests1.stream()
+                    .filter(r -> r.getUserUsername().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        List<ReservationRequestDTO> result = requests.stream()
+                .map(request -> new ReservationRequestDTO(request, userAccountService, accommodationService))
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
