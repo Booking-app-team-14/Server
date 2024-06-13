@@ -6,10 +6,7 @@ import com.bookingapp.enums.NotificationType;
 import com.bookingapp.enums.RequestStatus;
 import com.bookingapp.enums.Role;
 import com.bookingapp.repositories.ImagesRepository;
-import com.bookingapp.services.AccommodationService;
-import com.bookingapp.services.ActivationService;
-import com.bookingapp.services.ReservationRequestService;
-import com.bookingapp.services.UserAccountService;
+import com.bookingapp.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,13 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -48,6 +44,37 @@ public class UserAccountController {
 
     @Autowired
     private ReservationRequestService reservationRequestService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @GetMapping(value = "/users/username/token/{token}", produces = "text/plain")
+    public ResponseEntity<String> getUsername(@PathVariable String token) {
+        Long userId = userAccountService.getUserIdByToken(token);
+        if (userId == null) {
+            return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        UserAccount userAccount = userAccountService.getUserById(userId);
+        if (userAccount == null) {
+            return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAccount.getUsername(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/users/{id}/usernameAndNumberOfCancellations", produces = "text/plain")
+    public ResponseEntity<String> getUsernameAndNumberOfCancellations(@PathVariable Long id) {
+        UserAccount userAccount = userAccountService.getUserById(id);
+        if (userAccount == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        if (userAccount.getRole() == Role.GUEST) {
+            Guest guest = (Guest) userAccount;
+            String username = userAccount.getUsername();
+            int numberOfCancellations = guest.getNumberOfCancellations();
+            return new ResponseEntity<>(username + " | " + String.valueOf(numberOfCancellations), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping(value = "/register/users", name = "register user") // api/users?type=GUEST
     public ResponseEntity<Long> registerUserAccount(@RequestBody UserDTO userDTO, @RequestParam("type") Role role) throws MessagingException, UnsupportedEncodingException {
@@ -115,6 +142,14 @@ public class UserAccountController {
         return new ResponseEntity<>(userId, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/users/androidToken/{token}", name = "android get user id by bearer token")
+    public ResponseEntity<Long> getUserAccountByTokenAndroid(@PathVariable String token) {
+        Long userId = userAccountService.getUserIdByToken(token);
+        if (userId == null) {
+            return new ResponseEntity<>((long) -1, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userId, HttpStatus.OK);
+    }
 
     @PutMapping(value = "/users/{id}", name = "user updates his profile")
     public ResponseEntity<String> updateUserAccount(@PathVariable Long id, @RequestBody UserDTO userDTO) {
@@ -129,6 +164,31 @@ public class UserAccountController {
         user.setLastName(userDTO.getLastName());
         user.setAddress(userDTO.getAddress());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        userAccountService.save(user);
+        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{id}/basicInfo", name = "user updates his basic info")
+    public ResponseEntity<String> updateUserBasicInfo(@PathVariable Long id, @RequestBody UserBasicInfoNoImageDTO userDTO) {
+        UserAccount user = userAccountService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setAddress(userDTO.getAddress());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        userAccountService.save(user);
+        return new ResponseEntity<>("Account Updated", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/users/{id}/password", name = "user updates his password")
+    public ResponseEntity<String> updateUserPassword(@PathVariable Long id, @RequestBody String password) {
+        UserAccount user = userAccountService.getUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Account Not Found", HttpStatus.NOT_FOUND);
+        }
+        user.setPassword(passwordEncoder.encode(password));
         userAccountService.save(user);
         return new ResponseEntity<>("Account Updated", HttpStatus.OK);
     }
@@ -160,6 +220,17 @@ public class UserAccountController {
             Admin admin = (Admin) user;
             return new ResponseEntity<>(new AdminDTO(admin), HttpStatus.OK);
         }
+    }
+
+    @GetMapping(value = "/users/{id}/basicInfo")
+    public ResponseEntity<UserBasicInfoDTO> getUserBasicInfoById(@PathVariable Long id) {
+        UserAccount u = userAccountService.getUserById(id);
+        if (u == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        UserBasicInfoDTO user = new UserBasicInfoDTO(u);
+        user.setProfilePictureBytes(userAccountService.getUserImage(id));
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(value = "/users/owner/{userId}")
@@ -199,7 +270,8 @@ public class UserAccountController {
 
     @PostMapping(value = "/users/{id}/image", consumes = "text/plain", name = "user uploads avatar image for his profile")
     public ResponseEntity<Long> uploadUserImage(@PathVariable Long id, @RequestBody String imageBytes) {
-        boolean ok = userAccountService.uploadAvatarImage(id, imageBytes);
+        String sanitizedInput = imageBytes.replaceAll("[^A-Za-z0-9+/=]", "");
+        boolean ok = userAccountService.uploadAvatarImage(id, sanitizedInput);
         if (!ok) {
             return new ResponseEntity<>((long) -1, HttpStatus.BAD_REQUEST);
         }
@@ -207,7 +279,7 @@ public class UserAccountController {
         ImagesRepository imagesRepository = new ImagesRepository();
         String imageType = null;
         try {
-            imageType = imagesRepository.getImageType(imageBytes);
+            imageType = imagesRepository.getImageType(sanitizedInput);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -250,6 +322,17 @@ public class UserAccountController {
             return new ResponseEntity<>(-1D, HttpStatus.OK);
         }
         return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/owners/{id}/ratingString")
+    public ResponseEntity<String> getOwnerRatingString(@PathVariable Long id) {
+        Double rating = userAccountService.getOwnerRating(id);
+        if (rating == null) {
+            return new ResponseEntity<>("-1", HttpStatus.OK);
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedRating = decimalFormat.format(rating);
+        return new ResponseEntity<>(formattedRating, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/users/{Id}")
@@ -355,9 +438,51 @@ public class UserAccountController {
         return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
 
     }
+    @GetMapping("accommodations-mobile/favourite/{userId}")
+    public ResponseEntity<List<AccommodationMobileDTO>> getAllMobileAccommodations(@PathVariable Long userId) {
 
+        UserAccount user = userAccountService.getUserById(userId);
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        List<AccommodationMobileDTO> favouriteAccommodations = new ArrayList<>();
+        Guest guest = (Guest) user;
+        if (!guest.getFavouriteAccommodations().isEmpty()) {
+            for (Accommodation acc : guest.getFavouriteAccommodations()) {
+                AccommodationMobileDTO mobAcc = new AccommodationMobileDTO(acc);
+                favouriteAccommodations.add(mobAcc);
+                String accommodationImagePath = accommodationService.findAccommodationImageName(acc.getId());
+                try {
+                    String imageBytes = getImageBytes(accommodationImagePath);
+                    mobAcc.setMainPictureBytes(imageBytes);
+                } catch (IOException ignored) {
+                }
+            }
+        }else {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(favouriteAccommodations, HttpStatus.OK);
+
+    }
+
+    public String getImageBytes(String relativePath) throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/images/" + relativePath);
+        if (inputStream == null) {
+            throw new IOException("Image not found");
+        }
+        int imageSize = inputStream.available();
+        byte[] buffer = new byte[imageSize];
+        int bytesRead = inputStream.read(buffer);
+        if (bytesRead != imageSize) {
+            throw new IOException("Error reading image:");
+        }
+        inputStream.close();
+        return Base64.getEncoder().encodeToString(buffer);
+    }
     @GetMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<List<NotificationType>> getNotWantedNotifications(@PathVariable Long userId) {
+        System.out.println("GET Not wanted notifs");
         UserAccount user = userAccountService.getUserById(userId);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -365,8 +490,10 @@ public class UserAccountController {
         return new ResponseEntity<>(new ArrayList<>(user.getNotWantedNotificationTypes()), HttpStatus.OK);
     }
 
+
     @PutMapping(value = "/users/{userId}/not-wanted-notifications")
     public ResponseEntity<Boolean> setNotWantedNotifications(@PathVariable Long userId, @RequestBody String notWantedNotificationType) {
+        System.out.println("PUT Not wanted notifs");
         UserAccount user = userAccountService.getUserById(userId);
         if (user == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);

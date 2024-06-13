@@ -147,5 +147,4 @@ public class AccommodationReviewController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-
 }

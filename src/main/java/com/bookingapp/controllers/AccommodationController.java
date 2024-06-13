@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 @RestController
     @RequestMapping("/api/")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class AccommodationController {
 
     @Autowired
@@ -43,6 +45,59 @@ public class AccommodationController {
     private LocationService locationService;
     @Autowired
     private LocationRepository locationRepository;
+
+    @GetMapping(value = "accommodations/{id}/cancellationDeadline", produces = "text/plain")
+    public ResponseEntity<String>  getAccommodationCancellationDeadline(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        String deadline = String.valueOf(accommodation.get().getCancellationDeadline());
+        return new ResponseEntity<>(deadline, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "accommodations/{id}/nameAndType")
+    public ResponseEntity<String> getAccommodationNameAndType(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        String type = accommodation.get().getType().toString();
+        if (type.equals("STUDIO")) {
+            type = "Studio";
+        } else if (type.equals("ROOM")) {
+            type = "Room";
+        } else if (type.equals("APARTMENT")) {
+            type = "Apartment";
+        } else if (type.equals("VILLA")) {
+            type = "Villa";
+        } else if (type.equals("HOTEL")) {
+            type = "Hotel";
+        }
+        return new ResponseEntity<>(accommodation.get().getName() + " | " + type, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "accommodations/{id}/nameAndTypeAndBytes")
+    public ResponseEntity<String> getAccommodationNameAndTypeAndBytes(@PathVariable Long id) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(id);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        String type = accommodation.get().getType().toString();
+        if (type.equals("STUDIO")) {
+            type = "Studio";
+        } else if (type.equals("ROOM")) {
+            type = "Room";
+        } else if (type.equals("APARTMENT")) {
+            type = "Apartment";
+        } else if (type.equals("VILLA")) {
+            type = "Villa";
+        } else if (type.equals("HOTEL")) {
+            type = "Hotel";
+        }
+        String imageBytes = accommodationService.getAccommodationImage(id);
+        return new ResponseEntity<>(accommodation.get().getName() + " | " + type + " | " + imageBytes, HttpStatus.OK);
+    }
 
     @GetMapping(value = "accommodations/{id}")
     public ResponseEntity<AccommodationDTO> getAccommodationById(@PathVariable Long id) {
@@ -136,6 +191,12 @@ public class AccommodationController {
         }
         Accommodation accommodation = accommodationOpt.get();
         accommodation.setApproved(false);
+        // sanitize image bytes sent from the Android app
+        // TODO: check if this works (or is it even necessary)
+        for (Image image : accommodationUpdateDTO.getImages()) {
+            image.setImageBytes(image.getImageBytes().replaceAll("[^A-Za-z0-9+/=]", ""));
+        }
+        //
         accommodationService.save(accommodation);
 //        accommodation = accommodationService.update(accommodation, accommodationUpdateDTO);
 
@@ -205,6 +266,12 @@ public class AccommodationController {
             if (accommodation.isApproved())
                 result.add(new AccommodationSearchDTO(accommodation, accommodationService));
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("accommodations-mobile/sort/price/asc")
+    public ResponseEntity<List<AccommodationMobileDTO>> getAllMobileAccommodations() {
+        List<AccommodationMobileDTO> ownersAccommodationDTO = accommodationService.getAllMobileAccommodations();
+        return new ResponseEntity<>(ownersAccommodationDTO, HttpStatus.OK);
     }
 
     @GetMapping("accommodations/sort/price/desc")
@@ -293,6 +360,23 @@ public class AccommodationController {
         }
 
         return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/accommodations/{accommodationId}/ratingString")
+    public ResponseEntity<String> getAccommodationRatingString(@PathVariable Long accommodationId) {
+        Optional<Accommodation> accommodation = accommodationService.getAccommodationById(accommodationId);
+        if (accommodation.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Double rating = accommodation.get().getRating();
+        if (rating == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedRating = decimalFormat.format(rating);
+        return new ResponseEntity<>(formattedRating, HttpStatus.OK);
     }
 
 

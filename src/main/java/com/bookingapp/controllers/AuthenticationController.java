@@ -21,8 +21,8 @@ import com.bookingapp.util.TokenUtils;
 
 //Kontroler zaduzen za autentifikaciju korisnika
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping(value = "/api")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class AuthenticationController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class AuthenticationController {
     private UserAccountService userService;
 
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -57,6 +57,13 @@ public class AuthenticationController {
         String jwt = tokenUtils.generateToken(user.getUsername());
         return ResponseEntity.ok(jwt);
 
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<String> getRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount user = (UserAccount) authentication.getPrincipal();
+        return ResponseEntity.ok(user.getRole().toString());
     }
 
 }

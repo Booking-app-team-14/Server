@@ -17,6 +17,9 @@ public class UserInfoDTO {
     protected String firstName;
     @Size(min = 1, max = 50)
     protected String lastName;
+
+    @Size(min =1, max = 50)
+    protected String username;
     @NotEmpty
     protected String profilePictureType;
     @NotEmpty
@@ -26,7 +29,7 @@ public class UserInfoDTO {
 
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-
+        this.username = user.getUsername();
         try{
             ImagesRepository imagesRepository = new ImagesRepository();
             this.profilePictureBytes = imagesRepository.getUserImage(user.getId());

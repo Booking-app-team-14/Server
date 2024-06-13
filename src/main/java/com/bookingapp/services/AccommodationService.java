@@ -118,6 +118,32 @@ public class AccommodationService {
         return ownersAccommodationDTOS;
     }
 
+    public List<AccommodationMobileDTO> getAllMobileAccommodations() {
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+        List<AccommodationMobileDTO> ownersAccommodationDTOS = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if  (accommodation.isApproved()) {
+                AccommodationMobileDTO ownersAccommodationDTO = new AccommodationMobileDTO();
+                ownersAccommodationDTO.setId(accommodation.getId());
+                ownersAccommodationDTO.setName(accommodation.getName());
+                ownersAccommodationDTO.setType(accommodation.getType().toString());
+                ownersAccommodationDTO.setStars(accommodation.getRating().intValue());
+                ownersAccommodationDTO.setMaxGuests(accommodation.getMaxNumberOfGuests());
+                ownersAccommodationDTO.setAddress(accommodation.getLocation().getAddress());
+                ownersAccommodationDTO.setPrice(accommodation.getPricePerNight());
+                ImagesRepository imagesRepository = new ImagesRepository();
+                String accommodationImagePath = findAccommodationImageName(accommodation.getId());
+                try {
+                    String imageBytes = imagesRepository.getImageBytes(accommodationImagePath);
+                    ownersAccommodationDTO.setMainPictureBytes(imageBytes);
+                    ownersAccommodationDTO.setImageType(imagesRepository.getImageType(imageBytes));
+                } catch (IOException ignored) { }
+                ownersAccommodationDTOS.add(ownersAccommodationDTO);
+            }
+        }
+        return ownersAccommodationDTOS;
+    }
+
     public Set<BestOffersDTO> getBestOffers() {
         return null;
 //        return accommodationRepository.getBestOffers();
