@@ -67,6 +67,11 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.findByUsername(username);
     }
 
+    public Long getUserIdByUsername(String username) {
+        UserAccount userAccount = userAccountRepository.findByUsername(username);
+        return userAccount != null ? userAccount.getId() : null;
+    }
+
     public boolean deleteUser(Long userId) {
         if (userAccountRepository.existsById(userId)) {
             userAccountRepository.deleteById(userId);

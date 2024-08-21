@@ -506,4 +506,13 @@ public class UserAccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/users/username/{username}/id", produces = "text/plain")
+    public ResponseEntity<String> getUserIdByUsername(@PathVariable String username) {
+        Long userId = userAccountService.getUserIdByUsername(username);
+        if (userId == null) {
+            return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userId.toString(), HttpStatus.OK);
+    }
+
 }

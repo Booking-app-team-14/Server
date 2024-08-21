@@ -48,7 +48,7 @@ public class ActivationService {
         mailContent += "<p>Please click the link below to verify your registration:</p>";
         mailContent += "<p><span style='color: #800080;'>Link expires in 24 hours</span></p>";
 
-        mailContent += "<h3><a href=\"http://localhost:4200/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
+        mailContent += "<h3><a href=\"http://192.168.0.108:8080/verify?userId=" + user.getId() + "\">VERIFY</a></h3>";
         mailContent += "<p>Thank you,<br>BookingApp Team 14</p>";
         mailContent += "</div>";
 

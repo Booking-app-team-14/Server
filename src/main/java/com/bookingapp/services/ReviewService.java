@@ -180,6 +180,10 @@ public class ReviewService {
         return reviewRepository.findByApprovedFalse();
     }
 
+    public List<Review> getAllReportedOwnerReviews() {
+        return reviewRepository.findByReportedTrue();
+    }
+
     public void save(Review updatedReview) {
         reviewRepository.save(updatedReview);
     }

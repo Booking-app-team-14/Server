@@ -1,9 +1,11 @@
 package com.bookingapp.controllers;
 
+import com.bookingapp.dtos.OwnerReviewReportDTO;
 import com.bookingapp.dtos.ReviewDTO;
 import com.bookingapp.entities.Review;
 import com.bookingapp.repositories.OwnerReviewReportRepository;
 import com.bookingapp.services.AccommodationReviewService;
+import com.bookingapp.services.OwnerReviewReportService;
 import com.bookingapp.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,8 @@ public class ReviewController {
     @Autowired
     private final OwnerReviewReportRepository ownerReviewReportRepository;
 
+    @Autowired
+    private OwnerReviewReportService reviewReportService;
     @Autowired
     public ReviewController(ReviewService reviewService, OwnerReviewReportRepository ownerReviewReportRepository) {
         this.reviewService = reviewService;
@@ -81,6 +85,13 @@ public class ReviewController {
         return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/owner/requests/report", name = "admin gets all reported reviews for owners")
+    public ResponseEntity<List<ReviewDTO>> getAllReportedOwnerReviews() {
+        List<Review> reviews = reviewService.getAllReportedOwnerReviews();
+        List<ReviewDTO> reviewDTOs = ReviewDTO.convertToDTO(reviews);
+        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+    }
+
     @PutMapping(value = "/admin/{reviewId}", name = "admin accepts the review")
     public ResponseEntity<Review> updateReviewById(@PathVariable Long reviewId) {
         Optional<Review> reviewToUpdate = reviewService.getReviewById(reviewId);
@@ -110,21 +121,44 @@ public class ReviewController {
 
     ///api/reviews/report/{reviewId}
 
+//    @PutMapping("/report/{reviewId}")
+//    public ResponseEntity<Review> reportReview(@PathVariable Long reviewId) {
+//        Optional<Review> reviewToReport = reviewService.getReviewById(reviewId);
+//
+//        if (reviewToReport.isPresent()) {
+//            Review reportedReview = reviewToReport.get();
+//            reportedReview.setReported(true);
+//
+//            reviewService.save(reportedReview);
+//
+//            return new ResponseEntity<>(reportedReview, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//    }
+
     @PutMapping("/report/{reviewId}")
     public ResponseEntity<Review> reportReview(@PathVariable Long reviewId) {
-        Optional<Review> reviewToReport = reviewService.getReviewById(reviewId);
+        Optional<Review> reviewOptional = reviewService.getReviewById(reviewId);
 
-        if (reviewToReport.isPresent()) {
-            Review reportedReview = reviewToReport.get();
-            reportedReview.setReported(true);
+        if (reviewOptional.isPresent()) {
+            Review review = reviewOptional.get();
+            review.setReported(true);
+            reviewService.save(review);
 
-            reviewService.save(reportedReview);
+            // Kreiraj novi OwnerReviewReport entitet i sačuvaj ga
+            OwnerReviewReportDTO reportDTO = new OwnerReviewReportDTO();
+            reportDTO.setReviewId(reviewId);
+            reportDTO.setReason("Owner's review reported for inappropriate content!\n"); // Možeš postaviti razlog ako želiš
 
-            return new ResponseEntity<>(reportedReview, HttpStatus.OK);
+            reviewReportService.saveReviewReport(reportDTO);
+
+            return new ResponseEntity<>(review, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/hasAcceptedReservationForOwner/{ownerId}")
     public ResponseEntity<Boolean> hasAcceptedReservationForOwner(@PathVariable Long ownerId) {
         boolean hasAcceptedReservation = reviewService.hasAcceptedReservationForOwner(ownerId);

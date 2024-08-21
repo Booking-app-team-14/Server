@@ -12,7 +12,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findByApprovedFalse();
 
+
     List<Review> findByRecipientIdAndApproved(Long recipientId, boolean approved);
+
+    List<Review> findByReportedTrue();
 
     //List<Review> findByRecipientIdAndStatus(@Param("recipientId") Long recipientId, @Param("status") boolean status);
 
